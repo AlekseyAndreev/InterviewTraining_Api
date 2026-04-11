@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using InterviewTraining.Application.Common;
 
 namespace InterviewTraining.Application.GetAllExperts.V10;
 
-public class GetAllExpertsResponse
+public class GetAllExpertsResponse : PagedResponse<GetExpertResponse>
 {
-    public IReadOnlyCollection<GetExpertResponse> Experts { get; set; }
 }
