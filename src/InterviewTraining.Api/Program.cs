@@ -34,7 +34,7 @@ using (var scope = app.Services.GetService<IServiceScopeFactory>().CreateScope()
     }
 }
 
-await InterviewContextSeeding.SeedAllSkillsSkillGroupsSkillTagsAsync(app.Services);
+await InterviewContextSeeding.SeedAllAsync(app.Services);
 
 app.UseCors(builder => builder
     .AllowAnyOrigin()

@@ -9,11 +9,15 @@ public static partial class InterviewContextSeeding
 {
     private static readonly DateTime _utc_date = new DateTime(2026, 11, 04, 11, 24, 00, DateTimeKind.Utc);
 
-    public static async Task SeedAllSkillsSkillGroupsSkillTagsAsync(this IServiceProvider serviceProvider)
+    public static async Task SeedAllAsync(this IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<InterviewContext>();
+        await AddSkillsAndRelated(context);
+    }
 
+    private static async Task AddSkillsAndRelated(InterviewContext context)
+    {
         if (await context.SkillGroups.AnyAsync())
         {
             return;

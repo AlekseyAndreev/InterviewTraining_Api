@@ -14,7 +14,7 @@ public class SkillConfiguration : IEntityTypeConfiguration<Domain.Skill>
         builder
             .ToTable(t =>
             {
-                t.Metadata.SetTableName("skill");
+                t.Metadata.SetTableName("skills");
                 t.Metadata.SetSchema(null);
             });
 

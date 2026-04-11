@@ -33,6 +33,16 @@ public class InterviewContext : DbContext
     public DbSet<SkillGroup> SkillGroups { get; set; }
 
     /// <summary>
+    /// Дополнительная информация пользователей
+    /// </summary>
+    public DbSet<AdditionalUserInfo> AdditionalUserInfos { get; set; }
+
+    /// <summary>
+    /// Рейтинги пользователей
+    /// </summary>
+    public DbSet<UserRating> UserRatings { get; set; }
+
+    /// <summary>
     /// При создании модели
     /// </summary>
     /// <param name="modelBuilder">modelBuilder</param>
@@ -60,5 +70,7 @@ public class InterviewContext : DbContext
         builder.ApplyConfiguration(new SkillConfiguration());
         builder.ApplyConfiguration(new SkillGroupConfiguration());
         builder.ApplyConfiguration(new SkillTagConfiguration());
+        builder.ApplyConfiguration(new AdditionalUserInfoConfiguration());
+        builder.ApplyConfiguration(new UserRatingConfiguration());
     }
 }
