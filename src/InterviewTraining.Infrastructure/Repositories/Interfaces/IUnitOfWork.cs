@@ -1,0 +1,55 @@
+﻿using System;
+using System.Threading.Tasks;
+
+namespace InterviewTraining.Infrastructure.Repositories.Interfaces;
+
+/// <summary>
+/// Интерфейс паттерна Unit of Work для управления транзакциями и репозиториями
+/// </summary>
+public interface IUnitOfWork : IDisposable
+{
+    /// <summary>
+    /// Репозиторий навыков
+    /// </summary>
+    ISkillRepository Skills { get; }
+
+    /// <summary>
+    /// Репозиторий групп навыков
+    /// </summary>
+    ISkillGroupRepository SkillGroups { get; }
+
+    /// <summary>
+    /// Репозиторий тегов навыков
+    /// </summary>
+    ISkillTagRepository SkillTags { get; }
+
+    /// <summary>
+    /// Репозиторий рейтингов пользователей
+    /// </summary>
+    IUserRatingRepository UserRatings { get; }
+
+    /// <summary>
+    /// Репозиторий дополнительной информации пользователей
+    /// </summary>
+    IAdditionalUserInfoRepository AdditionalUserInfos { get; }
+
+    /// <summary>
+    /// Сохранить все изменения
+    /// </summary>
+    Task<int> SaveChangesAsync();
+
+    /// <summary>
+    /// Начать транзакцию
+    /// </summary>
+    Task BeginTransactionAsync();
+
+    /// <summary>
+    /// Зафиксировать транзакцию
+    /// </summary>
+    Task CommitTransactionAsync();
+
+    /// <summary>
+    /// Откатить транзакцию
+    /// </summary>
+    Task RollbackTransactionAsync();
+}

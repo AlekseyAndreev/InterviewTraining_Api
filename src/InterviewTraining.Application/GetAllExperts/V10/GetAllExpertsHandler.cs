@@ -9,6 +9,6 @@ public class GetAllExpertsHandler(IExpertService expertService) : IMediatorHandl
 {
     public async Task<GetAllExpertsResponse> HandleAsync(GetAllExpertsRequest request, CancellationToken cancellationToken)
     {
-        return await expertService.GetByFilterAsync(request);
+        return await expertService.GetByFilterAsync(request, cancellationToken);
     }
 }

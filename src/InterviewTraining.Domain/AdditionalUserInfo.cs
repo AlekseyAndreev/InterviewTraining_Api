@@ -6,6 +6,7 @@ namespace InterviewTraining.Domain;
 public class AdditionalUserInfo : BaseDeleteEntity<Guid>
 {
     public string IdentityUserId { get; set; }
+    public string FullName { get; set; }
     public string Photo { get; set; }
     public string ShortDescription { get; set; }
     public string Description { get; set; }

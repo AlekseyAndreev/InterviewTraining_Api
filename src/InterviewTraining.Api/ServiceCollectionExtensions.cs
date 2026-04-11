@@ -47,7 +47,7 @@ public static class ServiceCollectionExtensions
 
         services.AddCustomMediator();
         services.AddInfrastructureServices();
-        // services.ConfigureRepositories();
+        services.AddRepositories();
         ConfigureContext(services, configuration);
 
         services.AddSwaggerGen();

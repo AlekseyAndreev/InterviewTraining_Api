@@ -1,4 +1,6 @@
 ﻿using InterviewTraining.Application.Interfaces;
+using InterviewTraining.Infrastructure.Repositories;
+using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using InterviewTraining.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,7 +17,22 @@ public static class ServiceCollectionExtensions
     ///<param name="services"></param>
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
-        return services
-            .AddScoped<IExpertService, ExpertService>();
+        services.AddScoped<IExpertService, ExpertService>();
+        return services;
+    }
+
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to add services to the container.
+    /// </summary>
+    ///<param name="services"></param>
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ISkillRepository, SkillRepository>();
+        services.AddScoped<ISkillGroupRepository, SkillGroupRepository>();
+        services.AddScoped<ISkillTagRepository, SkillTagRepository>();
+        services.AddScoped<IUserRatingRepository, UserRatingRepository>();
+        services.AddScoped<IAdditionalUserInfoRepository, AdditionalUserInfoRepository>();
+        return services;
     }
 }
