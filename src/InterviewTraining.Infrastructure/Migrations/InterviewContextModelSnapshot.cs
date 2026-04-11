@@ -97,6 +97,7 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdentityUserId")
+                        .IsUnique()
                         .HasDatabaseName("ix_additional_user_info_identity_user_id");
 
                     b.HasIndex("IsCandidate")

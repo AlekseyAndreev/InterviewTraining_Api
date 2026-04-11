@@ -118,6 +118,7 @@ public class AdditionalUserInfoConfiguration : IEntityTypeConfiguration<Domain.A
         // Индекс для быстрого поиска по IdentityUserId
         builder
             .HasIndex(x => x.IdentityUserId)
+            .IsUnique(true)
             .HasDatabaseName("ix_additional_user_info_identity_user_id");
 
         // Индекс для поиска экспертов

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InterviewTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(InterviewContext))]
-    [Migration("20260411144242_Init")]
+    [Migration("20260411150257_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -100,6 +100,7 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdentityUserId")
+                        .IsUnique()
                         .HasDatabaseName("ix_additional_user_info_identity_user_id");
 
                     b.HasIndex("IsCandidate")

@@ -142,7 +142,8 @@ namespace InterviewTraining.Infrastructure.Migrations
                 name: "ix_additional_user_info_identity_user_id",
                 schema: "public",
                 table: "additional_user_infos",
-                column: "identity_user_id");
+                column: "identity_user_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_additional_user_info_is_candidate",
