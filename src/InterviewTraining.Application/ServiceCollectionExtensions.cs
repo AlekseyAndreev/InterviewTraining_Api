@@ -1,0 +1,22 @@
+﻿using InterviewTraining.Application.CustomMediatorLogic;
+using InterviewTraining.Application.GetAllExperts.V10;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace InterviewTraining.Application;
+
+/// <summary>
+/// Startup
+/// </summary>
+public static class ServiceCollectionExtensions
+{
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to add services to the container.
+    /// </summary>
+    ///<param name="services"></param>
+    public static IServiceCollection AddCustomMediator(this IServiceCollection services)
+    {
+        return services
+            .AddScoped<ICustomMediator, CustomMediator>()
+            .AddScoped<IMediatorHandler<GetAllExpertsRequest, GetAllExpertsResponse>, GetAllExpertsHandler>();
+    }
+}

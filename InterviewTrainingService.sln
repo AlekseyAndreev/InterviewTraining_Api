@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11626.88 stable
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterviewTraining.Api", "src\InterviewTraining.Api\InterviewTraining.Api.csproj", "{6CA9F93A-F659-472F-AB2B-50A80F931234}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DC02880F-692F-4926-A3AC-E36396445FB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterviewTraining.Tests", "test\InterviewTraining.Tests\InterviewTraining.Tests.csproj", "{BE551B91-E16F-3418-2017-BA1CF1B51BAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterviewTraining.Application", "src\InterviewTraining.Application\InterviewTraining.Application.csproj", "{32A4E034-5F6C-5ED6-EC58-1F0C188418DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterviewTraining.Domain", "src\InterviewTraining.Domain\InterviewTraining.Domain.csproj", "{EA515C48-5F79-A733-1D9B-CA5C2F12C012}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InterviewTraining.Infrastructure", "src\InterviewTraining.Infrastructure\InterviewTraining.Infrastructure.csproj", "{A3A9915B-F5AB-3222-CF7B-910AF4A1D47C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{91D63168-8207-46F2-93C8-87473FF25521}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6CA9F93A-F659-472F-AB2B-50A80F931234}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CA9F93A-F659-472F-AB2B-50A80F931234}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CA9F93A-F659-472F-AB2B-50A80F931234}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CA9F93A-F659-472F-AB2B-50A80F931234}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE551B91-E16F-3418-2017-BA1CF1B51BAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE551B91-E16F-3418-2017-BA1CF1B51BAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE551B91-E16F-3418-2017-BA1CF1B51BAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE551B91-E16F-3418-2017-BA1CF1B51BAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32A4E034-5F6C-5ED6-EC58-1F0C188418DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32A4E034-5F6C-5ED6-EC58-1F0C188418DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32A4E034-5F6C-5ED6-EC58-1F0C188418DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32A4E034-5F6C-5ED6-EC58-1F0C188418DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA515C48-5F79-A733-1D9B-CA5C2F12C012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA515C48-5F79-A733-1D9B-CA5C2F12C012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA515C48-5F79-A733-1D9B-CA5C2F12C012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA515C48-5F79-A733-1D9B-CA5C2F12C012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3A9915B-F5AB-3222-CF7B-910AF4A1D47C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3A9915B-F5AB-3222-CF7B-910AF4A1D47C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3A9915B-F5AB-3222-CF7B-910AF4A1D47C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3A9915B-F5AB-3222-CF7B-910AF4A1D47C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6CA9F93A-F659-472F-AB2B-50A80F931234} = {91D63168-8207-46F2-93C8-87473FF25521}
+		{BE551B91-E16F-3418-2017-BA1CF1B51BAE} = {DC02880F-692F-4926-A3AC-E36396445FB5}
+		{32A4E034-5F6C-5ED6-EC58-1F0C188418DC} = {91D63168-8207-46F2-93C8-87473FF25521}
+		{EA515C48-5F79-A733-1D9B-CA5C2F12C012} = {91D63168-8207-46F2-93C8-87473FF25521}
+		{A3A9915B-F5AB-3222-CF7B-910AF4A1D47C} = {91D63168-8207-46F2-93C8-87473FF25521}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5467891C-FBCA-45A1-B9EE-69B1FA4BD832}
+	EndGlobalSection
+EndGlobal

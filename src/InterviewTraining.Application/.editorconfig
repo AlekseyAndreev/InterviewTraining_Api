@@ -1,0 +1,19 @@
+﻿# The file has been copied from Skp.SonarQube nuget package.
+# Do not modify, rename/remove or commit this file.
+
+root = false
+
+[*.cs]
+
+#### Diagnostic configuration ####
+dotnet_diagnostic.S104.severity = Error # Files should not have too many lines of code https://rules.sonarsource.com/csharp/RSPEC-104/
+dotnet_diagnostic.S1075.severity = None # Refactor your code not to be use hardcoded absolute paths or URIs https://rules.sonarsource.com/csharp/RSPEC-1075/
+dotnet_diagnostic.S1133.severity = None # Do not forget to remove this deprecated code someday https://rules.sonarsource.com/csharp/RSPEC-1133/
+dotnet_diagnostic.S1135.severity = None # Complete the task associated to this 'TODO' comment https://rules.sonarsource.com/csharp/RSPEC-1135/
+dotnet_diagnostic.S2094.severity = None # Remove this empty class, write its code or make it an "interface" https://rules.sonarsource.com/csharp/RSPEC-2094/
+dotnet_diagnostic.S2292.severity = None # Make this an auto-implemented property and remove its backing field https://rules.sonarsource.com/csharp/RSPEC-2292/
+dotnet_diagnostic.S2589.severity = None # Change this expression which always evaluates to the same result https://rules.sonarsource.com/csharp/RSPEC-2589/
+dotnet_diagnostic.S2857.severity = None # Add a space before 'x' https://rules.sonarsource.com/csharp/RSPEC-2857/
+dotnet_diagnostic.S4144.severity = None # Methods should not have identical implementations https://rules.sonarsource.com/csharp/RSPEC-4144/
+dotnet_diagnostic.S6562.severity = None # Provide the "DateTimeKind" when creating this object. https://rules.sonarsource.com/csharp/RSPEC-6562/
+dotnet_diagnostic.S6580.severity = None # Use a format provider when parsing date and time https://rules.sonarsource.com/csharp/RSPEC-6580/
