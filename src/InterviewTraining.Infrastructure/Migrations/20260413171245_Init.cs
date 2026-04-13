@@ -138,6 +138,65 @@ namespace InterviewTraining.Infrastructure.Migrations
                         principalColumn: "id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "interview_versions",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
+                    interview_id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Идентификатор интервью"),
+                    candidate_is_approved = table.Column<bool>(type: "boolean", nullable: true, defaultValue: false, comment: "Признак подтверждения кандидатом"),
+                    candidate_is_paid = table.Column<bool>(type: "boolean", nullable: true, defaultValue: false, comment: "Признак оплаты кандидатом"),
+                    candidate_is_cancelled = table.Column<bool>(type: "boolean", nullable: true, defaultValue: false, comment: "Признак отмены кандидатом"),
+                    candidate_cancell_reason = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true, comment: "Причина отмены кандидатом"),
+                    expert_is_approved = table.Column<bool>(type: "boolean", nullable: true, defaultValue: false, comment: "Признак подтверждения экспертом"),
+                    expert_is_paid = table.Column<bool>(type: "boolean", nullable: true, defaultValue: false, comment: "Признак оплаты экспертом"),
+                    expert_is_cancelled = table.Column<bool>(type: "boolean", nullable: true, defaultValue: false, comment: "Признак отмены экспертом"),
+                    expert_cancell_reason = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true, comment: "Причина отмены экспертом"),
+                    link_to_video_call = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true, comment: "Ссылка на видеозвонок"),
+                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
+                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_interview_versions", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "interviews",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
+                    candidate_id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Идентификатор кандидата"),
+                    expert_id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Идентификатор эксперта"),
+                    active_interview_version_id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Идентификатор активной версии интервью"),
+                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
+                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_interviews", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_interviews_additional_user_infos_candidate_id",
+                        column: x => x.candidate_id,
+                        principalSchema: "public",
+                        principalTable: "additional_user_infos",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK_interviews_additional_user_infos_expert_id",
+                        column: x => x.expert_id,
+                        principalSchema: "public",
+                        principalTable: "additional_user_infos",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "FK_interviews_interview_versions_active_interview_version_id",
+                        column: x => x.active_interview_version_id,
+                        principalSchema: "public",
+                        principalTable: "interview_versions",
+                        principalColumn: "id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "ix_additional_user_info_identity_user_id",
                 schema: "public",
@@ -156,6 +215,30 @@ namespace InterviewTraining.Infrastructure.Migrations
                 schema: "public",
                 table: "additional_user_infos",
                 column: "is_expert");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_interview_versions_interview_id",
+                schema: "public",
+                table: "interview_versions",
+                column: "interview_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_interviews_active_interview_version_id",
+                schema: "public",
+                table: "interviews",
+                column: "active_interview_version_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_interviews_candidate_id",
+                schema: "public",
+                table: "interviews",
+                column: "candidate_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_interviews_expert_id",
+                schema: "public",
+                table: "interviews",
+                column: "expert_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_skill_groups_parent_group_id",
@@ -187,11 +270,25 @@ namespace InterviewTraining.Infrastructure.Migrations
                 schema: "public",
                 table: "user_ratings",
                 column: "user_to_id");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_interview_versions_interviews_interview_id",
+                schema: "public",
+                table: "interview_versions",
+                column: "interview_id",
+                principalSchema: "public",
+                principalTable: "interviews",
+                principalColumn: "id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_interview_versions_interviews_interview_id",
+                schema: "public",
+                table: "interview_versions");
+
             migrationBuilder.DropTable(
                 name: "skill_tags",
                 schema: "public");
@@ -205,11 +302,19 @@ namespace InterviewTraining.Infrastructure.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
+                name: "skill_groups",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "interviews",
+                schema: "public");
+
+            migrationBuilder.DropTable(
                 name: "additional_user_infos",
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "skill_groups",
+                name: "interview_versions",
                 schema: "public");
         }
     }

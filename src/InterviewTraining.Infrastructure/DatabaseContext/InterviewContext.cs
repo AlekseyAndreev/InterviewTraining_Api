@@ -43,6 +43,16 @@ public class InterviewContext : DbContext
     public DbSet<UserRating> UserRatings { get; set; }
 
     /// <summary>
+    /// Интервью
+    /// </summary>
+    public DbSet<Interview> Interviews { get; set; }
+
+    /// <summary>
+    /// Версии интервью
+    /// </summary>
+    public DbSet<InterviewVersion> InterviewVersions { get; set; }
+
+    /// <summary>
     /// При создании модели
     /// </summary>
     /// <param name="modelBuilder">modelBuilder</param>
@@ -72,5 +82,7 @@ public class InterviewContext : DbContext
         builder.ApplyConfiguration(new SkillTagConfiguration());
         builder.ApplyConfiguration(new AdditionalUserInfoConfiguration());
         builder.ApplyConfiguration(new UserRatingConfiguration());
+        builder.ApplyConfiguration(new InterviewConfiguration());
+        builder.ApplyConfiguration(new InterviewVersionConfiguration());
     }
 }

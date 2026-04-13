@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InterviewTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(InterviewContext))]
-    [Migration("20260411150257_Init")]
+    [Migration("20260413171245_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -110,6 +110,90 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasDatabaseName("ix_additional_user_info_is_expert");
 
                     b.ToTable("additional_user_infos", "public");
+                });
+
+            modelBuilder.Entity("InterviewTraining.Domain.Interview", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasComment("Уникальный идентификатор");
+
+                    b.Property<Guid>("ActiveInterviewVersionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("active_interview_version_id")
+                        .HasComment("Идентификатор активной версии интервью");
+
+                    b.Property<Guid>("CandidateId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("candidate_id")
+                        .HasComment("Идентификатор кандидата");
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_utc")
+                        .HasComment("Дата и время создания записи в таблице");
+
+                    b.Property<Guid>("ExpertId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("expert_id")
+                        .HasComment("Идентификатор эксперта");
+
+                    b.Property<DateTime?>("ModifiedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("modified_utc")
+                        .HasComment("Дата и время последнего изменения записи в таблице");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActiveInterviewVersionId")
+                        .HasDatabaseName("ix_interviews_active_interview_version_id");
+
+                    b.HasIndex("CandidateId")
+                        .HasDatabaseName("ix_interviews_candidate_id");
+
+                    b.HasIndex("ExpertId")
+                        .HasDatabaseName("ix_interviews_expert_id");
+
+                    b.ToTable("interviews", "public");
+                });
+
+            modelBuilder.Entity("InterviewTraining.Domain.InterviewVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasComment("Уникальный идентификатор");
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_utc")
+                        .HasComment("Дата и время создания записи в таблице");
+
+                    b.Property<Guid>("InterviewId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("interview_id")
+                        .HasComment("Идентификатор интервью");
+
+                    b.Property<string>("LinkToVideoCall")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("link_to_video_call")
+                        .HasComment("Ссылка на видеозвонок");
+
+                    b.Property<DateTime?>("ModifiedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("modified_utc")
+                        .HasComment("Дата и время последнего изменения записи в таблице");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InterviewId")
+                        .HasDatabaseName("ix_interview_versions_interview_id");
+
+                    b.ToTable("interview_versions", "public");
                 });
 
             modelBuilder.Entity("InterviewTraining.Domain.Skill", b =>
@@ -289,6 +373,128 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.ToTable("user_ratings", "public");
                 });
 
+            modelBuilder.Entity("InterviewTraining.Domain.Interview", b =>
+                {
+                    b.HasOne("InterviewTraining.Domain.InterviewVersion", "ActiveInterviewVersion")
+                        .WithMany()
+                        .HasForeignKey("ActiveInterviewVersionId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("InterviewTraining.Domain.AdditionalUserInfo", "Candidate")
+                        .WithMany()
+                        .HasForeignKey("CandidateId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("InterviewTraining.Domain.AdditionalUserInfo", "Expert")
+                        .WithMany()
+                        .HasForeignKey("ExpertId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.Navigation("ActiveInterviewVersion");
+
+                    b.Navigation("Candidate");
+
+                    b.Navigation("Expert");
+                });
+
+            modelBuilder.Entity("InterviewTraining.Domain.InterviewVersion", b =>
+                {
+                    b.HasOne("InterviewTraining.Domain.Interview", "Interview")
+                        .WithMany("Versions")
+                        .HasForeignKey("InterviewId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.OwnsOne("InterviewTraining.Domain.UserInterviewData", "Candidate", b1 =>
+                        {
+                            b1.Property<Guid>("InterviewVersionId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("CancellReason")
+                                .HasMaxLength(2000)
+                                .HasColumnType("character varying(2000)")
+                                .HasColumnName("candidate_cancell_reason")
+                                .HasComment("Причина отмены кандидатом");
+
+                            b1.Property<bool>("IsApproved")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("candidate_is_approved")
+                                .HasComment("Признак подтверждения кандидатом");
+
+                            b1.Property<bool>("IsCancelled")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("candidate_is_cancelled")
+                                .HasComment("Признак отмены кандидатом");
+
+                            b1.Property<bool>("IsPaid")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("candidate_is_paid")
+                                .HasComment("Признак оплаты кандидатом");
+
+                            b1.HasKey("InterviewVersionId");
+
+                            b1.ToTable("interview_versions", "public");
+
+                            b1.WithOwner()
+                                .HasForeignKey("InterviewVersionId");
+                        });
+
+                    b.OwnsOne("InterviewTraining.Domain.UserInterviewData", "Expert", b1 =>
+                        {
+                            b1.Property<Guid>("InterviewVersionId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("CancellReason")
+                                .HasMaxLength(2000)
+                                .HasColumnType("character varying(2000)")
+                                .HasColumnName("expert_cancell_reason")
+                                .HasComment("Причина отмены экспертом");
+
+                            b1.Property<bool>("IsApproved")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("expert_is_approved")
+                                .HasComment("Признак подтверждения экспертом");
+
+                            b1.Property<bool>("IsCancelled")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("expert_is_cancelled")
+                                .HasComment("Признак отмены экспертом");
+
+                            b1.Property<bool>("IsPaid")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("expert_is_paid")
+                                .HasComment("Признак оплаты экспертом");
+
+                            b1.HasKey("InterviewVersionId");
+
+                            b1.ToTable("interview_versions", "public");
+
+                            b1.WithOwner()
+                                .HasForeignKey("InterviewVersionId");
+                        });
+
+                    b.Navigation("Candidate");
+
+                    b.Navigation("Expert");
+
+                    b.Navigation("Interview");
+                });
+
             modelBuilder.Entity("InterviewTraining.Domain.Skill", b =>
                 {
                     b.HasOne("InterviewTraining.Domain.SkillGroup", "Group")
@@ -344,6 +550,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.Navigation("MyRatingToUsers");
 
                     b.Navigation("RatingFromUsers");
+                });
+
+            modelBuilder.Entity("InterviewTraining.Domain.Interview", b =>
+                {
+                    b.Navigation("Versions");
                 });
 
             modelBuilder.Entity("InterviewTraining.Domain.Skill", b =>
