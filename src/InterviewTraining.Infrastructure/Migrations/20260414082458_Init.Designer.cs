@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InterviewTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(InterviewContext))]
-    [Migration("20260413171245_Init")]
+    [Migration("20260414082458_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -85,10 +85,15 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("modified_utc")
                         .HasComment("Дата и время последнего изменения записи в таблице");
 
-                    b.Property<string>("Photo")
+                    b.Property<byte[]>("PhotoLocal")
+                        .HasColumnType("bytea")
+                        .HasColumnName("photo_local")
+                        .HasComment("Фото пользователя");
+
+                    b.Property<string>("PhotoUrl")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)")
-                        .HasColumnName("photo")
+                        .HasColumnName("photo_url")
                         .HasComment("URL фото пользователя");
 
                     b.Property<string>("ShortDescription")

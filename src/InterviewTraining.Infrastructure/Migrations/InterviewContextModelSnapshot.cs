@@ -82,10 +82,15 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("modified_utc")
                         .HasComment("Дата и время последнего изменения записи в таблице");
 
-                    b.Property<string>("Photo")
+                    b.Property<byte[]>("PhotoLocal")
+                        .HasColumnType("bytea")
+                        .HasColumnName("photo_local")
+                        .HasComment("Фото пользователя");
+
+                    b.Property<string>("PhotoUrl")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)")
-                        .HasColumnName("photo")
+                        .HasColumnName("photo_url")
                         .HasComment("URL фото пользователя");
 
                     b.Property<string>("ShortDescription")
