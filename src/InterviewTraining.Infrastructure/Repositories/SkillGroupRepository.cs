@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.DatabaseContext;
@@ -58,6 +59,22 @@ public class SkillGroupRepository : Repository<SkillGroup, Guid>, ISkillGroupRep
             .Include(g => g.Skills)
             .Include(g => g.ChildGroups)
             .FirstOrDefaultAsync(g => g.Id == id);
+    }
+
+    public async Task<IEnumerable<SkillGroup>> GetAllWithHierarchyAsync(CancellationToken cancellationToken)
+    {
+        return await DbSet
+            .Where(g => !g.IsDeleted)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<SkillGroup>> GetFullTreeAsync(CancellationToken cancellationToken)
+    {
+        return await DbSet
+            .Include(g => g.Skills.Where(s => !s.IsDeleted))
+            .Include(g => g.ChildGroups.Where(s => !s.IsDeleted))
+            .Where(g => !g.IsDeleted)
+            .ToListAsync(cancellationToken);
     }
 
     public override async Task<SkillGroup> GetByIdAsync(Guid id)

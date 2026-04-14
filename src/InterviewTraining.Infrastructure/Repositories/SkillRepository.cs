@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.DatabaseContext;
@@ -68,9 +69,16 @@ public class SkillRepository : Repository<Skill, Guid>, ISkillRepository
         return await DbSet
             .Include(s => s.Tags)
             .Where(s => !s.IsDeleted &&
-                   (s.Name.ToLower().Contains(term) ||
-                    s.Tags.Any(t => t.Name.ToLower().Contains(term))))
+                       (s.Name.ToLower().Contains(term) ||
+                        s.Tags.Any(t => t.Name.ToLower().Contains(term))))
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Skill>> GetAllWithGroupsAsync(CancellationToken cancellationToken)
+    {
+        return await DbSet
+            .Where(s => !s.IsDeleted)
+            .ToListAsync(cancellationToken);
     }
 
     public override async Task<Skill> GetByIdAsync(Guid id)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Domain;
 
@@ -44,4 +45,9 @@ public interface ISkillRepository : IRepository<Skill, Guid>
     /// Поиск навыков по названию или тегу
     /// </summary>
     Task<IEnumerable<Skill>> SearchAsync(string searchTerm);
+
+    /// <summary>
+    /// Получить все навыки с группами
+    /// </summary>
+    Task<IEnumerable<Skill>> GetAllWithGroupsAsync(CancellationToken cancellationToken);
 }

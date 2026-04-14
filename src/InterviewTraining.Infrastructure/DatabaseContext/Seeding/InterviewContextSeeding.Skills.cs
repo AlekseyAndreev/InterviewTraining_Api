@@ -1111,7 +1111,7 @@ public static partial class InterviewContextSeeding
         CreatedUtc = _utc_date
     };
 
-    private static List<Skill> GetAllSkills() => new()
+    public static List<Skill> GetAllSkills() => new()
     {
         // .NET
         CSharpSkill, AspNetCoreSkill, EntityFrameworkSkill, BlazorSkill, WpfSkill, XamarinSkill, MauiSkill, LinqSkill,

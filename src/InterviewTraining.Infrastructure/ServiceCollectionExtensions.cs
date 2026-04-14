@@ -18,6 +18,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddScoped<IExpertService, ExpertService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ISkillService, SkillService>();
         return services;
     }
 

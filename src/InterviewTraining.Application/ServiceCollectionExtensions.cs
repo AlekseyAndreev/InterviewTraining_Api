@@ -1,5 +1,8 @@
 ﻿using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetAllExperts.V10;
+using InterviewTraining.Application.GetSkillsTree.V10;
+using InterviewTraining.Application.GetUserInfo.V10;
+using InterviewTraining.Application.UpdateUserInfo.V10;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InterviewTraining.Application;
@@ -17,6 +20,9 @@ public static class ServiceCollectionExtensions
     {
         return services
             .AddScoped<ICustomMediator, CustomMediator>()
-            .AddScoped<IMediatorHandler<GetAllExpertsRequest, GetAllExpertsResponse>, GetAllExpertsHandler>();
+            .AddScoped<IMediatorHandler<GetAllExpertsRequest, GetAllExpertsResponse>, GetAllExpertsHandler>()
+            .AddScoped<IMediatorHandler<GetUserInfoRequest, GetUserInfoResponse>, GetUserInfoHandler>()
+            .AddScoped<IMediatorHandler<UpdateUserInfoRequest, UpdateUserInfoResponse>, UpdateUserInfoHandler>()
+            .AddScoped<IMediatorHandler<GetSkillsTreeRequest, GetSkillsTreeResponse>, GetSkillsTreeHandler>();
     }
 }

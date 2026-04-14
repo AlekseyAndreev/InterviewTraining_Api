@@ -6,7 +6,7 @@ namespace InterviewTraining.Infrastructure.DatabaseContext;
 
 public static partial class InterviewContextSeeding
 {
-    private static readonly List<SkillTag> AllTags = new()
+    public static readonly List<SkillTag> AllTags = new()
     {
         // C# tags
         new() { Id = Guid.Parse("90000000-0000-0000-0000-000000000001"), SkillId = CSharpSkill.Id, Name = "c#", CreatedUtc = _utc_date },

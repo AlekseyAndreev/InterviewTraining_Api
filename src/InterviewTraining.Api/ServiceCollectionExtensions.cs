@@ -22,6 +22,10 @@ public static class ServiceCollectionExtensions
     {
         services.AddCors();
         services.AddHealthChecks();
+
+        // Добавляем Memory Cache
+        services.AddMemoryCache();
+
         var identityServerAuthenticationAuthority = ConfigHelper.GetSettingFromConfig(configuration, "IdentityServerAuthentication", "Authority");
         var identityServerAuthenticationApiName = ConfigHelper.GetSettingFromConfig(configuration, "IdentityServerAuthentication", "ApiName");
         // Маппинг claim-типов для корректной работы ролей

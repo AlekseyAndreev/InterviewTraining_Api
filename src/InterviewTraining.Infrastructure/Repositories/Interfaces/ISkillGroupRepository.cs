@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Domain;
 
@@ -39,4 +40,14 @@ public interface ISkillGroupRepository : IRepository<SkillGroup, Guid>
     /// Получить полную иерархию группы (с навыками и дочерними группами)
     /// </summary>
     Task<SkillGroup> GetFullHierarchyAsync(Guid id);
+
+    /// <summary>
+    /// Получить все группы с иерархией
+    /// </summary>
+    Task<IEnumerable<SkillGroup>> GetAllWithHierarchyAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получить полное дерево навыков и групп одним запросом
+    /// </summary>
+    Task<IEnumerable<SkillGroup>> GetFullTreeAsync(CancellationToken cancellationToken);
 }
