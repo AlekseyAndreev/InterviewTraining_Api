@@ -6,5 +6,5 @@ public class GetExpertResponse
 {
     public Guid Id { get; set; }
     public string IdentityServerId { get; set; }
-    public string Name { get; set; }
+    public string FullName { get; set; }
 }

@@ -29,14 +29,21 @@ public class UsersController : BaseController<UsersController>
     }
 
     /// <summary>
-    /// Получить информацию о текущем пользователе
+    /// Получить информацию о пользователе
     /// </summary>
-    [HttpGet]
+    [HttpGet("{userId:string}")]
     [Authorize]
-    public async Task<GetUserInfoResponse> GetUserInfo(CancellationToken cancellationToken)
+    public async Task<GetUserInfoResponse> GetUserInfo(string userId, CancellationToken cancellationToken)
     {
         var request = new GetUserInfoRequest();
-        request.IdentityUserId = CurrentUserId;
+        if (string.IsNullOrEmpty(userId))
+        {
+            request.IdentityUserId = CurrentUserId;
+        }
+        else
+        {
+            request.IdentityUserId = userId;
+        }
         return await _mediator.SendAsync(request, cancellationToken);
     }
 

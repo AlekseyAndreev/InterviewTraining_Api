@@ -16,7 +16,7 @@ public static class AdditionalUserInfoMapper
         {
             Id = additionalUserInfo.Id,
             IdentityServerId = additionalUserInfo.IdentityUserId,
-            Name = additionalUserInfo.FullName,
+            FullName = additionalUserInfo.FullName,
         };
     }
 }
