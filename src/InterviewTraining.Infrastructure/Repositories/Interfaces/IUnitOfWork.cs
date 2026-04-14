@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.Repositories.Interfaces;
@@ -47,6 +48,11 @@ public interface IUnitOfWork : IDisposable
     /// Сохранить все изменения
     /// </summary>
     Task<int> SaveChangesAsync();
+
+    /// <summary>
+    /// Сохранить все изменения
+    /// </summary>
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Начать транзакцию

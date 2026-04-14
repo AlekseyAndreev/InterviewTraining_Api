@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using InterviewTraining.Application.Exceptions;
+﻿using InterviewTraining.Application.Exceptions;
+using InterviewTraining.Application.GetSkillsTree.V10;
 using InterviewTraining.Application.Interfaces;
 using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.Services;
 
@@ -25,7 +26,7 @@ public class UserSkillService : IUserSkillService
         _logger = logger;
     }
 
-    public async Task AddSkillsToCurrentUserAsync(string identityUserId, IEnumerable<Guid> skillIds, CancellationToken cancellationToken)
+    public async Task<int> UpdateSkillsToCurrentUserAsync(string identityUserId, IEnumerable<Guid> skillIds, CancellationToken cancellationToken)
     {
         // Получаем пользователя по IdentityUserId
         var user = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(identityUserId, cancellationToken);
@@ -34,6 +35,9 @@ public class UserSkillService : IUserSkillService
             _logger.LogWarning("Не найден пользователь с IdentityUserId {IdentityUserId}", identityUserId);
             throw new BusinessLogicException("Пользователь не найден");
         }
+
+        await _unitOfWork.UserSkills.DeleteByUserIdAsync(user.Id, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var skillIdsList = skillIds.ToList();
         var addedCount = 0;
@@ -68,8 +72,9 @@ public class UserSkillService : IUserSkillService
             addedCount++;
         }
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
         _logger.LogInformation("Добавлено {Count} навыков пользователю {UserId}", addedCount, user.Id);
+        return addedCount;
     }
 
     public async Task<IEnumerable<Guid>> GetUserSkillIdsAsync(string identityUserId, CancellationToken cancellationToken)
@@ -83,5 +88,76 @@ public class UserSkillService : IUserSkillService
 
         var userSkills = await _unitOfWork.UserSkills.GetByUserIdAsync(user.Id, cancellationToken);
         return userSkills.Select(us => us.SkillId);
+    }
+
+    public async Task<GetSkillsTreeResponse> GetSkillsTreeAsync(string userId, CancellationToken cancellationToken)
+    {
+        var allGroups = (await _unitOfWork.SkillGroups.GetFullTreeAsync(cancellationToken))?.ToList() ?? new List<Domain.SkillGroup>();
+
+        if (!allGroups.Any())
+        {
+            return new GetSkillsTreeResponse { Groups = new List<SkillGroupDto>() };
+        }
+
+        // Получаем выбранные пользователем навыки
+        var selectedSkillIds = await GetUserSelectedSkillIdsAsync(userId, cancellationToken);
+
+        var groupsDict = allGroups.ToDictionary(
+            g => g.Id,
+            g => new SkillGroupDto
+            {
+                Id = g.Id,
+                Name = g.Name,
+                Skills = g.Skills?
+                    .Where(s => !s.IsDeleted)
+                    .Select(s => new SkillDto
+                    {
+                        Id = s.Id,
+                        Name = s.Name,
+                        IsSelected = selectedSkillIds.Contains(s.Id)
+                    })
+                    .ToList() ?? new List<SkillDto>(),
+                ChildGroups = new List<SkillGroupDto>()
+            });
+
+        var rootGroups = allGroups
+            .Where(g => g.ParentGroupId == null || g.ParentGroupId == Guid.Empty)
+            .Select(g => groupsDict[g.Id])
+            .ToList();
+
+        foreach (var group in allGroups.Where(g => g.ParentGroupId.HasValue && g.ParentGroupId != Guid.Empty))
+        {
+            if (groupsDict.TryGetValue(group.ParentGroupId!.Value, out var parentGroup))
+            {
+                parentGroup.ChildGroups.Add(groupsDict[group.Id]);
+            }
+        }
+
+        return new GetSkillsTreeResponse { Groups = rootGroups };
+    }
+
+    /// <summary>
+    /// Получить идентификаторы выбранных пользователем навыков
+    /// </summary>
+    private async Task<HashSet<Guid>> GetUserSelectedSkillIdsAsync(string userId, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(userId))
+        {
+            return new HashSet<Guid>();
+        }
+
+        // Получаем пользователя по IdentityUserId
+        var user = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(userId, cancellationToken);
+        if (user == null)
+        {
+            _logger.LogDebug("Пользователь с IdentityUserId {UserId} не найден", userId);
+            return new HashSet<Guid>();
+        }
+
+        // Получаем все навыки пользователя
+        var userSkills = await _unitOfWork.UserSkills.GetByUserIdAsync(user.Id, cancellationToken);
+        return userSkills
+            .Select(us => us.SkillId)
+            .ToHashSet();
     }
 }

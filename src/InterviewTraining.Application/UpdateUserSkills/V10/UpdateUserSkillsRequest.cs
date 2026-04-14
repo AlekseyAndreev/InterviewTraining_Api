@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using InterviewTraining.Application.CustomMediatorLogic;
 
-namespace InterviewTraining.Application.AddUserSkills.V10;
+namespace InterviewTraining.Application.UpdateUserSkills.V10;
 
 /// <summary>
 /// Запрос на добавление навыков пользователю
 /// </summary>
-public class AddUserSkillsRequest : IMediatorRequest<AddUserSkillsResponse>
+public class UpdateUserSkillsRequest : IMediatorRequest<UpdateUserSkillsResponse>
 {
     /// <summary>
     /// Идентификатор пользователя из токена

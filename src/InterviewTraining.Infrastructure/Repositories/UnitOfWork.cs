@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Infrastructure.DatabaseContext;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
@@ -76,6 +77,14 @@ public class UnitOfWork : IUnitOfWork
     public async Task<int> SaveChangesAsync()
     {
         return await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Сохранить все изменения
+    /// </summary>
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        return await _context.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>

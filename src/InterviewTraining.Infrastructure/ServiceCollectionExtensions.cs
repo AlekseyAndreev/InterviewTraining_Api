@@ -19,7 +19,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IExpertService, ExpertService>();
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<ISkillService, SkillService>();
         services.AddScoped<IUserSkillService, UserSkillService>();
         return services;
     }

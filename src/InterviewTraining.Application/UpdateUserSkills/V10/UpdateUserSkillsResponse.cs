@@ -1,9 +1,9 @@
-﻿namespace InterviewTraining.Application.AddUserSkills.V10;
+﻿namespace InterviewTraining.Application.UpdateUserSkills.V10;
 
 /// <summary>
 /// Ответ на добавление навыков пользователю
 /// </summary>
-public class AddUserSkillsResponse
+public class UpdateUserSkillsResponse
 {
     /// <summary>
     /// Признак успешного выполнения

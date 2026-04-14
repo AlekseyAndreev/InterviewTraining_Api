@@ -5,7 +5,7 @@ namespace InterviewTraining.Domain;
 /// <summary>
 /// Связь пользователя с навыком
 /// </summary>
-public class UserSkill : BaseDeleteEntity<Guid>
+public class UserSkill : BaseEntity<Guid>
 {
     /// <summary>
     /// Идентификатор пользователя

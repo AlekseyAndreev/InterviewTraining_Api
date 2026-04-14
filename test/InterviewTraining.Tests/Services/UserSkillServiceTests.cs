@@ -7,31 +7,37 @@ using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.DatabaseContext;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using InterviewTraining.Infrastructure.Services;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
 namespace InterviewTraining.Tests.Services;
 
-public class SkillServiceTests : BaseUnitTests
+public class UserSkillServiceTests : BaseUnitTests
 {
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ISkillGroupRepository> _skillGroupRepositoryMock;
-    private readonly IMemoryCache _cache;
-    private readonly Mock<ILogger<SkillService>> _loggerMock;
-    private readonly SkillService _skillService;
+    private readonly Mock<IAdditionalUserInfoRepository> _additionalUserInfoRepositoryMock;
+    private readonly Mock<IUserSkillRepository> _userSkillRepositoryMock;
+    private readonly Mock<ILogger<UserSkillService>> _loggerMock;
+    private readonly UserSkillService _sut;
 
-    public SkillServiceTests()
+    private const string TestUserId = "test-user-id";
+    private readonly Guid _testUserInternalId = Guid.NewGuid();
+
+    public UserSkillServiceTests()
     {
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _skillGroupRepositoryMock = new Mock<ISkillGroupRepository>();
-        _cache = new MemoryCache(new MemoryCacheOptions());
-        _loggerMock = new Mock<ILogger<SkillService>>();
+        _additionalUserInfoRepositoryMock = new Mock<IAdditionalUserInfoRepository>();
+        _userSkillRepositoryMock = new Mock<IUserSkillRepository>();
+        _loggerMock = new Mock<ILogger<UserSkillService>>();
 
         _unitOfWorkMock.Setup(u => u.SkillGroups).Returns(_skillGroupRepositoryMock.Object);
+        _unitOfWorkMock.Setup(u => u.AdditionalUserInfos).Returns(_additionalUserInfoRepositoryMock.Object);
+        _unitOfWorkMock.Setup(u => u.UserSkills).Returns(_userSkillRepositoryMock.Object);
 
-        _skillService = new SkillService(_unitOfWorkMock.Object, _cache, _loggerMock.Object);
+        _sut = new UserSkillService(_unitOfWorkMock.Object, _loggerMock.Object);
     }
 
     [Fact]
@@ -42,8 +48,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(new List<SkillGroup>());
 
+        SetupUserNotFound();
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         Assert.NotNull(result);
@@ -65,8 +73,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(groups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         Assert.NotNull(result);
@@ -101,8 +111,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(groups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         Assert.Single(result.Groups);
@@ -135,8 +147,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(groups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         Assert.Single(result.Groups);
@@ -169,61 +183,14 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(groups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         Assert.Single(result.Groups[0].Skills);
         Assert.Equal("Active Skill", result.Groups[0].Skills[0].Name);
-    }
-
-    [Fact]
-    public async Task GetSkillsTreeAsync_ReturnsDataFromCache_WhenCacheExists()
-    {
-        // Arrange
-        var cachedResponse = new GetSkillsTreeResponse
-        {
-            Groups = new List<SkillGroupDto>
-            {
-                new SkillGroupDto { Id = Guid.NewGuid(), Name = "Cached Group" }
-            }
-        };
-
-        _cache.Set("SkillsTree", cachedResponse);
-
-        // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Single(result.Groups);
-        Assert.Equal("Cached Group", result.Groups[0].Name);
-
-        // Verify repository was not called
-        _skillGroupRepositoryMock.Verify(r => r.GetFullTreeAsync(Token), Times.Never);
-    }
-
-    [Fact]
-    public async Task GetSkillsTreeAsync_SavesToCache_AfterDatabaseCall()
-    {
-        // Arrange
-        var groups = new List<SkillGroup>
-        {
-            new SkillGroup { Id = Guid.NewGuid(), Name = "Root Group", ParentGroupId = null }
-        };
-
-        _skillGroupRepositoryMock
-            .Setup(r => r.GetFullTreeAsync(Token))
-            .ReturnsAsync(groups);
-
-        // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
-
-        // Assert - Check that data is now in cache
-        Assert.True(_cache.TryGetValue("SkillsTree", out GetSkillsTreeResponse cachedResponse));
-        Assert.NotNull(cachedResponse);
-        Assert.Single(cachedResponse.Groups);
-        Assert.Equal("Root Group", cachedResponse.Groups[0].Name);
     }
 
     [Fact]
@@ -245,8 +212,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(groups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         Assert.Single(result.Groups); // One root
@@ -276,15 +245,16 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(groups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         Assert.Equal(2, result.Groups.Count);
         
         var root1 = result.Groups.First(g => g.Name == "Root 1");
         var root2 = result.Groups.First(g => g.Name == "Root 2");
-        
         Assert.Single(root1.ChildGroups);
         Assert.Single(root2.ChildGroups);
         Assert.Equal("Child 1", root1.ChildGroups[0].Name);
@@ -318,13 +288,124 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(groups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         Assert.Equal(2, result.Groups[0].Skills.Count);
         Assert.Contains(result.Groups[0].Skills, s => s.Id == skillId1);
         Assert.Contains(result.Groups[0].Skills, s => s.Id == skillId2);
+    }
+
+    [Fact]
+    public async Task GetSkillsTreeAsync_MarksSelectedSkills_WhenUserHasSkills()
+    {
+        // Arrange
+        var groupId = Guid.NewGuid();
+        var skillId1 = Guid.NewGuid();
+        var skillId2 = Guid.NewGuid();
+
+        var groups = new List<SkillGroup>
+        {
+            new SkillGroup
+            {
+                Id = groupId,
+                Name = "Group",
+                ParentGroupId = null,
+                Skills = new List<Skill>
+                {
+                    new Skill { Id = skillId1, Name = "Skill 1", GroupId = groupId, IsDeleted = false },
+                    new Skill { Id = skillId2, Name = "Skill 2", GroupId = groupId, IsDeleted = false }
+                }
+            }
+        };
+
+        _skillGroupRepositoryMock
+            .Setup(r => r.GetFullTreeAsync(Token))
+            .ReturnsAsync(groups);
+
+        // User has only skillId1 selected
+        SetupUserWithSkills(new List<UserSkill>
+        {
+            new UserSkill { SkillId = skillId1, UserId = _testUserInternalId }
+        });
+
+        // Act
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
+
+        // Assert
+        Assert.True(result.Groups[0].Skills.First(s => s.Id == skillId1).IsSelected);
+        Assert.False(result.Groups[0].Skills.First(s => s.Id == skillId2).IsSelected);
+    }
+
+    [Fact]
+    public async Task GetSkillsTreeAsync_ReturnsAllSkillsNotSelected_WhenUserNotFound()
+    {
+        // Arrange
+        var groupId = Guid.NewGuid();
+        var skillId = Guid.NewGuid();
+
+        var groups = new List<SkillGroup>
+        {
+            new SkillGroup
+            {
+                Id = groupId,
+                Name = "Group",
+                ParentGroupId = null,
+                Skills = new List<Skill>
+                {
+                    new Skill { Id = skillId, Name = "Skill 1", GroupId = groupId, IsDeleted = false }
+                }
+            }
+        };
+
+        _skillGroupRepositoryMock
+            .Setup(r => r.GetFullTreeAsync(Token))
+            .ReturnsAsync(groups);
+
+        SetupUserNotFound();
+
+        // Act
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
+
+        // Assert
+        Assert.Single(result.Groups[0].Skills);
+        Assert.False(result.Groups[0].Skills[0].IsSelected);
+    }
+
+    [Fact]
+    public async Task GetSkillsTreeAsync_ReturnsAllSkillsNotSelected_WhenUserIdIsEmpty()
+    {
+        // Arrange
+        var groupId = Guid.NewGuid();
+        var skillId = Guid.NewGuid();
+
+        var groups = new List<SkillGroup>
+        {
+            new SkillGroup
+            {
+                Id = groupId,
+                Name = "Group",
+                ParentGroupId = null,
+                Skills = new List<Skill>
+                {
+                    new Skill { Id = skillId, Name = "Skill 1", GroupId = groupId, IsDeleted = false }
+                }
+            }
+        };
+
+        _skillGroupRepositoryMock
+            .Setup(r => r.GetFullTreeAsync(Token))
+            .ReturnsAsync(groups);
+
+        // Act
+        var result = await _sut.GetSkillsTreeAsync(string.Empty, Token);
+
+        // Assert
+        Assert.Single(result.Groups[0].Skills);
+        Assert.False(result.Groups[0].Skills[0].IsSelected);
     }
 
     [Fact]
@@ -344,18 +425,21 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(4, result.Groups.Count); // Development, Analytics, Testing, DevOps
+        Assert.Equal(5, result.Groups.Count); // Development, Analytics, Testing, DevOps, Interview Languages
         
         var groupNames = result.Groups.Select(g => g.Name).ToList();
         Assert.Contains("Разработка", groupNames);
         Assert.Contains("Аналитика", groupNames);
         Assert.Contains("Тестирование", groupNames);
         Assert.Contains("DevOps", groupNames);
+        Assert.Contains("Языки для проведения собеседования", groupNames);
     }
 
     [Fact]
@@ -374,18 +458,19 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         var developmentGroup = result.Groups.First(g => g.Name == "Разработка");
         Assert.NotNull(developmentGroup);
-        Assert.Equal(4, developmentGroup.ChildGroups.Count); // Backend, Frontend, Full Stack, Mobile
-        
+        Assert.Equal(3, developmentGroup.ChildGroups.Count); // Backend, Frontend, Mobile
+
         var childGroupNames = developmentGroup.ChildGroups.Select(g => g.Name).ToList();
         Assert.Contains("Backend", childGroupNames);
         Assert.Contains("Frontend", childGroupNames);
-        Assert.Contains("Full Stack", childGroupNames);
         Assert.Contains("Mobile", childGroupNames);
     }
 
@@ -405,13 +490,14 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         var developmentGroup = result.Groups.First(g => g.Name == "Разработка");
         var backendGroup = developmentGroup.ChildGroups.First(g => g.Name == "Backend");
-        
         Assert.Equal(9, backendGroup.ChildGroups.Count); // .NET, Java, Python, Node.js, Go, PHP, Ruby, C/C++, Rust
         
         var backendSubGroupNames = backendGroup.ChildGroups.Select(g => g.Name).ToList();
@@ -443,8 +529,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         var developmentGroup = result.Groups.First(g => g.Name == "Разработка");
@@ -476,13 +564,14 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         var developmentGroup = result.Groups.First(g => g.Name == "Разработка");
         var frontendGroup = developmentGroup.ChildGroups.First(g => g.Name == "Frontend");
-        
         Assert.Equal(6, frontendGroup.ChildGroups.Count); // React, Angular, Vue.js, JavaScript, TypeScript, CSS/Стилизация
         
         var frontendSubGroupNames = frontendGroup.ChildGroups.Select(g => g.Name).ToList();
@@ -510,13 +599,14 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         var developmentGroup = result.Groups.First(g => g.Name == "Разработка");
         var mobileGroup = developmentGroup.ChildGroups.First(g => g.Name == "Mobile");
-        
         Assert.Equal(3, mobileGroup.ChildGroups.Count); // iOS, Android, Кроссплатформенная разработка
         
         var mobileSubGroupNames = mobileGroup.ChildGroups.Select(g => g.Name).ToList();
@@ -541,8 +631,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         var testingGroup = result.Groups.First(g => g.Name == "Тестирование");
@@ -571,8 +663,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         var devOpsGroup = result.Groups.First(g => g.Name == "DevOps");
@@ -585,6 +679,37 @@ public class SkillServiceTests : BaseUnitTests
         Assert.Contains("Контейнеризация", devOpsSubGroupNames);
         Assert.Contains("Мониторинг и логирование", devOpsSubGroupNames);
         Assert.Contains("Инфраструктура", devOpsSubGroupNames);
+    }
+
+    [Fact]
+    public async Task GetSkillsTreeAsync_WithSeedingData_ReturnsInterviewLanguagesGroup()
+    {
+        // Arrange
+        var allGroups = InterviewContextSeeding.GetAllGroups();
+        var allSkills = InterviewContextSeeding.GetAllSkills();
+
+        foreach (var group in allGroups)
+        {
+            group.Skills = allSkills.Where(s => s.GroupId == group.Id).ToList();
+        }
+
+        _skillGroupRepositoryMock
+            .Setup(r => r.GetFullTreeAsync(Token))
+            .ReturnsAsync(allGroups);
+
+        SetupUserWithSkills(new List<UserSkill>());
+
+        // Act
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
+
+        // Assert
+        var languagesGroup = result.Groups.FirstOrDefault(g => g.Name == "Языки для проведения собеседования");
+        Assert.NotNull(languagesGroup);
+        Assert.Equal(2, languagesGroup.Skills.Count);
+        
+        var skillNames = languagesGroup.Skills.Select(s => s.Name).ToList();
+        Assert.Contains("Русский", skillNames);
+        Assert.Contains("Английский", skillNames);
     }
 
     [Fact]
@@ -603,8 +728,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert - Count all groups in hierarchy
         var totalGroups = CountAllGroups(result.Groups);
@@ -628,8 +755,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert - Count all skills in hierarchy
         var totalSkills = CountAllSkills(result.Groups);
@@ -653,8 +782,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         var developmentGroup = result.Groups.First(g => g.Name == "Разработка");
@@ -689,8 +820,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         var developmentGroup = result.Groups.First(g => g.Name == "Разработка");
@@ -723,8 +856,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert
         var testingGroup = result.Groups.First(g => g.Name == "Тестирование");
@@ -760,8 +895,10 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert - Verify C# skill has correct ID
         var csharpSkillId = Guid.Parse("20000000-0000-0000-0000-000000000001");
@@ -789,14 +926,34 @@ public class SkillServiceTests : BaseUnitTests
             .Setup(r => r.GetFullTreeAsync(Token))
             .ReturnsAsync(allGroups);
 
+        SetupUserWithSkills(new List<UserSkill>());
+
         // Act
-        var result = await _skillService.GetSkillsTreeAsync(Token);
+        var result = await _sut.GetSkillsTreeAsync(TestUserId, Token);
 
         // Assert - Verify Development group has correct ID
         var developmentGroupId = Guid.Parse("10000000-0000-0000-0000-000000000001");
         var developmentGroup = result.Groups.First(g => g.Name == "Разработка");
         
         Assert.Equal(developmentGroupId, developmentGroup.Id);
+    }
+
+    private void SetupUserWithSkills(List<UserSkill> userSkills)
+    {
+        _additionalUserInfoRepositoryMock
+            .Setup(r => r.GetByIdentityUserIdAsync(TestUserId, Token))
+            .ReturnsAsync(new AdditionalUserInfo { Id = _testUserInternalId, IdentityUserId = TestUserId });
+
+        _userSkillRepositoryMock
+            .Setup(r => r.GetByUserIdAsync(_testUserInternalId, Token))
+            .ReturnsAsync(userSkills);
+    }
+
+    private void SetupUserNotFound()
+    {
+        _additionalUserInfoRepositoryMock
+            .Setup(r => r.GetByIdentityUserIdAsync(TestUserId, Token))
+            .ReturnsAsync((AdditionalUserInfo)null);
     }
 
     private int CountAllGroups(List<SkillGroupDto> groups)

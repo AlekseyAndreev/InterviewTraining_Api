@@ -1,4 +1,4 @@
-﻿using InterviewTraining.Application.AddUserSkills.V10;
+﻿using InterviewTraining.Application.UpdateUserSkills.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetAllExperts.V10;
 using InterviewTraining.Application.GetSkillsTree.V10;
@@ -25,6 +25,6 @@ public static class ServiceCollectionExtensions
             .AddScoped<IMediatorHandler<GetUserInfoRequest, GetUserInfoResponse>, GetUserInfoHandler>()
             .AddScoped<IMediatorHandler<UpdateUserInfoRequest, UpdateUserInfoResponse>, UpdateUserInfoHandler>()
             .AddScoped<IMediatorHandler<GetSkillsTreeRequest, GetSkillsTreeResponse>, GetSkillsTreeHandler>()
-            .AddScoped<IMediatorHandler<AddUserSkillsRequest, AddUserSkillsResponse>, AddUserSkillsHandler>();
+            .AddScoped<IMediatorHandler<UpdateUserSkillsRequest, UpdateUserSkillsResponse>, UpdateUserSkillsHandler>();
     }
 }

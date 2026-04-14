@@ -42,12 +42,6 @@ public class UserSkillConfiguration : IEntityTypeConfiguration<Domain.UserSkill>
             .IsRequired(false);
 
         builder
-            .Property(x => x.IsDeleted)
-            .HasComment("Признак удалена запись или нет")
-            .HasColumnName("is_deleted")
-            .IsRequired();
-
-        builder
             .Property(x => x.UserId)
             .HasComment("Идентификатор пользователя")
             .HasColumnName("user_id")

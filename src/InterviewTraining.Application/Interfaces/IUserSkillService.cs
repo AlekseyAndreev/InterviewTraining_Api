@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InterviewTraining.Application.GetSkillsTree.V10;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,10 +14,15 @@ public interface IUserSkillService
     /// <summary>
     /// Добавить навыки текущему пользователю
     /// </summary>
-    Task AddSkillsToCurrentUserAsync(string identityUserId, IEnumerable<Guid> skillIds, CancellationToken cancellationToken);
+    Task<int> UpdateSkillsToCurrentUserAsync(string identityUserId, IEnumerable<Guid> skillIds, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получить навыки текущего пользователя
     /// </summary>
     Task<IEnumerable<Guid>> GetUserSkillIdsAsync(string identityUserId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получить навыки текущего пользователя
+    /// </summary>
+    Task<GetSkillsTreeResponse> GetSkillsTreeAsync(string userId, CancellationToken cancellationToken);
 }
