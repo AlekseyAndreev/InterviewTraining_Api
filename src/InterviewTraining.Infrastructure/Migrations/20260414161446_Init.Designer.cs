@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InterviewTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(InterviewContext))]
-    [Migration("20260414082458_Init")]
+    [Migration("20260414161446_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -102,6 +102,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("short_description")
                         .HasComment("Краткое описание");
 
+                    b.Property<Guid?>("TimeZoneId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("time_zone_id")
+                        .HasComment("Идентификатор часового пояса пользователя");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdentityUserId")
@@ -113,6 +118,8 @@ namespace InterviewTraining.Infrastructure.Migrations
 
                     b.HasIndex("IsExpert")
                         .HasDatabaseName("ix_additional_user_info_is_expert");
+
+                    b.HasIndex("TimeZoneId");
 
                     b.ToTable("additional_user_infos", "public");
                 });
@@ -322,6 +329,52 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.ToTable("skill_tags", "public");
                 });
 
+            modelBuilder.Entity("InterviewTraining.Domain.TimeZone", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasComment("Уникальный идентификатор");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("code")
+                        .HasComment("Код часового пояса");
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_utc")
+                        .HasComment("Дата и время создания записи в таблице");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description")
+                        .HasComment("Наименование часового пояса");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted")
+                        .HasComment("Признак удалена запись или нет");
+
+                    b.Property<DateTime?>("ModifiedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("modified_utc")
+                        .HasComment("Дата и время последнего изменения записи в таблице");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_time_zones_code");
+
+                    b.ToTable("time_zones", "public");
+                });
+
             modelBuilder.Entity("InterviewTraining.Domain.UserRating", b =>
                 {
                     b.Property<Guid>("Id")
@@ -376,6 +429,16 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasDatabaseName("ix_user_rating_user_from_to");
 
                     b.ToTable("user_ratings", "public");
+                });
+
+            modelBuilder.Entity("InterviewTraining.Domain.AdditionalUserInfo", b =>
+                {
+                    b.HasOne("InterviewTraining.Domain.TimeZone", "TimeZone")
+                        .WithMany()
+                        .HasForeignKey("TimeZoneId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("TimeZone");
                 });
 
             modelBuilder.Entity("InterviewTraining.Domain.Interview", b =>

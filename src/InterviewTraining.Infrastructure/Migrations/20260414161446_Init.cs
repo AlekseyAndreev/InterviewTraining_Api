@@ -15,30 +15,6 @@ namespace InterviewTraining.Infrastructure.Migrations
                 name: "public");
 
             migrationBuilder.CreateTable(
-                name: "additional_user_infos",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
-                    identity_user_id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false, comment: "Идентификатор пользователя в Identity"),
-                    full_name = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true, comment: "Полное имя пользователя"),
-                    photo_url = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true, comment: "URL фото пользователя"),
-                    photo_local = table.Column<byte[]>(type: "bytea", nullable: true, comment: "Фото пользователя"),
-                    short_description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true, comment: "Краткое описание"),
-                    description = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: true, comment: "Полное описание"),
-                    interview_schedule_at_any_time = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false, comment: "Готов проводить интервью в любое время"),
-                    is_candidate = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак кандидата"),
-                    is_expert = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак эксперта"),
-                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
-                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице"),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак удалена запись или нет")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_additional_user_infos", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "skill_groups",
                 schema: "public",
                 columns: table => new
@@ -60,6 +36,101 @@ namespace InterviewTraining.Infrastructure.Migrations
                         principalTable: "skill_groups",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "time_zones",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
+                    code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false, comment: "Код часового пояса"),
+                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false, comment: "Наименование часового пояса"),
+                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
+                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице"),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак удалена запись или нет")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_time_zones", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "skills",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
+                    name = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false, comment: "Наимнование навыка"),
+                    GroupId = table.Column<Guid>(type: "uuid", nullable: true),
+                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
+                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице"),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак удалена запись или нет")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_skills", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_skills_skill_groups_GroupId",
+                        column: x => x.GroupId,
+                        principalSchema: "public",
+                        principalTable: "skill_groups",
+                        principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "additional_user_infos",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
+                    identity_user_id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false, comment: "Идентификатор пользователя в Identity"),
+                    full_name = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true, comment: "Полное имя пользователя"),
+                    photo_url = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true, comment: "URL фото пользователя"),
+                    photo_local = table.Column<byte[]>(type: "bytea", nullable: true, comment: "Фото пользователя"),
+                    short_description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true, comment: "Краткое описание"),
+                    description = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: true, comment: "Полное описание"),
+                    interview_schedule_at_any_time = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false, comment: "Готов проводить интервью в любое время"),
+                    is_candidate = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак кандидата"),
+                    is_expert = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак эксперта"),
+                    time_zone_id = table.Column<Guid>(type: "uuid", nullable: true, comment: "Идентификатор часового пояса пользователя"),
+                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
+                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице"),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак удалена запись или нет")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_additional_user_infos", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_additional_user_infos_time_zones_time_zone_id",
+                        column: x => x.time_zone_id,
+                        principalSchema: "public",
+                        principalTable: "time_zones",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "skill_tags",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
+                    SkillId = table.Column<Guid>(type: "uuid", nullable: false),
+                    name = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false, comment: "Наимнование группы"),
+                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
+                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице"),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак удалена запись или нет")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_skill_tags", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_skill_tags_skills_SkillId",
+                        column: x => x.SkillId,
+                        principalSchema: "public",
+                        principalTable: "skills",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -90,52 +161,6 @@ namespace InterviewTraining.Infrastructure.Migrations
                         column: x => x.user_to_id,
                         principalSchema: "public",
                         principalTable: "additional_user_infos",
-                        principalColumn: "id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "skills",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
-                    name = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false, comment: "Наимнование навыка"),
-                    GroupId = table.Column<Guid>(type: "uuid", nullable: true),
-                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
-                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице"),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак удалена запись или нет")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_skills", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_skills_skill_groups_GroupId",
-                        column: x => x.GroupId,
-                        principalSchema: "public",
-                        principalTable: "skill_groups",
-                        principalColumn: "id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "skill_tags",
-                schema: "public",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
-                    SkillId = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false, comment: "Наимнование группы"),
-                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
-                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице"),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак удалена запись или нет")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_skill_tags", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_skill_tags_skills_SkillId",
-                        column: x => x.SkillId,
-                        principalSchema: "public",
-                        principalTable: "skills",
                         principalColumn: "id");
                 });
 
@@ -218,6 +243,12 @@ namespace InterviewTraining.Infrastructure.Migrations
                 column: "is_expert");
 
             migrationBuilder.CreateIndex(
+                name: "IX_additional_user_infos_time_zone_id",
+                schema: "public",
+                table: "additional_user_infos",
+                column: "time_zone_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_interview_versions_interview_id",
                 schema: "public",
                 table: "interview_versions",
@@ -260,6 +291,13 @@ namespace InterviewTraining.Infrastructure.Migrations
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
+                name: "ix_time_zones_code",
+                schema: "public",
+                table: "time_zones",
+                column: "code",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "ix_user_rating_user_from_to",
                 schema: "public",
                 table: "user_ratings",
@@ -286,6 +324,11 @@ namespace InterviewTraining.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_additional_user_infos_time_zones_time_zone_id",
+                schema: "public",
+                table: "additional_user_infos");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_interview_versions_interviews_interview_id",
                 schema: "public",
                 table: "interview_versions");
@@ -304,6 +347,10 @@ namespace InterviewTraining.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "skill_groups",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "time_zones",
                 schema: "public");
 
             migrationBuilder.DropTable(

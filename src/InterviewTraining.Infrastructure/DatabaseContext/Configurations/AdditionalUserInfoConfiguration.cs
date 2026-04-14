@@ -107,6 +107,19 @@ public class AdditionalUserInfoConfiguration : IEntityTypeConfiguration<Domain.A
             .HasColumnName("is_expert")
             .IsRequired();
 
+        builder
+            .Property(x => x.TimeZoneId)
+            .HasComment("Идентификатор часового пояса пользователя")
+            .HasColumnName("time_zone_id")
+            .IsRequired(false);
+
+        // Связь с часовым поясом
+        builder
+            .HasOne(x => x.TimeZone)
+            .WithMany()
+            .HasForeignKey(x => x.TimeZoneId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // Связь: рейтинги, которые пользователь поставил другим
         builder
             .HasMany(x => x.MyRatingToUsers)

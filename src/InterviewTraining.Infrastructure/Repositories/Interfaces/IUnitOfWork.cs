@@ -34,6 +34,11 @@ public interface IUnitOfWork : IDisposable
     IAdditionalUserInfoRepository AdditionalUserInfos { get; }
 
     /// <summary>
+    /// Репозиторий часовых поясов
+    /// </summary>
+    ITimeZoneRepository TimeZones { get; }
+
+    /// <summary>
     /// Сохранить все изменения
     /// </summary>
     Task<int> SaveChangesAsync();

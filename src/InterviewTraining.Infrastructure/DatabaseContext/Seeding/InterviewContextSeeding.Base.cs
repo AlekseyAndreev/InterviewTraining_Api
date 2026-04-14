@@ -14,6 +14,7 @@ public static partial class InterviewContextSeeding
         using var scope = serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<InterviewContext>();
         await AddSkillsAndRelated(context);
+        await AddTimeZones(context);
     }
 
     private static async Task AddSkillsAndRelated(InterviewContext context)
@@ -28,6 +29,18 @@ public static partial class InterviewContextSeeding
         await context.Skills.AddRangeAsync(GetAllSkills());
 
         await context.SkillTags.AddRangeAsync(AllTags);
+
+        await context.SaveChangesAsync();
+    }
+
+    private static async Task AddTimeZones(InterviewContext context)
+    {
+        if (await context.TimeZones.AnyAsync())
+        {
+            return;
+        }
+
+        await context.TimeZones.AddRangeAsync(GetAllTimeZones());
 
         await context.SaveChangesAsync();
     }

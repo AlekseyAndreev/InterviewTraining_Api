@@ -35,6 +35,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISkillTagRepository, SkillTagRepository>();
         services.AddScoped<IUserRatingRepository, UserRatingRepository>();
         services.AddScoped<IAdditionalUserInfoRepository, AdditionalUserInfoRepository>();
+        services.AddScoped<ITimeZoneRepository, TimeZoneRepository>();
         return services;
     }
 }

@@ -53,6 +53,11 @@ public class InterviewContext : DbContext
     public DbSet<InterviewVersion> InterviewVersions { get; set; }
 
     /// <summary>
+    /// Часовые пояса
+    /// </summary>
+    public DbSet<Domain.TimeZone> TimeZones { get; set; }
+
+    /// <summary>
     /// При создании модели
     /// </summary>
     /// <param name="modelBuilder">modelBuilder</param>
@@ -84,5 +89,6 @@ public class InterviewContext : DbContext
         builder.ApplyConfiguration(new UserRatingConfiguration());
         builder.ApplyConfiguration(new InterviewConfiguration());
         builder.ApplyConfiguration(new InterviewVersionConfiguration());
+        builder.ApplyConfiguration(new TimeZoneConfiguration());
     }
 }

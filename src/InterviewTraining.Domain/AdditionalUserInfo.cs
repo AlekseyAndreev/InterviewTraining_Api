@@ -14,6 +14,16 @@ public class AdditionalUserInfo : BaseDeleteEntity<Guid>
     public bool InterviewScheduleAtAnyTime { get; set; }
     public bool IsCandidate { get; set; }
     public bool IsExpert { get; set; }
+    /// <summary>
+    /// Идентификатор часового пояса пользователя
+    /// </summary>
+    public Guid? TimeZoneId { get; set; }
+
+    /// <summary>
+    /// Часовой пояс пользователя
+    /// </summary>
+    public TimeZone TimeZone { get; set; }
+
     public List<UserRating> MyRatingToUsers { get; set; }
     public List<UserRating> RatingFromUsers { get; set; }
 }
