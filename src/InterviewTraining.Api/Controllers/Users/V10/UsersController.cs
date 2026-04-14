@@ -1,5 +1,6 @@
 ﻿using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetUserInfo.V10;
+using InterviewTraining.Application.UpdateUserInfo.V10;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,8 +18,8 @@ public class UsersController : BaseController<UsersController>
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="orderManager"></param>
-    /// <param name="logger"></param>
+    ///<param name="mediator"></param>
+    ///<param name="logger"></param>
     public UsersController(ICustomMediator mediator,
         ILogger<UsersController> logger
     )
@@ -35,6 +36,17 @@ public class UsersController : BaseController<UsersController>
     public async Task<GetUserInfoResponse> GetUserInfo(CancellationToken cancellationToken)
     {
         var request = new GetUserInfoRequest();
+        request.IdentityUserId = CurrentUserId;
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Обновить информацию о текущем пользователе
+    /// </summary>
+    [HttpPut]
+    [Authorize]
+    public async Task<UpdateUserInfoResponse> UpdateUserInfo([FromBody] UpdateUserInfoRequest request, CancellationToken cancellationToken)
+    {
         request.IdentityUserId = CurrentUserId;
         return await _mediator.SendAsync(request, cancellationToken);
     }
