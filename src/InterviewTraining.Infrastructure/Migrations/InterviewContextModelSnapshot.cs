@@ -441,11 +441,6 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("created_utc")
                         .HasComment("Дата и время создания записи в таблице");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted")
-                        .HasComment("Признак удалена запись или нет");
-
                     b.Property<DateTime?>("ModifiedUtc")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("modified_utc")

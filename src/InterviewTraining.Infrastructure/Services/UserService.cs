@@ -1,4 +1,5 @@
-﻿using InterviewTraining.Application.Exceptions;
+﻿using System.Linq;
+using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.GetUserInfo.V10;
 using InterviewTraining.Application.Interfaces;
 using InterviewTraining.Application.UpdateUserInfo.V10;
@@ -20,13 +21,26 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
             throw new BusinessLogicException("Не найдена информация по пользователю");
         }
 
+        // Получаем все доступные временные зоны
+        var timeZones = await unitOfWork.TimeZones.GetAllAsync();
+
         return new GetUserInfoResponse
         {
             Description = userInfo.Description,
             FullName = userInfo.FullName,
             ShortDescription = userInfo.ShortDescription,
             Photo = userInfo.PhotoLocal,
-            PhotoUrl = userInfo.PhotoUrl
+            PhotoUrl = userInfo.PhotoUrl,
+            SelectedTimeZoneId = userInfo.TimeZoneId,
+            TimeZones = timeZones
+                .Where(tz => !tz.IsDeleted)
+                .Select(tz => new TimeZoneDto
+                {
+                    Id = tz.Id,
+                    Code = tz.Code,
+                    Description = tz.Description
+                })
+                .ToList()
         };
     }
 
@@ -37,6 +51,20 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
         {
             logger.LogWarning("Не найдена информация по пользователю {UserId}", request.IdentityUserId);
             throw new BusinessLogicException("Не найдена информация по пользователю");
+        }
+
+        // Проверяем и обновляем временную зону, если она задана
+        if (request.TimeZoneId.HasValue)
+        {
+            var timeZone = await unitOfWork.TimeZones.GetByIdAsync(request.TimeZoneId.Value);
+            if (timeZone == null || timeZone.IsDeleted)
+            {
+                logger.LogWarning("Временная зона с ID {TimeZoneId} не найдена", request.TimeZoneId);
+                throw new BusinessLogicException("Указанная временная зона не найдена");
+            }
+
+            userInfo.TimeZoneId = request.TimeZoneId;
+            logger.LogInformation("Обновлена временная зона пользователя {UserId} на {TimeZoneId}", request.IdentityUserId, request.TimeZoneId);
         }
 
         userInfo.PhotoUrl = request.PhotoUrl;

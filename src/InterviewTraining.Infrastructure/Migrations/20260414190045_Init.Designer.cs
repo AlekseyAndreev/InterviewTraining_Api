@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InterviewTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(InterviewContext))]
-    [Migration("20260414180545_Init")]
+    [Migration("20260414190045_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -443,11 +443,6 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("created_utc")
                         .HasComment("Дата и время создания записи в таблице");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_deleted")
-                        .HasComment("Признак удалена запись или нет");
 
                     b.Property<DateTime?>("ModifiedUtc")
                         .HasColumnType("timestamp without time zone")
