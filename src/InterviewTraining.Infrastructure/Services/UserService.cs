@@ -53,18 +53,19 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
             throw new BusinessLogicException("Не найдена информация по пользователю");
         }
 
-        // Проверяем и обновляем временную зону, если она задана
         if (request.TimeZoneId.HasValue)
         {
             var timeZone = await unitOfWork.TimeZones.GetByIdAsync(request.TimeZoneId.Value);
             if (timeZone == null || timeZone.IsDeleted)
             {
-                logger.LogWarning("Временная зона с ID {TimeZoneId} не найдена", request.TimeZoneId);
                 throw new BusinessLogicException("Указанная временная зона не найдена");
             }
 
             userInfo.TimeZoneId = request.TimeZoneId;
-            logger.LogInformation("Обновлена временная зона пользователя {UserId} на {TimeZoneId}", request.IdentityUserId, request.TimeZoneId);
+        }
+        else
+        {
+            userInfo.TimeZoneId = null;
         }
 
         userInfo.PhotoUrl = request.PhotoUrl;
