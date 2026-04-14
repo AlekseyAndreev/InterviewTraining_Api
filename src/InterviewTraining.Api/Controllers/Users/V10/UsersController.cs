@@ -31,7 +31,19 @@ public class UsersController : BaseController<UsersController>
     /// <summary>
     /// Получить информацию о пользователе
     /// </summary>
-    [HttpGet("{userId:string}")]
+    [HttpGet]
+    [Authorize]
+    public async Task<GetUserInfoResponse> GetUserInfo(CancellationToken cancellationToken)
+    {
+        var request = new GetUserInfoRequest();
+        request.IdentityUserId = CurrentUserId;
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Получить информацию о пользователе
+    /// </summary>
+    [HttpGet("{userId}")]
     [Authorize]
     public async Task<GetUserInfoResponse> GetUserInfo(string userId, CancellationToken cancellationToken)
     {
