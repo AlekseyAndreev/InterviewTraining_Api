@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IExpertService, ExpertService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ISkillService, SkillService>();
+        services.AddScoped<IUserSkillService, UserSkillService>();
         return services;
     }
 
@@ -36,6 +37,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserRatingRepository, UserRatingRepository>();
         services.AddScoped<IAdditionalUserInfoRepository, AdditionalUserInfoRepository>();
         services.AddScoped<ITimeZoneRepository, TimeZoneRepository>();
+        services.AddScoped<IUserSkillRepository, UserSkillRepository>();
         return services;
     }
 }

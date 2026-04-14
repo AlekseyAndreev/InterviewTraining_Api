@@ -20,6 +20,7 @@ public class UnitOfWork : IUnitOfWork
     private IUserRatingRepository _userRatings;
     private IAdditionalUserInfoRepository _additionalUserInfos;
     private ITimeZoneRepository _timeZones;
+    private IUserSkillRepository _userSkills;
 
     private bool _disposed;
 
@@ -62,6 +63,12 @@ public class UnitOfWork : IUnitOfWork
     /// </summary>
     public ITimeZoneRepository TimeZones =>
         _timeZones ??= new TimeZoneRepository(_context);
+
+    /// <summary>
+    /// Репозиторий связей пользователей и навыков
+    /// </summary>
+    public IUserSkillRepository UserSkills =>
+        _userSkills ??= new UserSkillRepository(_context);
 
     /// <summary>
     /// Сохранить все изменения

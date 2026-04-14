@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InterviewTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(InterviewContext))]
-    [Migration("20260414161446_Init")]
+    [Migration("20260414180545_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -431,6 +431,54 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.ToTable("user_ratings", "public");
                 });
 
+            modelBuilder.Entity("InterviewTraining.Domain.UserSkill", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasComment("Уникальный идентификатор");
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_utc")
+                        .HasComment("Дата и время создания записи в таблице");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted")
+                        .HasComment("Признак удалена запись или нет");
+
+                    b.Property<DateTime?>("ModifiedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("modified_utc")
+                        .HasComment("Дата и время последнего изменения записи в таблице");
+
+                    b.Property<Guid>("SkillId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("skill_id")
+                        .HasComment("Идентификатор навыка");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id")
+                        .HasComment("Идентификатор пользователя");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SkillId")
+                        .HasDatabaseName("ix_user_skills_skill_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_user_skills_user_id");
+
+                    b.HasIndex("UserId", "SkillId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_user_skills_user_id_skill_id");
+
+                    b.ToTable("user_skills", "public");
+                });
+
             modelBuilder.Entity("InterviewTraining.Domain.AdditionalUserInfo", b =>
                 {
                     b.HasOne("InterviewTraining.Domain.TimeZone", "TimeZone")
@@ -613,11 +661,32 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.Navigation("UserTo");
                 });
 
+            modelBuilder.Entity("InterviewTraining.Domain.UserSkill", b =>
+                {
+                    b.HasOne("InterviewTraining.Domain.Skill", "Skill")
+                        .WithMany()
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InterviewTraining.Domain.AdditionalUserInfo", "User")
+                        .WithMany("Skills")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Skill");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("InterviewTraining.Domain.AdditionalUserInfo", b =>
                 {
                     b.Navigation("MyRatingToUsers");
 
                     b.Navigation("RatingFromUsers");
+
+                    b.Navigation("Skills");
                 });
 
             modelBuilder.Entity("InterviewTraining.Domain.Interview", b =>

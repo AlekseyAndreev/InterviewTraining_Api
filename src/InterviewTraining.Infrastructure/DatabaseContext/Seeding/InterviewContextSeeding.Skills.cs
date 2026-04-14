@@ -1111,6 +1111,23 @@ public static partial class InterviewContextSeeding
         CreatedUtc = _utc_date
     };
 
+    // === INTERVIEW LANGUAGES SKILLS ===
+    private static readonly Skill RussianLanguageSkill = new()
+    {
+        Id = Guid.Parse("80000000-0000-0000-0000-000000000001"),
+        Name = "Русский",
+        GroupId = InterviewLanguagesGroup.Id,
+        CreatedUtc = _utc_date
+    };
+
+    private static readonly Skill EnglishLanguageSkill = new()
+    {
+        Id = Guid.Parse("80000000-0000-0000-0000-000000000002"),
+        Name = "Английский",
+        GroupId = InterviewLanguagesGroup.Id,
+        CreatedUtc = _utc_date
+    };
+
     public static List<Skill> GetAllSkills() => new()
     {
         // .NET
@@ -1199,6 +1216,9 @@ public static partial class InterviewContextSeeding
         PrometheusSkill, GrafanaSkill, ElkSkill, DatadogSkill, ZabbixSkill, JaegerSkill,
 
         // Infrastructure
-        TerraformSkill, AnsibleSkill, PulumiSkill, LinuxSkill, NginxSkill, HAProxySkill
+        TerraformSkill, AnsibleSkill, PulumiSkill, LinuxSkill, NginxSkill, HAProxySkill,
+
+        // Interview Languages
+        RussianLanguageSkill, EnglishLanguageSkill
     };
 }

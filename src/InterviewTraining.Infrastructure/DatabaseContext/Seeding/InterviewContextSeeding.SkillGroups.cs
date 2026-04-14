@@ -55,14 +55,6 @@ public static partial class InterviewContextSeeding
         CreatedUtc = _utc_date
     };
 
-    private static readonly SkillGroup FullStackGroup = new()
-    {
-        Id = Guid.Parse("11000000-0000-0000-0000-000000000003"),
-        Name = "Full Stack",
-        ParentGroupId = DevelopmentGroup.Id,
-        CreatedUtc = _utc_date
-    };
-
     private static readonly SkillGroup MobileGroup = new()
     {
         Id = Guid.Parse("11000000-0000-0000-0000-000000000004"),
@@ -319,13 +311,24 @@ public static partial class InterviewContextSeeding
         CreatedUtc = _utc_date
     };
 
+    /// <summary>
+    /// Языки для проведения собеседования
+    /// </summary>
+    private static readonly SkillGroup InterviewLanguagesGroup = new()
+    {
+        Id = Guid.Parse("10000000-0000-0000-0000-000000000005"),
+        Name = "Языки для проведения собеседования",
+        CreatedUtc = _utc_date,
+        IsDeleted = false
+    };
+
     public static List<SkillGroup> GetAllGroups() => new()
     {
         // Root groups
         DevelopmentGroup, AnalyticsGroup, TestingGroup, DevOpsGroup,
             
         // Development subgroups
-        BackendGroup, FrontendGroup, FullStackGroup, MobileGroup,
+        BackendGroup, FrontendGroup, MobileGroup,
             
         // Backend subgroups
         DotNetGroup, JavaGroup, PythonGroup, NodeJsGroup, GoGroup, PhpGroup, RubyGroup, CppGroup, RustGroup,
@@ -343,6 +346,9 @@ public static partial class InterviewContextSeeding
         ManualTestingGroup, AutoTestingGroup, PerformanceTestingGroup, SecurityTestingGroup,
             
         // DevOps subgroups
-        CICDGroup, CloudGroup, ContainerizationGroup, MonitoringGroup, InfrastructureGroup
+        CICDGroup, CloudGroup, ContainerizationGroup, MonitoringGroup, InfrastructureGroup,
+
+        // Interview Languages
+        InterviewLanguagesGroup
     };
 }

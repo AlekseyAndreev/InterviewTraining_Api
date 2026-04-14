@@ -165,6 +165,37 @@ namespace InterviewTraining.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "user_skills",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Идентификатор пользователя"),
+                    skill_id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Идентификатор навыка"),
+                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
+                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице"),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак удалена запись или нет")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user_skills", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_user_skills_additional_user_infos_user_id",
+                        column: x => x.user_id,
+                        principalSchema: "public",
+                        principalTable: "additional_user_infos",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_user_skills_skills_skill_id",
+                        column: x => x.skill_id,
+                        principalSchema: "public",
+                        principalTable: "skills",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "interview_versions",
                 schema: "public",
                 columns: table => new
@@ -310,6 +341,25 @@ namespace InterviewTraining.Infrastructure.Migrations
                 table: "user_ratings",
                 column: "user_to_id");
 
+            migrationBuilder.CreateIndex(
+                name: "ix_user_skills_skill_id",
+                schema: "public",
+                table: "user_skills",
+                column: "skill_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_skills_user_id",
+                schema: "public",
+                table: "user_skills",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_skills_user_id_skill_id",
+                schema: "public",
+                table: "user_skills",
+                columns: new[] { "user_id", "skill_id" },
+                unique: true);
+
             migrationBuilder.AddForeignKey(
                 name: "FK_interview_versions_interviews_interview_id",
                 schema: "public",
@@ -339,6 +389,10 @@ namespace InterviewTraining.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "user_ratings",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "user_skills",
                 schema: "public");
 
             migrationBuilder.DropTable(

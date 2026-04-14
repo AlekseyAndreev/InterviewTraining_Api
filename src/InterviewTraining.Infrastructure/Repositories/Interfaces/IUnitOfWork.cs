@@ -39,6 +39,11 @@ public interface IUnitOfWork : IDisposable
     ITimeZoneRepository TimeZones { get; }
 
     /// <summary>
+    /// Репозиторий связей пользователей и навыков
+    /// </summary>
+    IUserSkillRepository UserSkills { get; }
+
+    /// <summary>
     /// Сохранить все изменения
     /// </summary>
     Task<int> SaveChangesAsync();

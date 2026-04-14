@@ -134,6 +134,13 @@ public class AdditionalUserInfoConfiguration : IEntityTypeConfiguration<Domain.A
             .HasForeignKey(x => x.UserToId)
             .OnDelete(DeleteBehavior.ClientCascade);
 
+        // Связь: навыки пользователя
+        builder
+            .HasMany(x => x.Skills)
+            .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Индекс для быстрого поиска по IdentityUserId
         builder
             .HasIndex(x => x.IdentityUserId)

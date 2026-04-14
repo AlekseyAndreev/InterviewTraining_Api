@@ -24,6 +24,11 @@ public class AdditionalUserInfo : BaseDeleteEntity<Guid>
     /// </summary>
     public TimeZone TimeZone { get; set; }
 
+    /// <summary>
+    /// Навыки пользователя
+    /// </summary>
+    public List<UserSkill> Skills { get; set; }
+
     public List<UserRating> MyRatingToUsers { get; set; }
     public List<UserRating> RatingFromUsers { get; set; }
 }
