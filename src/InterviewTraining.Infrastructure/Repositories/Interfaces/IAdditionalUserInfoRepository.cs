@@ -14,7 +14,7 @@ public interface IAdditionalUserInfoRepository : IRepository<AdditionalUserInfo,
     /// <summary>
     /// Получить пользователя по IdentityUserId
     /// </summary>
-    Task<AdditionalUserInfo> GetByIdentityUserIdAsync(string identityUserId);
+    Task<AdditionalUserInfo> GetByIdentityUserIdAsync(string identityUserId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получить всех экспертов

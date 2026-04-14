@@ -19,10 +19,10 @@ public class AdditionalUserInfoRepository : Repository<AdditionalUserInfo, Guid>
     {
     }
 
-    public async Task<AdditionalUserInfo> GetByIdentityUserIdAsync(string identityUserId)
+    public async Task<AdditionalUserInfo> GetByIdentityUserIdAsync(string identityUserId, CancellationToken cancellationToken)
     {
         return await DbSet
-            .FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId && !u.IsDeleted);
+            .FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId && !u.IsDeleted, cancellationToken);
     }
 
     public async Task<IEnumerable<AdditionalUserInfo>> GetExpertsAsync(CancellationToken cancellationToken)
