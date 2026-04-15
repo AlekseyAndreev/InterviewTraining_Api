@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IMediatorHandler<GetSkillsTreeRequest, GetSkillsTreeResponse>, GetSkillsTreeHandler>()
             .AddScoped<IMediatorHandler<UpdateUserSkillsRequest, UpdateUserSkillsResponse>, UpdateUserSkillsHandler>()
             .AddScoped<IMediatorHandler<CreateAvailableTimeRequest, CreateAvailableTimeResponse>, CreateAvailableTimeHandler>()
+            .AddScoped<IMediatorHandler<UpdateAvailableTimeRequest, UpdateAvailableTimeResponse>, UpdateAvailableTimeHandler>()
             .AddScoped<IMediatorHandler<GetAvailableTimeRequest, GetAvailableTimeResponse>, GetAvailableTimeHandler>()
             .AddScoped<IMediatorHandler<DeleteAvailableTimeRequest, DeleteAvailableTimeResponse>, DeleteAvailableTimeHandler>();
     }

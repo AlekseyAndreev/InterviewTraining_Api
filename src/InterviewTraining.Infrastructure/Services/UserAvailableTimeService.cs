@@ -47,24 +47,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             }
         }
 
-        var timeZoneId = user.TimeZoneId;
-        TimeZoneInfo timeZoneInfo = null;
-        
-        if (timeZoneId.HasValue)
-        {
-            var timeZone = await _unitOfWork.TimeZones.GetByIdAsync(timeZoneId.Value);
-            if (timeZone != null)
-            {
-                try
-                {
-                    timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone.Code);
-                }
-                catch
-                {
-                    // Если timezone не найдена, используем UTC
-                }
-            }
-        }
+        var timeZoneInfo = await GetUserTimeZoneAsync(user);
 
         TimeOnly? startTimeUtc = null;
         TimeOnly? endTimeUtc = null;
@@ -127,22 +110,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
         var availableTimes = await _unitOfWork.UserAvailableTimes.GetActiveByUserIdAsync(user.Id);
 
         // Получаем timezone пользователя для отображения
-        TimeZoneInfo timeZoneInfo = null;
-        if (user.TimeZoneId.HasValue)
-        {
-            var timeZone = await _unitOfWork.TimeZones.GetByIdAsync(user.TimeZoneId.Value);
-            if (timeZone != null)
-            {
-                try
-                {
-                    timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone.Code);
-                }
-                catch
-                {
-                    // Если timezone не найдена, используем UTC
-                }
-            }
-        }
+        var timeZoneInfo = await GetUserTimeZoneAsync(user);
 
         var result = new GetAvailableTimeResponse
         {
@@ -216,23 +184,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             }
         }
 
-        var timeZoneId = user.TimeZoneId;
-        TimeZoneInfo timeZoneInfo = null;
-        if (timeZoneId.HasValue)
-        {
-            var timeZone = await _unitOfWork.TimeZones.GetByIdAsync(timeZoneId.Value);
-            if (timeZone != null)
-            {
-                try
-                {
-                    timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone.Code);
-                }
-                catch
-                {
-                    // Если timezone не найдена, используем UTC
-                }
-            }
-        }
+        var timeZoneInfo = await GetUserTimeZoneAsync(user);
 
         TimeOnly? startTimeUtc = null;
         TimeOnly? endTimeUtc = null;
@@ -273,12 +225,37 @@ public class UserAvailableTimeService : IUserAvailableTimeService
         };
     }
 
+    private async Task<TimeZoneInfo> GetUserTimeZoneAsync(AdditionalUserInfo user)
+    {
+        var timeZoneId = user.TimeZoneId;
+        if (!timeZoneId.HasValue)
+        {
+            return null;
+        }
+
+        var timeZone = await _unitOfWork.TimeZones.GetByIdAsync(timeZoneId.Value);
+        if (timeZone == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById(timeZone.Code);
+        }
+        catch
+        {
+            // Если timezone не найдена, тогда возвращаем null и используем UTC
+            return null;
+        }
+    }
+
     /// <summary>
     /// Валидация запроса на создание
     /// </summary>
     private void ValidateRequest(CreateAvailableTimeRequest request)
     {
-        var availabilityType = Convert(request.AvailabilityType);
+        var availabilityType = ConvertApplicationAvailabilityType(request.AvailabilityType);
 
         switch (availabilityType)
         {
@@ -307,7 +284,6 @@ public class UserAvailableTimeService : IUserAvailableTimeService
                 }
                 break;
             
-             // TODO: подумать какие поля реально хотим передавать
             case AvailabilityType.SpecificDateTime:
                 if (!request.SpecificDate.HasValue)
                 {
@@ -329,7 +305,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
     /// </summary>
     private void ValidateUpdateRequest(UpdateAvailableTimeRequest request)
     {
-        var availabilityType = Convert(request.AvailabilityType);
+        var availabilityType = ConvertApplicationAvailabilityType(request.AvailabilityType);
 
         switch (availabilityType)
         {
@@ -377,7 +353,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
     /// <summary>
     /// Конвертация типа доступности
     /// </summary>
-    private AvailabilityType Convert(ApplicationAvailabilityType availabilityType) =>
+    private AvailabilityType ConvertApplicationAvailabilityType(ApplicationAvailabilityType availabilityType) =>
         availabilityType switch
         {
             ApplicationAvailabilityType.AlwaysAvailable => AvailabilityType.AlwaysAvailable,
@@ -385,6 +361,19 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             ApplicationAvailabilityType.WeeklyWithTime => AvailabilityType.WeeklyWithTime,
             ApplicationAvailabilityType.SpecificDateTime => AvailabilityType.SpecificDateTime,
             _ => throw new BusinessLogicException("Не поддерживаемый формат для ApplicationAvailabilityType:" + availabilityType),
+        };
+
+    /// <summary>
+    /// Конвертация типа доступности
+    /// </summary>
+    private ApplicationAvailabilityType ConvertAvailabilityType(AvailabilityType availabilityType) =>
+        availabilityType switch
+        {
+            AvailabilityType.AlwaysAvailable => ApplicationAvailabilityType.AlwaysAvailable,
+            AvailabilityType.WeeklyFullDay => ApplicationAvailabilityType.WeeklyFullDay,
+            AvailabilityType.WeeklyWithTime => ApplicationAvailabilityType.WeeklyWithTime,
+            AvailabilityType.SpecificDateTime => ApplicationAvailabilityType.SpecificDateTime,
+            _ => throw new BusinessLogicException("Не поддерживаемый формат для AvailabilityType:" + availabilityType),
         };
 
     /// <summary>
@@ -435,7 +424,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
         return new AvailableTimeDto
         {
             Id = entity.Id,
-            AvailabilityType = (int)entity.AvailabilityType,
+            AvailabilityType = ConvertAvailabilityType(entity.AvailabilityType),
             DayOfWeek = entity.DayOfWeek.HasValue ? (int)entity.DayOfWeek.Value : null,
             SpecificDate = entity.SpecificDate,
             StartTime = displayStartTime,
@@ -447,21 +436,21 @@ public class UserAvailableTimeService : IUserAvailableTimeService
     /// <summary>
     /// Генерация текстового представления для отображения
     /// </summary>
-    private string GenerateDisplayTime(UserAvailableTime entity, TimeOnly? startTime, TimeOnly? endTime)
+    private static string GenerateDisplayTime(UserAvailableTime entity, TimeOnly? startTime, TimeOnly? endTime)
     {
-        var dayNames = new[] { "воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота" };
+        var dayNames = new[] { "Каждое воскресенье", "Каждый понедельник", "Каждый вторник", "Каждую среду", "Каждый четверг", "Каждую пятницу", "Каждую субботу" };
 
         return entity.AvailabilityType switch
         {
             AvailabilityType.AlwaysAvailable => "Доступен всегда",
             
-            AvailabilityType.WeeklyFullDay => $"Каждый {dayNames[(int)entity.DayOfWeek.Value]} весь день",
+            AvailabilityType.WeeklyFullDay => $"{dayNames[(int)entity.DayOfWeek.Value]} весь день",
             
             AvailabilityType.WeeklyWithTime when endTime.HasValue => 
-                $"Каждый {dayNames[(int)entity.DayOfWeek.Value]} с {startTime:HH:mm} до {endTime:HH:mm}",
+                $"{dayNames[(int)entity.DayOfWeek.Value]} с {startTime:HH:mm} до {endTime:HH:mm}",
             
             AvailabilityType.WeeklyWithTime => 
-                $"Каждый {dayNames[(int)entity.DayOfWeek.Value]} в {startTime:HH:mm}",
+                $"{dayNames[(int)entity.DayOfWeek.Value]} в {startTime:HH:mm}",
             
             AvailabilityType.SpecificDateTime when endTime.HasValue => 
                 $"{entity.SpecificDate:dd.MM.yyyy} с {startTime:HH:mm} до {endTime:HH:mm}",
