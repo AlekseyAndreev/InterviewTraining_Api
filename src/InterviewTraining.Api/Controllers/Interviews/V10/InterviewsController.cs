@@ -38,7 +38,7 @@ public class InterviewsController : BaseController<InterviewsController>
     /// </remarks>
     ///<param name="cancellationToken">Токен отмены</param>
     /// <returns>Список интервью</returns>
-    [HttpGet("my")]
+    [HttpPost("my")]
     [Authorize]
     public async Task<GetMyInterviewsResponse> GetMyInterviews(CancellationToken cancellationToken)
     {
