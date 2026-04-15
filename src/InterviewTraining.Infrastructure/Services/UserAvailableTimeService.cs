@@ -37,6 +37,16 @@ public class UserAvailableTimeService : IUserAvailableTimeService
 
         ValidateRequest(request);
 
+        // Проверяем, если создаем AlwaysAvailable - не должно быть других активных записей этого типа
+        if ((AvailabilityType)request.AvailabilityType == AvailabilityType.AlwaysAvailable)
+        {
+            var hasAlwaysAvailable = await _unitOfWork.UserAvailableTimes.HasAlwaysAvailableAsync(user.Id);
+            if (hasAlwaysAvailable)
+            {
+                throw new BusinessLogicException("У пользователя уже есть активная запись с типом 'Доступен всегда'");
+            }
+        }
+
         var timeZoneId = user.TimeZoneId;
         TimeZoneInfo timeZoneInfo = null;
         
@@ -176,7 +186,95 @@ public class UserAvailableTimeService : IUserAvailableTimeService
     }
 
     /// <summary>
-    /// Валидация запроса
+    /// Обновить запись доступного времени
+    /// </summary>
+    public async Task<UpdateAvailableTimeResponse> UpdateAsync(
+        UpdateAvailableTimeRequest request,
+        CancellationToken cancellationToken)
+    {
+        var user = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.IdentityUserId, cancellationToken);
+        if (user == null)
+        {
+            throw new EntityNotFoundException("Пользователь не найден");
+        }
+
+        var availableTime = await _unitOfWork.UserAvailableTimes.GetByIdAsync(request.AvailableTimeId);
+        if (availableTime == null || availableTime.UserId != user.Id)
+        {
+            throw new EntityNotFoundException("Запись не найдена");
+        }
+
+        ValidateUpdateRequest(request);
+
+        // Проверяем, если обновляем на AlwaysAvailable - не должно быть других активных записей этого типа
+        if ((AvailabilityType)request.AvailabilityType == AvailabilityType.AlwaysAvailable)
+        {
+            var hasAlwaysAvailable = await _unitOfWork.UserAvailableTimes.HasAlwaysAvailableExcludingAsync(user.Id, request.AvailableTimeId);
+            if (hasAlwaysAvailable)
+            {
+                throw new BusinessLogicException("У пользователя уже есть активная запись с типом 'Доступен всегда'");
+            }
+        }
+
+        var timeZoneId = user.TimeZoneId;
+        TimeZoneInfo timeZoneInfo = null;
+        if (timeZoneId.HasValue)
+        {
+            var timeZone = await _unitOfWork.TimeZones.GetByIdAsync(timeZoneId.Value);
+            if (timeZone != null)
+            {
+                try
+                {
+                    timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone.Code);
+                }
+                catch
+                {
+                    // Если timezone не найдена, используем UTC
+                }
+            }
+        }
+
+        TimeOnly? startTimeUtc = null;
+        TimeOnly? endTimeUtc = null;
+
+        if (request.StartTime.HasValue && timeZoneInfo != null)
+        {
+            startTimeUtc = ConvertTimeToUtc(request.StartTime.Value, timeZoneInfo, request.DayOfWeek, request.SpecificDate);
+        }
+        else if (request.StartTime.HasValue)
+        {
+            startTimeUtc = request.StartTime;
+        }
+
+        if (request.EndTime.HasValue && timeZoneInfo != null)
+        {
+            endTimeUtc = ConvertTimeToUtc(request.EndTime.Value, timeZoneInfo, request.DayOfWeek, request.SpecificDate);
+        }
+        else if (request.EndTime.HasValue)
+        {
+            endTimeUtc = request.EndTime;
+        }
+
+        // Обновляем запись
+        availableTime.AvailabilityType = (AvailabilityType)request.AvailabilityType;
+        availableTime.DayOfWeek = request.DayOfWeek.HasValue ? (DayOfWeek)request.DayOfWeek.Value : null;
+        availableTime.SpecificDate = request.SpecificDate;
+        availableTime.StartTime = startTimeUtc;
+        availableTime.EndTime = endTimeUtc;
+        availableTime.ModifiedUtc = DateTime.UtcNow;
+
+        _unitOfWork.UserAvailableTimes.Update(availableTime);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return new UpdateAvailableTimeResponse
+        {
+            Id = availableTime.Id,
+            Success = true
+        };
+    }
+
+    /// <summary>
+    /// Валидация запроса на создание
     /// </summary>
     private void ValidateRequest(CreateAvailableTimeRequest request)
     {
@@ -227,7 +325,57 @@ public class UserAvailableTimeService : IUserAvailableTimeService
     }
 
     /// <summary>
-    /// Валидация запроса
+    /// Валидация запроса на обновление
+    /// </summary>
+    private void ValidateUpdateRequest(UpdateAvailableTimeRequest request)
+    {
+        var availabilityType = Convert(request.AvailabilityType);
+
+        switch (availabilityType)
+        {
+            case AvailabilityType.AlwaysAvailable:
+                break;
+
+            case AvailabilityType.WeeklyFullDay:
+                if (!request.DayOfWeek.HasValue)
+                {
+                    throw new BusinessLogicException("Для типа WeeklyFullDay необходимо указать день недели");
+                }
+                if (request.DayOfWeek.Value < 0 || request.DayOfWeek.Value > 6)
+                {
+                    throw new BusinessLogicException("День недели должен быть от 0 (воскресенье) до 6 (суббота)");
+                }
+                break;
+
+            case AvailabilityType.WeeklyWithTime:
+                if (!request.DayOfWeek.HasValue)
+                {
+                    throw new BusinessLogicException("Для типа WeeklyWithTime необходимо указать день недели");
+                }
+                if (!request.StartTime.HasValue)
+                {
+                    throw new BusinessLogicException("Для типа WeeklyWithTime необходимо указать время начала");
+                }
+                break;
+
+            case AvailabilityType.SpecificDateTime:
+                if (!request.SpecificDate.HasValue)
+                {
+                    throw new BusinessLogicException("Для типа SpecificDateTime необходимо указать конкретную дату");
+                }
+                if (!request.StartTime.HasValue)
+                {
+                    throw new BusinessLogicException("Для типа SpecificDateTime необходимо указать время начала");
+                }
+                break;
+
+            default:
+                throw new BusinessLogicException("Неверный тип доступности");
+        }
+    }
+
+    /// <summary>
+    /// Конвертация типа доступности
     /// </summary>
     private AvailabilityType Convert(ApplicationAvailabilityType availabilityType) =>
         availabilityType switch

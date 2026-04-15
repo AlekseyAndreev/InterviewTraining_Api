@@ -43,4 +43,22 @@ public class UserAvailableTimeRepository : Repository<UserAvailableTime, Guid>, 
             .ThenBy(x => x.SpecificDate)
             .ToListAsync();
     }
+
+    /// <summary>
+    /// Проверить, есть ли у пользователя активная запись с типом AlwaysAvailable
+    /// </summary>
+    public async Task<bool> HasAlwaysAvailableAsync(Guid userId)
+    {
+        return await DbSet
+            .AnyAsync(x => x.UserId == userId && !x.IsDeleted && x.AvailabilityType == AvailabilityType.AlwaysAvailable);
+    }
+
+    /// <summary>
+    /// Проверить, есть ли у пользователя активная запись с типом AlwaysAvailable, исключая указанную запись
+    /// </summary>
+    public async Task<bool> HasAlwaysAvailableExcludingAsync(Guid userId, Guid excludeId)
+    {
+        return await DbSet
+            .AnyAsync(x => x.UserId == userId && !x.IsDeleted && x.AvailabilityType == AvailabilityType.AlwaysAvailable && x.Id != excludeId);
+    }
 }

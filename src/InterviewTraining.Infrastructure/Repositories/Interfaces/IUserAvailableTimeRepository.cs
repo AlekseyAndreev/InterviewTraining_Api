@@ -19,4 +19,14 @@ public interface IUserAvailableTimeRepository : IRepository<UserAvailableTime, G
     /// Получить активные (не удаленные) записи доступного времени пользователя
     /// </summary>
     Task<IEnumerable<UserAvailableTime>> GetActiveByUserIdAsync(Guid userId);
+
+    /// <summary>
+    /// Проверить, есть ли у пользователя активная запись с типом AlwaysAvailable
+    /// </summary>
+    Task<bool> HasAlwaysAvailableAsync(Guid userId);
+
+    /// <summary>
+    /// Проверить, есть ли у пользователя активная запись с типом AlwaysAvailable, исключая указанную запись
+    /// </summary>
+    Task<bool> HasAlwaysAvailableExcludingAsync(Guid userId, Guid excludeId);
 }

@@ -24,4 +24,9 @@ public interface IUserAvailableTimeService
     /// Удалить запись доступного времени
     /// </summary>
     Task<DeleteAvailableTimeResponse> DeleteAsync(string identityUserId, Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Обновить запись доступного времени
+    /// </summary>
+    Task<UpdateAvailableTimeResponse> UpdateAsync(UpdateAvailableTimeRequest request, CancellationToken cancellationToken);
 }

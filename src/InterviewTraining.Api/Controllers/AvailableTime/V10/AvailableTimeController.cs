@@ -67,4 +67,18 @@ public class AvailableTimeController : BaseController<AvailableTimeController>
         };
         return await _mediator.SendAsync(request, cancellationToken);
     }
+
+    /// <summary>
+    /// Обновить запись доступного времени
+    /// </summary>
+    [HttpPut("{availableTimeId}")]
+    public async Task<UpdateAvailableTimeResponse> UpdateAvailableTime(
+        Guid availableTimeId,
+        [FromBody] UpdateAvailableTimeRequest request,
+        CancellationToken cancellationToken)
+    {
+        request.IdentityUserId = CurrentUserId;
+        request.AvailableTimeId = availableTimeId;
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
 }
