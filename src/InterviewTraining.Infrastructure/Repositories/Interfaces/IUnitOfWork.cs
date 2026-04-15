@@ -45,6 +45,11 @@ public interface IUnitOfWork : IDisposable
     IUserSkillRepository UserSkills { get; }
 
     /// <summary>
+    /// Репозиторий доступного времени пользователей
+    /// </summary>
+    IUserAvailableTimeRepository UserAvailableTimes { get; }
+
+    /// <summary>
     /// Сохранить все изменения
     /// </summary>
     Task<int> SaveChangesAsync();
