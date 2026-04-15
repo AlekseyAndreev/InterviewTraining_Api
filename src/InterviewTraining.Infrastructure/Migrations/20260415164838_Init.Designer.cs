@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InterviewTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(InterviewContext))]
-    [Migration("20260415090416_Init")]
+    [Migration("20260415164838_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -184,7 +184,7 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("created_utc")
                         .HasComment("Дата и время создания записи в таблице");
 
-                    b.Property<DateTime>("EndUtc")
+                    b.Property<DateTime?>("EndUtc")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("end_utc")
                         .HasComment("Конец собеседования в UTC");

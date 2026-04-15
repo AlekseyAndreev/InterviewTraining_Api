@@ -11,24 +11,17 @@ public class AdditionalUserInfo : BaseDeleteEntity<Guid>
     public byte[] PhotoLocal { get; set; }
     public string ShortDescription { get; set; }
     public string Description { get; set; }
-    public bool InterviewScheduleAtAnyTime { get; set; }
     public bool IsCandidate { get; set; }
     public bool IsExpert { get; set; }
     /// <summary>
-    /// Идентификатор часового пояса пользователя
+    /// Готов проводить интервью в любое время
     /// </summary>
-    public Guid? TimeZoneId { get; set; }
+    public bool InterviewScheduleAtAnyTime { get; set; }
 
-    /// <summary>
-    /// Часовой пояс пользователя
-    /// </summary>
+    public Guid? TimeZoneId { get; set; }
     public TimeZone TimeZone { get; set; }
 
-    /// <summary>
-    /// Навыки пользователя
-    /// </summary>
     public List<UserSkill> Skills { get; set; }
-
     public List<UserRating> MyRatingToUsers { get; set; }
     public List<UserRating> RatingFromUsers { get; set; }
 }

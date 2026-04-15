@@ -181,7 +181,7 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("created_utc")
                         .HasComment("Дата и время создания записи в таблице");
 
-                    b.Property<DateTime>("EndUtc")
+                    b.Property<DateTime?>("EndUtc")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("end_utc")
                         .HasComment("Конец собеседования в UTC");

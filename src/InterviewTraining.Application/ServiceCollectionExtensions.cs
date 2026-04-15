@@ -3,6 +3,7 @@ using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetAllExperts.V10;
 using InterviewTraining.Application.GetSkillsTree.V10;
 using InterviewTraining.Application.GetUserInfo.V10;
+using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.UpdateUserInfo.V10;
 using InterviewTraining.Application.ManageAvailableTime.V10;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IMediatorHandler<CreateAvailableTimeRequest, CreateAvailableTimeResponse>, CreateAvailableTimeHandler>()
             .AddScoped<IMediatorHandler<UpdateAvailableTimeRequest, UpdateAvailableTimeResponse>, UpdateAvailableTimeHandler>()
             .AddScoped<IMediatorHandler<GetAvailableTimeRequest, GetAvailableTimeResponse>, GetAvailableTimeHandler>()
-            .AddScoped<IMediatorHandler<DeleteAvailableTimeRequest, DeleteAvailableTimeResponse>, DeleteAvailableTimeHandler>();
+            .AddScoped<IMediatorHandler<DeleteAvailableTimeRequest, DeleteAvailableTimeResponse>, DeleteAvailableTimeHandler>()
+            .AddScoped<IMediatorHandler<GetMyInterviewsRequest, GetMyInterviewsResponse>, GetMyInterviewsHandler>();
     }
 }

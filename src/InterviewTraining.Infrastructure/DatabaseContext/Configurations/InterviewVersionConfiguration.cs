@@ -64,7 +64,7 @@ public class InterviewVersionConfiguration : IEntityTypeConfiguration<Domain.Int
             .Property(x => x.EndUtc)
             .HasComment("Конец собеседования в UTC")
             .HasColumnName("end_utc")
-            .IsRequired(true);
+            .IsRequired(false);
 
         builder.OwnsOne(x => x.Candidate, navigationBuilder =>
         {

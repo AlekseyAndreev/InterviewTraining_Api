@@ -50,6 +50,11 @@ public interface IUnitOfWork : IDisposable
     IUserAvailableTimeRepository UserAvailableTimes { get; }
 
     /// <summary>
+    /// Репозиторий интервью
+    /// </summary>
+    IInterviewRepository Interviews { get; }
+
+    /// <summary>
     /// Сохранить все изменения
     /// </summary>
     Task<int> SaveChangesAsync();

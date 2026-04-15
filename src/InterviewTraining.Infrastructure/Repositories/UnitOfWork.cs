@@ -23,6 +23,7 @@ public class UnitOfWork : IUnitOfWork
     private ITimeZoneRepository _timeZones;
     private IUserSkillRepository _userSkills;
     private IUserAvailableTimeRepository _userAvailableTimes;
+    private IInterviewRepository _interviews;
 
     private bool _disposed;
 
@@ -77,6 +78,12 @@ public class UnitOfWork : IUnitOfWork
     /// </summary>
     public IUserAvailableTimeRepository UserAvailableTimes =>
         _userAvailableTimes ??= new UserAvailableTimeRepository(_context);
+
+    /// <summary>
+    /// Репозиторий интервью
+    /// </summary>
+    public IInterviewRepository Interviews =>
+        _interviews ??= new InterviewRepository(_context);
 
     /// <summary>
     /// Сохранить все изменения
