@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InterviewTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(InterviewContext))]
-    [Migration("20260414190045_Init")]
+    [Migration("20260415090416_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -184,6 +184,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("created_utc")
                         .HasComment("Дата и время создания записи в таблице");
 
+                    b.Property<DateTime>("EndUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("end_utc")
+                        .HasComment("Конец собеседования в UTC");
+
                     b.Property<Guid>("InterviewId")
                         .HasColumnType("uuid")
                         .HasColumnName("interview_id")
@@ -199,6 +204,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("modified_utc")
                         .HasComment("Дата и время последнего изменения записи в таблице");
+
+                    b.Property<DateTime>("StartUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("start_utc")
+                        .HasComment("Начало собеседования в UTC");
 
                     b.HasKey("Id");
 
@@ -375,6 +385,70 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.ToTable("time_zones", "public");
                 });
 
+            modelBuilder.Entity("InterviewTraining.Domain.UserAvailableTime", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasComment("Уникальный идентификатор");
+
+                    b.Property<int>("AvailabilityType")
+                        .HasColumnType("integer")
+                        .HasColumnName("availability_type")
+                        .HasComment("Тип доступности: 0=AlwaysAvailable, 1=WeeklyFullDay, 2=WeeklyWithTime, 3=SpecificDateTime");
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_utc")
+                        .HasComment("Дата и время создания записи в таблице");
+
+                    b.Property<int?>("DayOfWeek")
+                        .HasColumnType("integer")
+                        .HasColumnName("day_of_week")
+                        .HasComment("День недели (0-6), если применимо");
+
+                    b.Property<TimeOnly?>("EndTime")
+                        .HasColumnType("time without time zone")
+                        .HasColumnName("end_time")
+                        .HasComment("Время окончания в UTC");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted")
+                        .HasComment("Признак удалена запись или нет");
+
+                    b.Property<DateTime?>("ModifiedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("modified_utc")
+                        .HasComment("Дата и время последнего изменения записи в таблице");
+
+                    b.Property<DateOnly?>("SpecificDate")
+                        .HasColumnType("date")
+                        .HasColumnName("specific_date")
+                        .HasComment("Конкретная дата, если применимо");
+
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("time without time zone")
+                        .HasColumnName("start_time")
+                        .HasComment("Время начала в UTC");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id")
+                        .HasComment("Идентификатор пользователя (эксперта)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AvailabilityType")
+                        .HasDatabaseName("ix_user_available_times_availability_type");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_user_available_times_user_id");
+
+                    b.ToTable("user_available_times", "public");
+                });
+
             modelBuilder.Entity("InterviewTraining.Domain.UserRating", b =>
                 {
                     b.Property<Guid>("Id")
@@ -519,7 +593,47 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
-                    b.OwnsOne("InterviewTraining.Domain.UserInterviewData", "Candidate", b1 =>
+                    b.OwnsOne("InterviewTraining.Domain.BaseUserInterviewData", "Expert", b1 =>
+                        {
+                            b1.Property<Guid>("InterviewVersionId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("CancellReason")
+                                .HasMaxLength(2000)
+                                .HasColumnType("character varying(2000)")
+                                .HasColumnName("expert_cancell_reason")
+                                .HasComment("Причина отмены экспертом");
+
+                            b1.Property<bool>("IsApproved")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("expert_is_approved")
+                                .HasComment("Признак подтверждения экспертом");
+
+                            b1.Property<bool>("IsCancelled")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("expert_is_cancelled")
+                                .HasComment("Признак отмены экспертом");
+
+                            b1.Property<bool>("IsPaid")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("expert_is_paid")
+                                .HasComment("Признак оплаты экспертом");
+
+                            b1.HasKey("InterviewVersionId");
+
+                            b1.ToTable("interview_versions", "public");
+
+                            b1.WithOwner()
+                                .HasForeignKey("InterviewVersionId");
+                        });
+
+                    b.OwnsOne("InterviewTraining.Domain.CandidateInterviewData", "Candidate", b1 =>
                         {
                             b1.Property<Guid>("InterviewVersionId")
                                 .HasColumnType("uuid");
@@ -551,45 +665,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                                 .HasColumnName("candidate_is_paid")
                                 .HasComment("Признак оплаты кандидатом");
 
-                            b1.HasKey("InterviewVersionId");
-
-                            b1.ToTable("interview_versions", "public");
-
-                            b1.WithOwner()
-                                .HasForeignKey("InterviewVersionId");
-                        });
-
-                    b.OwnsOne("InterviewTraining.Domain.UserInterviewData", "Expert", b1 =>
-                        {
-                            b1.Property<Guid>("InterviewVersionId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("CancellReason")
+                            b1.Property<string>("Notes")
                                 .HasMaxLength(2000)
                                 .HasColumnType("character varying(2000)")
-                                .HasColumnName("expert_cancell_reason")
-                                .HasComment("Причина отмены экспертом");
-
-                            b1.Property<bool>("IsApproved")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("boolean")
-                                .HasDefaultValue(false)
-                                .HasColumnName("expert_is_approved")
-                                .HasComment("Признак подтверждения экспертом");
-
-                            b1.Property<bool>("IsCancelled")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("boolean")
-                                .HasDefaultValue(false)
-                                .HasColumnName("expert_is_cancelled")
-                                .HasComment("Признак отмены экспертом");
-
-                            b1.Property<bool>("IsPaid")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("boolean")
-                                .HasDefaultValue(false)
-                                .HasColumnName("expert_is_paid")
-                                .HasComment("Признак оплаты экспертом");
+                                .HasColumnName("notes")
+                                .HasComment("Примечания от кандидата при бронировании");
 
                             b1.HasKey("InterviewVersionId");
 
@@ -635,6 +715,17 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Skill");
+                });
+
+            modelBuilder.Entity("InterviewTraining.Domain.UserAvailableTime", b =>
+                {
+                    b.HasOne("InterviewTraining.Domain.AdditionalUserInfo", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("InterviewTraining.Domain.UserRating", b =>

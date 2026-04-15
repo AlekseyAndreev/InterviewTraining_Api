@@ -63,6 +63,11 @@ public class InterviewContext : DbContext
     public DbSet<UserSkill> UserSkills { get; set; }
 
     /// <summary>
+    /// Доступное время пользователей для собеседований
+    /// </summary>
+    public DbSet<UserAvailableTime> UserAvailableTimes { get; set; }
+
+    /// <summary>
     /// При создании модели
     /// </summary>
     /// <param name="modelBuilder">modelBuilder</param>
@@ -96,5 +101,6 @@ public class InterviewContext : DbContext
         builder.ApplyConfiguration(new InterviewVersionConfiguration());
         builder.ApplyConfiguration(new TimeZoneConfiguration());
         builder.ApplyConfiguration(new UserSkillConfiguration());
+        builder.ApplyConfiguration(new UserAvailableTimeConfiguration());
     }
 }

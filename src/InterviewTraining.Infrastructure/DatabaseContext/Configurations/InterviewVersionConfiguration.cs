@@ -54,8 +54,27 @@ public class InterviewVersionConfiguration : IEntityTypeConfiguration<Domain.Int
             .IsRequired(false)
             .HasMaxLength(2000);
 
+        builder
+            .Property(x => x.StartUtc)
+            .HasComment("Начало собеседования в UTC")
+            .HasColumnName("start_utc")
+            .IsRequired(true);
+
+        builder
+            .Property(x => x.EndUtc)
+            .HasComment("Конец собеседования в UTC")
+            .HasColumnName("end_utc")
+            .IsRequired(true);
+
         builder.OwnsOne(x => x.Candidate, navigationBuilder =>
         {
+            navigationBuilder
+                .Property(x => x.Notes)
+                .HasComment("Примечания от кандидата при бронировании")
+                .HasColumnName("notes")
+                .IsRequired(false)
+                .HasMaxLength(2000);
+
             navigationBuilder
                 .Property(x => x.IsApproved)
                 .HasComment("Признак подтверждения кандидатом")
