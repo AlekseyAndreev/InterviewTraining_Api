@@ -47,7 +47,8 @@ public class AvailableTimeController : BaseController<AvailableTimeController>
     {
         var request = new GetAvailableTimeRequest
         {
-            IdentityUserId = CurrentUserId
+            IdentityUserId = CurrentUserId,
+            CurrentIdentityUserId = CurrentUserId,
         };
         return await _mediator.SendAsync(request, cancellationToken);
     }

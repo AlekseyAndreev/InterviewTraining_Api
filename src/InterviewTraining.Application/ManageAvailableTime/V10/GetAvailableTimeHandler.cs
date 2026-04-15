@@ -13,6 +13,6 @@ public class GetAvailableTimeHandler(IUserAvailableTimeService userAvailableTime
 {
     public async Task<GetAvailableTimeResponse> HandleAsync(GetAvailableTimeRequest request, CancellationToken cancellationToken)
     {
-        return await userAvailableTimeService.GetByCurrentUserAsync(request.IdentityUserId, cancellationToken);
+        return await userAvailableTimeService.GetAsync(request.IdentityUserId, request.CurrentIdentityUserId, cancellationToken);
     }
 }

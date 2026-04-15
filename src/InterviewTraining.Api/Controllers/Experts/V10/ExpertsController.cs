@@ -1,6 +1,7 @@
 ﻿using InterviewTraining.Api.Constants;
 using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetAllExperts.V10;
+using InterviewTraining.Application.ManageAvailableTime.V10;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -35,4 +36,18 @@ public class ExpertsController : BaseController<ExpertsController>
     [Authorize(Roles = AuhConstants.RoleCandidateOrExpert)]
     public Task<GetAllExpertsResponse> GetByFilterAsync(GetAllExpertsRequest request, CancellationToken cancellationToken) =>
         _mediator.SendAsync(request, cancellationToken);
+
+    /// <summary>
+    /// Получить список доступного времени пользователя
+    /// </summary>
+    [HttpGet("{userId}/available-slots")]
+    public async Task<GetAvailableTimeResponse> GetAvailableTime(string userId, CancellationToken cancellationToken)
+    {
+        var request = new GetAvailableTimeRequest
+        {
+            IdentityUserId = userId,
+            CurrentIdentityUserId = CurrentUserId,
+        };
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
 }

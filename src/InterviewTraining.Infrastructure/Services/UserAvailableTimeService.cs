@@ -47,7 +47,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             }
         }
 
-        var timeZoneInfo = await GetUserTimeZoneAsync(user);
+        var timeZoneInfo = await GetUserTimeZoneAsync(user.TimeZoneId);
 
         TimeOnly? startTimeUtc = null;
         TimeOnly? endTimeUtc = null;
@@ -97,20 +97,32 @@ public class UserAvailableTimeService : IUserAvailableTimeService
     /// <summary>
     /// Получить список доступного времени пользователя
     /// </summary>
-    public async Task<GetAvailableTimeResponse> GetByCurrentUserAsync(
+    public async Task<GetAvailableTimeResponse> GetAsync(
         string identityUserId,
+        string currentUserId,
         CancellationToken cancellationToken)
     {
-        var user = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(identityUserId, cancellationToken);
-        if (user == null)
+        if (string.IsNullOrEmpty(identityUserId))
         {
-            throw new EntityNotFoundException("Пользователь не найден");
+            throw new BusinessLogicException("Не задан идентификатор пользователя, для которого требуется вернуть время доступное");
         }
 
-        var availableTimes = await _unitOfWork.UserAvailableTimes.GetActiveByUserIdAsync(user.Id);
+        if (string.IsNullOrEmpty(currentUserId))
+        {
+            throw new BusinessLogicException("Не задан идентификатор текущего пользователя");
+        }
+        var identityUser = await GetUserInfoAsync(identityUserId, cancellationToken);
 
-        // Получаем timezone пользователя для отображения
-        var timeZoneInfo = await GetUserTimeZoneAsync(user);
+        var availableTimes = await _unitOfWork.UserAvailableTimes.GetActiveByUserIdAsync(identityUser.Id);
+
+        var timeZoneId = identityUser.TimeZoneId;
+        if (identityUserId.ToLower() != currentUserId.ToLower())
+        {
+            var currentUser = await GetUserInfoAsync(currentUserId, cancellationToken);
+            timeZoneId = currentUser.TimeZoneId;
+        }
+
+        var timeZoneInfo = await GetUserTimeZoneAsync(timeZoneId);
 
         var result = new GetAvailableTimeResponse
         {
@@ -184,7 +196,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             }
         }
 
-        var timeZoneInfo = await GetUserTimeZoneAsync(user);
+        var timeZoneInfo = await GetUserTimeZoneAsync(user.TimeZoneId);
 
         TimeOnly? startTimeUtc = null;
         TimeOnly? endTimeUtc = null;
@@ -225,9 +237,19 @@ public class UserAvailableTimeService : IUserAvailableTimeService
         };
     }
 
-    private async Task<TimeZoneInfo> GetUserTimeZoneAsync(AdditionalUserInfo user)
+    private async Task<AdditionalUserInfo> GetUserInfoAsync(string userId, CancellationToken cancellationToken)
     {
-        var timeZoneId = user.TimeZoneId;
+        var identityUser = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(userId, cancellationToken);
+        if (identityUser == null)
+        {
+            throw new EntityNotFoundException("Пользователь не найден");
+        }
+
+        return identityUser;
+    }
+
+    private async Task<TimeZoneInfo> GetUserTimeZoneAsync(Guid? timeZoneId)
+    {
         if (!timeZoneId.HasValue)
         {
             return null;

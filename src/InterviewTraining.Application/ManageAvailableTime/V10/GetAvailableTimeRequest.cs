@@ -11,4 +11,9 @@ public class GetAvailableTimeRequest : IMediatorRequest<GetAvailableTimeResponse
     /// Идентификатор пользователя из токена
     /// </summary>
     public string IdentityUserId { get; set; }
+
+    /// <summary>
+    /// Идентификатор текущего пользователя из токена
+    /// </summary>
+    public string CurrentIdentityUserId { get; set; }
 }

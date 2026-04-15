@@ -18,7 +18,7 @@ public interface IUserAvailableTimeService
     /// <summary>
     /// Получить список доступного времени пользователя
     /// </summary>
-    Task<GetAvailableTimeResponse> GetByCurrentUserAsync(string identityUserId, CancellationToken cancellationToken);
+    Task<GetAvailableTimeResponse> GetAsync(string identityUserId, string currentUserId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Удалить запись доступного времени
