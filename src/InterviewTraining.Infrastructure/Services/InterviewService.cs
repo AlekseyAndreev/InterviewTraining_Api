@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.Interfaces;
+using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -27,7 +28,6 @@ public class InterviewService : IInterviewService
 
     public async Task<GetMyInterviewsResponse> GetMyInterviewsAsync(string identityUserId, CancellationToken cancellationToken)
     {
-        // Получаем информацию о текущем пользователе
         var currentUser = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(identityUserId, cancellationToken);
         if (currentUser == null)
         {
@@ -35,10 +35,8 @@ public class InterviewService : IInterviewService
             throw new BusinessLogicException("Не найдена информация по пользователю");
         }
 
-        // Получаем все интервью пользователя
         var interviews = await _unitOfWork.Interviews.GetByUserIdAsync(currentUser.Id, cancellationToken);
 
-        // Получаем часовой пояс пользователя (или UTC по умолчанию)
         var userTimeZone = currentUser.TimeZoneId.HasValue
             ? await _unitOfWork.TimeZones.GetByIdAsync(currentUser.TimeZoneId.Value)
             : null;
@@ -74,7 +72,6 @@ public class InterviewService : IInterviewService
         if (version == null)
             return InterviewStatus.PendingConfirmation;
 
-        // Если отменено кем-то
         if (version.Candidate?.IsCancelled == true || version.Expert?.IsCancelled == true)
         {
             return InterviewStatus.Cancelled;
@@ -83,7 +80,6 @@ public class InterviewService : IInterviewService
         // Если оба подтвердили
         if (version.Candidate?.IsApproved == true && version.Expert?.IsApproved == true)
         {
-            // Проверяем, прошло ли интервью
             if (version.EndUtc.HasValue && version.EndUtc.Value < DateTime.UtcNow)
             {
                 return InterviewStatus.Completed;
@@ -92,7 +88,6 @@ public class InterviewService : IInterviewService
             return InterviewStatus.Confirmed;
         }
 
-        // Ожидает подтверждения
         return InterviewStatus.PendingConfirmation;
     }
 
@@ -113,12 +108,110 @@ public class InterviewService : IInterviewService
         }
         catch (TimeZoneNotFoundException)
         {
-            // Если часовой пояс не найден, возвращаем UTC
             return utcTime;
         }
         catch (InvalidTimeZoneException)
         {
             return utcTime;
+        }
+    }
+
+    public async Task<CreateInterviewResponse> CreateInterviewAsync(CreateInterviewRequest request, CancellationToken cancellationToken)
+    {
+        var candidate = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.CandidateId, cancellationToken);
+        if (candidate == null)
+        {
+            throw new BusinessLogicException("Не найдена информация по текущему пользователю");
+        }
+
+        if (!candidate.IsCandidate)
+        {
+            throw new BusinessLogicException("Только кандидат может создать собеседование");
+        }
+
+        var expert = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.ExpertId, cancellationToken);
+        if (expert == null)
+        {
+            throw new BusinessLogicException("Указанный эксперт не найден");
+        }
+
+        if (!expert.IsExpert)
+        {
+            throw new BusinessLogicException("Указанный пользователь не является экспертом");
+        }
+
+        var startUtc = ConvertUserTimeToUtc(request.Date, request.Time, candidate.TimeZone?.Code);
+
+        var interview = new Interview
+        {
+            Id = Guid.NewGuid(),
+            CandidateId = candidate.Id,
+            ExpertId = expert.Id,
+            CreatedUtc = DateTime.UtcNow
+        };
+
+        var interviewVersion = new InterviewVersion
+        {
+            Id = Guid.NewGuid(),
+            InterviewId = interview.Id,
+            StartUtc = startUtc,
+            Candidate = new CandidateInterviewData
+            {
+                IsApproved = true,
+                IsPaid = false,
+                IsCancelled = false,
+                Notes = request.Notes
+            },
+            Expert = new BaseUserInterviewData
+            {
+                IsApproved = false,
+                IsPaid = false,
+                IsCancelled = false
+            },
+            CreatedUtc = DateTime.UtcNow
+        };
+
+        interview.ActiveInterviewVersionId = interviewVersion.Id;
+        interview.ActiveInterviewVersion = interviewVersion;
+
+        await _unitOfWork.Interviews.AddAsync(interview);
+        await _unitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation("Создано собеседование {InterviewId} кандидатом {CandidateId} с экспертом {ExpertId}",
+            interview.Id, candidate.Id, expert.Id);
+
+        return new CreateInterviewResponse
+        {
+            Id = interview.Id,
+            Success = true
+        };
+    }
+
+    /// <summary>
+    /// Конвертация времени пользователя в UTC
+    /// </summary>
+    private static DateTime ConvertUserTimeToUtc(DateOnly date, TimeOnly time, string timeZoneCode)
+    {
+        var localDateTime = date.ToDateTime(time);
+
+        if (string.IsNullOrEmpty(timeZoneCode) || timeZoneCode.Equals("UTC", StringComparison.OrdinalIgnoreCase))
+        {
+            return localDateTime;
+        }
+
+        try
+        {
+            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneCode);
+            return TimeZoneInfo.ConvertTimeToUtc(localDateTime, timeZoneInfo);
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            // Если часовой пояс не найден, считаем что время уже в UTC
+            return localDateTime;
+        }
+        catch (InvalidTimeZoneException)
+        {
+            return localDateTime;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using InterviewTraining.Application.CustomMediatorLogic;
+﻿using InterviewTraining.Application.CreateInterview.V10;
+using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +38,7 @@ public class InterviewsController : BaseController<InterviewsController>
     /// </remarks>
     ///<param name="cancellationToken">Токен отмены</param>
     /// <returns>Список интервью</returns>
-    [HttpPost("my")]
+    [HttpGet("my")]
     [Authorize]
     public async Task<GetMyInterviewsResponse> GetMyInterviews(CancellationToken cancellationToken)
     {
@@ -45,6 +46,25 @@ public class InterviewsController : BaseController<InterviewsController>
         {
             IdentityUserId = CurrentUserId
         };
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Создать новое собеседование
+    /// </summary>
+    /// <remarks>
+    /// Создаёт собеседование между текущим пользователем (кандидатом) и указанным экспертом.
+    /// Дата и время указываются в часовом поясе кандидата.
+    /// После создания собеседование ожидает подтверждения от эксперта.
+    /// </remarks>
+    ///<param name="request">Данные для создания собеседования</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Идентификатор созданного собеседования</returns>
+    [HttpPost]
+    [Authorize]
+    public async Task<CreateInterviewResponse> CreateInterview([FromBody] CreateInterviewRequest request, CancellationToken cancellationToken)
+    {
+        request.CandidateId = CurrentUserId;
         return await _mediator.SendAsync(request, cancellationToken);
     }
 }
