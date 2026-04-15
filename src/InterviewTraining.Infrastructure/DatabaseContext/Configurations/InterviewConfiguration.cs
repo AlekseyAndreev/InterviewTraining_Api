@@ -57,7 +57,7 @@ public class InterviewConfiguration : IEntityTypeConfiguration<Domain.Interview>
             .Property(x => x.ActiveInterviewVersionId)
             .HasComment("Идентификатор активной версии интервью")
             .HasColumnName("active_interview_version_id")
-            .IsRequired();
+            .IsRequired(false);
 
         builder
             .HasOne(x => x.Candidate)

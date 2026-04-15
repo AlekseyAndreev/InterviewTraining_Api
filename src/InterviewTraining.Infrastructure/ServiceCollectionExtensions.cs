@@ -41,6 +41,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserSkillRepository, UserSkillRepository>();
         services.AddScoped<IUserAvailableTimeRepository, UserAvailableTimeRepository>();
         services.AddScoped<IInterviewRepository, InterviewRepository>();
+        services.AddScoped<IInterviewVersionRepository, InterviewVersionRepository>();
         return services;
     }
 }

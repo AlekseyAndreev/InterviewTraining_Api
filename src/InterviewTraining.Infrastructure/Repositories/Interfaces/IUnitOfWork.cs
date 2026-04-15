@@ -55,6 +55,11 @@ public interface IUnitOfWork : IDisposable
     IInterviewRepository Interviews { get; }
 
     /// <summary>
+    /// Репозиторий версий интервью
+    /// </summary>
+    IInterviewVersionRepository InterviewVersions { get; }
+
+    /// <summary>
     /// Сохранить все изменения
     /// </summary>
     Task<int> SaveChangesAsync();

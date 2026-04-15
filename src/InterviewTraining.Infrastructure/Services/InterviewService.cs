@@ -60,7 +60,7 @@ public class InterviewService : IInterviewService
 
         return new GetMyInterviewsResponse
         {
-            Interviews = result
+            Data = result
         };
     }
 
@@ -121,22 +121,26 @@ public class InterviewService : IInterviewService
         var candidate = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.CandidateId, cancellationToken);
         if (candidate == null)
         {
+            _logger.LogWarning("Не найдена информация по пользователю {UserId}", request.CandidateId);
             throw new BusinessLogicException("Не найдена информация по текущему пользователю");
         }
 
         if (!candidate.IsCandidate)
         {
+            _logger.LogWarning("Пользователь {UserId} не является кандидатом", request.CandidateId);
             throw new BusinessLogicException("Только кандидат может создать собеседование");
         }
 
         var expert = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.ExpertId, cancellationToken);
         if (expert == null)
         {
+            _logger.LogWarning("Не найден эксперт с идентификатором {ExpertId}", request.ExpertId);
             throw new BusinessLogicException("Указанный эксперт не найден");
         }
 
         if (!expert.IsExpert)
         {
+            _logger.LogWarning("Пользователь {ExpertId} не является экспертом", request.ExpertId);
             throw new BusinessLogicException("Указанный пользователь не является экспертом");
         }
 
@@ -147,8 +151,12 @@ public class InterviewService : IInterviewService
             Id = Guid.NewGuid(),
             CandidateId = candidate.Id,
             ExpertId = expert.Id,
+            ActiveInterviewVersionId = null,
             CreatedUtc = DateTime.UtcNow
         };
+
+        await _unitOfWork.Interviews.AddAsync(interview);
+        await _unitOfWork.SaveChangesAsync();
 
         var interviewVersion = new InterviewVersion
         {
@@ -171,10 +179,11 @@ public class InterviewService : IInterviewService
             CreatedUtc = DateTime.UtcNow
         };
 
-        interview.ActiveInterviewVersionId = interviewVersion.Id;
-        interview.ActiveInterviewVersion = interviewVersion;
+        await _unitOfWork.InterviewVersions.AddAsync(interviewVersion);
 
-        await _unitOfWork.Interviews.AddAsync(interview);
+        interview.ActiveInterviewVersionId = interviewVersion.Id;
+        _unitOfWork.Interviews.Update(interview);
+
         await _unitOfWork.SaveChangesAsync();
 
         _logger.LogInformation("Создано собеседование {InterviewId} кандидатом {CandidateId} с экспертом {ExpertId}",

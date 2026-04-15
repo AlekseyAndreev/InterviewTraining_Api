@@ -9,7 +9,7 @@ public class Interview : BaseEntity<Guid>
     public AdditionalUserInfo Candidate { get; set; }
     public Guid ExpertId { get; set; }
     public AdditionalUserInfo Expert { get; set; }
-    public Guid ActiveInterviewVersionId { get; set; }
+    public Guid? ActiveInterviewVersionId { get; set; }
     public InterviewVersion ActiveInterviewVersion { get; set; }
     public List<InterviewVersion> Versions { get; set; }
 }

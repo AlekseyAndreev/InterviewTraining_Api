@@ -257,7 +257,7 @@ namespace InterviewTraining.Infrastructure.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
                     candidate_id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Идентификатор кандидата"),
                     expert_id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Идентификатор эксперта"),
-                    active_interview_version_id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Идентификатор активной версии интервью"),
+                    active_interview_version_id = table.Column<Guid>(type: "uuid", nullable: true, comment: "Идентификатор активной версии интервью"),
                     created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
                     modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице")
                 },

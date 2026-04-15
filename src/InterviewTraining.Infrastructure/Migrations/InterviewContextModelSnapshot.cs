@@ -129,7 +129,7 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("id")
                         .HasComment("Уникальный идентификатор");
 
-                    b.Property<Guid>("ActiveInterviewVersionId")
+                    b.Property<Guid?>("ActiveInterviewVersionId")
                         .HasColumnType("uuid")
                         .HasColumnName("active_interview_version_id")
                         .HasComment("Идентификатор активной версии интервью");
@@ -560,8 +560,7 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.HasOne("InterviewTraining.Domain.InterviewVersion", "ActiveInterviewVersion")
                         .WithMany()
                         .HasForeignKey("ActiveInterviewVersionId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.ClientCascade);
 
                     b.HasOne("InterviewTraining.Domain.AdditionalUserInfo", "Candidate")
                         .WithMany()
