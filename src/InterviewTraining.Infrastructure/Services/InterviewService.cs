@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.Exceptions;
+using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.Interfaces;
 using InterviewTraining.Domain;
@@ -238,4 +239,127 @@ public class InterviewService : IInterviewService
             return localDateTime;
         }
     }
-}
+
+    /// <summary>
+    /// Получить детальную информацию по собеседованию
+    /// </summary>
+    public async Task<GetInterviewInfoResponse> GetInterviewInfoAsync(GetInterviewInfoRequest request, CancellationToken cancellationToken)
+    {
+        // Получаем текущего пользователя
+        var currentUser = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.IdentityUserId, cancellationToken);
+        if (currentUser == null)
+        {
+            _logger.LogWarning("Не найдена информация по пользователю {UserId}", request.IdentityUserId);
+            throw new BusinessLogicException("Не найдена информация по пользователю");
+        }
+
+        // Получаем интервью с деталями
+        var interview = await _unitOfWork.Interviews.GetWithDetailsAsync(request.InterviewId, cancellationToken);
+        if (interview == null)
+        {
+            _logger.LogWarning("Интервью с идентификатором {InterviewId} не найдено", request.InterviewId);
+            throw new EntityNotFoundException("Собеседование не найдено");
+        }
+
+        // Проверка прав доступа
+        var hasAccess = request.IsAdmin
+            || interview.CandidateId == currentUser.Id
+            || interview.ExpertId == currentUser.Id;
+
+        if (!hasAccess)
+        {
+            _logger.LogWarning("Пользователь {UserId} не имеет доступа к интервью {InterviewId}",
+                currentUser.Id, interview.Id);
+            throw new BusinessLogicException("У вас нет доступа к этому собеседованию");
+        }
+
+        // Получаем активную версию интервью
+        var activeVersion = interview.ActiveInterviewVersion;
+
+        if (activeVersion == null)
+        {
+            throw new BusinessLogicException("Не задана активная версия для интервью");
+        }
+
+        // Определяем часовой пояс пользователя для конвертации времени
+        var userTimeZone = currentUser.TimeZoneId.HasValue
+            ? await _unitOfWork.TimeZones.GetByIdAsync(currentUser.TimeZoneId.Value)
+            : null;
+        var timeZoneCode = userTimeZone?.Code;
+
+        // Формируем ответ
+        var response = new GetInterviewInfoResponse
+        {
+            Id = interview.Id,
+            Status = CalculateStatus(activeVersion),
+            StartDateTime = ConvertUtcToUserTimeZone(activeVersion.StartUtc, timeZoneCode),
+            EndDateTime = activeVersion.EndUtc.HasValue == true
+                ? ConvertUtcToUserTimeZone(activeVersion.EndUtc.Value, timeZoneCode)
+                : null,
+            LinkToVideoCall = activeVersion.LinkToVideoCall,
+            Notes = activeVersion.Candidate.Notes,
+            CreatedUtc = interview.CreatedUtc,
+            Candidate = MapParticipant(interview.Candidate),
+            Expert = MapParticipant(interview.Expert),
+            Language = activeVersion.Language != null ? MapLanguage(activeVersion.Language) : null,
+            CandidateApproval = activeVersion.Candidate != null
+                ? MapApproval(activeVersion.Candidate)
+                : null,
+            ExpertApproval = activeVersion.Expert != null
+                ? MapApproval(activeVersion.Expert)
+                : null
+        };
+
+        return response;
+    }
+
+    /// <summary>
+    /// Маппинг участника интервью
+    /// </summary>
+    private static InterviewParticipantDto MapParticipant(AdditionalUserInfo user)
+    {
+        if (user == null) return null;
+
+        return new InterviewParticipantDto
+        {
+            Id = user.Id,
+            FullName = user.FullName ?? "Не указан",
+            PhotoUrl = user.PhotoUrl,
+            ShortDescription = user.ShortDescription
+        };
+    }
+
+    /// <summary>
+    /// Маппинг языка интервью
+    /// </summary>
+    private static InterviewLanguageDto MapLanguage(InterviewLanguage language)
+    {
+        if (language == null) return null;
+
+        return new InterviewLanguageDto
+        {
+            Id = language.Id,
+            Code = language.Code,
+            NameRu = language.NameRu,
+            NameEn = language.NameEn
+        };
+    }
+
+    /// <summary>
+    /// Маппинг данных подтверждения
+    /// </summary>
+    private static ParticipantApprovalDto MapApproval(BaseUserInterviewData data)
+    {
+        if (data == null)
+        {
+            return null;
+        }
+
+        return new ParticipantApprovalDto
+        {
+            IsApproved = data.IsApproved,
+            IsCancelled = data.IsCancelled,
+            CancelReason = data.CancellReason
+        };
+    }
+ }

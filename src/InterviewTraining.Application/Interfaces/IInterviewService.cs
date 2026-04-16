@@ -1,4 +1,5 @@
 ﻿using InterviewTraining.Application.CreateInterview.V10;
+using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,4 +20,12 @@ public interface IInterviewService
     /// Создать новое собеседование
     /// </summary>
     Task<CreateInterviewResponse> CreateInterviewAsync(CreateInterviewRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получить детальную информацию по собеседованию
+    /// </summary>
+    /// <remarks>
+    /// Доступно только кандидату (кто создал), эксперту (кто проводит) или администратору
+    /// </remarks>
+    Task<GetInterviewInfoResponse> GetInterviewInfoAsync(GetInterviewInfoRequest request, CancellationToken cancellationToken);
 }

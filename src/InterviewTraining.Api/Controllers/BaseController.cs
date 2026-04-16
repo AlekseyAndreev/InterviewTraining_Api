@@ -78,4 +78,22 @@ public abstract class BaseController<TLogger> : ControllerBase
             return roles.Contains(AuhConstants.RoleExpert);
         }
     }
+
+    /// <summary>
+    /// Возвращает является ли текущий пользователь администратором(у него есть роль админ в токене)
+    /// </summary>
+    public bool IsAdmin
+    {
+        get
+        {
+            var roles = User?.Claims?.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)
+                .ToArray();
+            if (roles == null || !roles.Any())
+            {
+                return false;
+            }
+
+            return roles.Contains(AuhConstants.RoleAdmin);
+        }
+    }
 }

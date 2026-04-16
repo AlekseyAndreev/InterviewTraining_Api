@@ -1,9 +1,11 @@
 ﻿using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
+using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -65,6 +67,32 @@ public class InterviewsController : BaseController<InterviewsController>
     public async Task<CreateInterviewResponse> CreateInterview([FromBody] CreateInterviewRequest request, CancellationToken cancellationToken)
     {
         request.CandidateId = CurrentUserId;
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Получить информацию по собеседованию
+    /// </summary>
+    /// <remarks>
+    /// Возвращает детальную информацию по собеседованию.
+    /// Доступно только:
+    /// - Кандидату (кто создал собеседование)
+    /// - Эксперту (кто назначен экспертом в собеседовании)
+    /// - Администратору
+    /// </remarks>
+    /// <param name="id">Идентификатор собеседования</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Детальная информация по собеседованию</returns>
+    [HttpGet("{id:guid}")]
+    [Authorize]
+    public async Task<GetInterviewInfoResponse> GetInterviewInfo(Guid id, CancellationToken cancellationToken)
+    {
+        var request = new GetInterviewInfoRequest
+        {
+            InterviewId = id,
+            IdentityUserId = CurrentUserId,
+            IsAdmin = IsAdmin
+        };
         return await _mediator.SendAsync(request, cancellationToken);
     }
 }

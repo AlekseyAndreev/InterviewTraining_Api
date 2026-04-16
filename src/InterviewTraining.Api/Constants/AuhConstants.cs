@@ -4,6 +4,7 @@
     {
         public const string RoleCandidate = "Candidate";
         public const string RoleExpert = "Expert";
+        public const string RoleAdmin = "Admin";
         public const string RoleCandidateOrExpert = "Candidate, Expert";
     }
 }

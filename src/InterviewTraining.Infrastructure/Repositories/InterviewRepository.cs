@@ -37,6 +37,7 @@ public class InterviewRepository : Repository<Interview, Guid>, IInterviewReposi
                 .ThenInclude(c => c.TimeZone)
             .Include(i => i.Expert)
             .Include(i => i.ActiveInterviewVersion)
+                .ThenInclude(v => v.Language)
             .Include(i => i.Versions)
             .FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
     }
