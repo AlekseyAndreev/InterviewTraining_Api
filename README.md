@@ -1,6 +1,6 @@
 # InterviewTraining_Api
-TogetherByTaxi https://github.com/AlekseyAndreev/InterviewTraining_Identity
+InterviewTraining Api https://github.com/AlekseyAndreev/InterviewTraining_Api
 
-Api дляInterviewTraining.
+Api для InterviewTraining.
 
 Методы работы для интервью
