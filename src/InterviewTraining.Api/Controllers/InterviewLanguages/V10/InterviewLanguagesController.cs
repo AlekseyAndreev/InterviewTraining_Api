@@ -32,6 +32,6 @@ public class InterviewLanguagesController : BaseController<InterviewLanguagesCon
     /// </summary>
     [HttpGet]
     [Authorize]
-    public Task<InterviewLanguageResponse[]> GetByFilterAsync(GetAllInterviewLanguagesRequest request, CancellationToken cancellationToken) =>
+    public Task<InterviewLanguageResponse[]> GetAllAsync(GetAllInterviewLanguagesRequest request, CancellationToken cancellationToken) =>
         _mediator.SendAsync(new GetAllInterviewLanguagesRequest(), cancellationToken);
 }
