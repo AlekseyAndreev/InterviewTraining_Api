@@ -2,6 +2,7 @@
 using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetAllExperts.V10;
 using InterviewTraining.Application.GetAllInterviewLanguages.V10;
+using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.GetSkillsTree.V10;
 using InterviewTraining.Application.GetUserInfo.V10;
@@ -36,6 +37,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IMediatorHandler<DeleteAvailableTimeRequest, DeleteAvailableTimeResponse>, DeleteAvailableTimeHandler>()
             .AddScoped<IMediatorHandler<GetMyInterviewsRequest, GetMyInterviewsResponse>, GetMyInterviewsHandler>()
             .AddScoped<IMediatorHandler<CreateInterviewRequest, CreateInterviewResponse>, CreateInterviewHandler>()
+            .AddScoped<IMediatorHandler<GetInterviewInfoRequest, GetInterviewInfoResponse>, GetInterviewInfoHandler>()
             .AddScoped<IMediatorHandler<GetAllInterviewLanguagesRequest, InterviewLanguageResponse[]>, GetAllInterviewLanguagesHandler>();
     }
 }
