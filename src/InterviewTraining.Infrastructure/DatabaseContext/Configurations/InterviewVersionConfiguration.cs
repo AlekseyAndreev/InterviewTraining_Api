@@ -48,6 +48,12 @@ public class InterviewVersionConfiguration : IEntityTypeConfiguration<Domain.Int
             .IsRequired();
 
         builder
+            .Property(x => x.LanguageId)
+            .HasComment("Идентификатор языка")
+            .HasColumnName("language_id")
+            .IsRequired(false);
+
+        builder
             .Property(x => x.LinkToVideoCall)
             .HasComment("Ссылка на видеозвонок")
             .HasColumnName("link_to_video_call")
@@ -139,6 +145,12 @@ public class InterviewVersionConfiguration : IEntityTypeConfiguration<Domain.Int
             .HasOne(x => x.Interview)
             .WithMany(x => x.Versions)
             .HasForeignKey(x => x.InterviewId)
+            .OnDelete(DeleteBehavior.ClientCascade);
+
+        builder
+            .HasOne(x => x.Language)
+            .WithMany()
+            .HasForeignKey(x => x.LanguageId)
             .OnDelete(DeleteBehavior.ClientCascade);
 
         builder

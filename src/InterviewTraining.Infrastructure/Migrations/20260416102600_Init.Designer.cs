@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InterviewTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(InterviewContext))]
-    [Migration("20260415184321_Init")]
+    [Migration("20260416102600_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -171,6 +171,53 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.ToTable("interviews", "public");
                 });
 
+            modelBuilder.Entity("InterviewTraining.Domain.InterviewLanguage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasComment("Уникальный идентификатор");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code")
+                        .HasComment("Код");
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_utc")
+                        .HasComment("Дата и время создания записи в таблице");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ModifiedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("modified_utc")
+                        .HasComment("Дата и время последнего изменения записи в таблице");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name_en")
+                        .HasComment("Наименование языка по английски");
+
+                    b.Property<string>("NameRu")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name_ru")
+                        .HasComment("Наименование языка по русски");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("interview_languages", "public");
+                });
+
             modelBuilder.Entity("InterviewTraining.Domain.InterviewVersion", b =>
                 {
                     b.Property<Guid>("Id")
@@ -194,6 +241,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("interview_id")
                         .HasComment("Идентификатор интервью");
 
+                    b.Property<Guid?>("LanguageId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("language_id")
+                        .HasComment("Идентификатор языка");
+
                     b.Property<string>("LinkToVideoCall")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)")
@@ -214,6 +266,8 @@ namespace InterviewTraining.Infrastructure.Migrations
 
                     b.HasIndex("InterviewId")
                         .HasDatabaseName("ix_interview_versions_interview_id");
+
+                    b.HasIndex("LanguageId");
 
                     b.ToTable("interview_versions", "public");
                 });
@@ -592,6 +646,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
+                    b.HasOne("InterviewTraining.Domain.InterviewLanguage", "Language")
+                        .WithMany()
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.ClientCascade);
+
                     b.OwnsOne("InterviewTraining.Domain.BaseUserInterviewData", "Expert", b1 =>
                         {
                             b1.Property<Guid>("InterviewVersionId")
@@ -683,6 +742,8 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.Navigation("Expert");
 
                     b.Navigation("Interview");
+
+                    b.Navigation("Language");
                 });
 
             modelBuilder.Entity("InterviewTraining.Domain.Skill", b =>

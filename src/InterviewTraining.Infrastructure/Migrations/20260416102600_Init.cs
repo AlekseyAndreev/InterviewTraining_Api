@@ -15,6 +15,24 @@ namespace InterviewTraining.Infrastructure.Migrations
                 name: "public");
 
             migrationBuilder.CreateTable(
+                name: "interview_languages",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
+                    code = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false, comment: "Код"),
+                    name_ru = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false, comment: "Наименование языка по русски"),
+                    name_en = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false, comment: "Наименование языка по английски"),
+                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
+                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице"),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_interview_languages", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "skill_groups",
                 schema: "public",
                 columns: table => new
@@ -241,12 +259,19 @@ namespace InterviewTraining.Infrastructure.Migrations
                     link_to_video_call = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true, comment: "Ссылка на видеозвонок"),
                     start_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Начало собеседования в UTC"),
                     end_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Конец собеседования в UTC"),
+                    language_id = table.Column<Guid>(type: "uuid", nullable: true, comment: "Идентификатор языка"),
                     created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
                     modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_interview_versions", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_interview_versions_interview_languages_language_id",
+                        column: x => x.language_id,
+                        principalSchema: "public",
+                        principalTable: "interview_languages",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -314,6 +339,12 @@ namespace InterviewTraining.Infrastructure.Migrations
                 schema: "public",
                 table: "interview_versions",
                 column: "interview_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_interview_versions_language_id",
+                schema: "public",
+                table: "interview_versions",
+                column: "language_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_interviews_active_interview_version_id",
@@ -421,6 +452,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                 table: "additional_user_infos");
 
             migrationBuilder.DropForeignKey(
+                name: "FK_interview_versions_interview_languages_language_id",
+                schema: "public",
+                table: "interview_versions");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_interview_versions_interviews_interview_id",
                 schema: "public",
                 table: "interview_versions");
@@ -451,6 +487,10 @@ namespace InterviewTraining.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "time_zones",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "interview_languages",
                 schema: "public");
 
             migrationBuilder.DropTable(

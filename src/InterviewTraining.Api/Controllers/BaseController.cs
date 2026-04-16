@@ -1,7 +1,8 @@
-﻿using System.Linq;
-using System.Security.Claims;
+﻿using InterviewTraining.Api.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Security.Claims;
 
 namespace InterviewTraining.Api.Controllers;
 
@@ -39,6 +40,42 @@ public abstract class BaseController<TLogger> : ControllerBase
             }
 
             return firstClaim;
+        }
+    }
+
+    /// <summary>
+    /// Возвращает является ли текущий пользователь кандидатом(у него есть роль кандидат в токене)
+    /// </summary>
+    public bool IsCandidate
+    {
+        get
+        {
+            var roles = User?.Claims?.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)
+                .ToArray();
+            if (roles == null || !roles.Any())
+            {
+                return false;
+            }
+
+            return roles.Contains(AuhConstants.RoleCandidate);
+        }
+    }
+
+    /// <summary>
+    /// Возвращает является ли текущий пользователь экспертом(у него есть роль эксперт в токене)
+    /// </summary>
+    public bool IsExpert
+    {
+        get
+        {
+            var roles = User?.Claims?.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)
+                .ToArray();
+            if (roles == null || !roles.Any())
+            {
+                return false;
+            }
+
+            return roles.Contains(AuhConstants.RoleExpert);
         }
     }
 }

@@ -58,6 +58,11 @@ public class InterviewContext : DbContext
     public DbSet<Domain.TimeZone> TimeZones { get; set; }
 
     /// <summary>
+    /// Языки для собеседования
+    /// </summary>
+    public DbSet<InterviewLanguage> InterviewLanguages { get; set; }
+
+    /// <summary>
     /// Связи пользователей и навыков
     /// </summary>
     public DbSet<UserSkill> UserSkills { get; set; }
@@ -102,5 +107,6 @@ public class InterviewContext : DbContext
         builder.ApplyConfiguration(new TimeZoneConfiguration());
         builder.ApplyConfiguration(new UserSkillConfiguration());
         builder.ApplyConfiguration(new UserAvailableTimeConfiguration());
+        builder.ApplyConfiguration(new InterviewLanguageConfiguration());
     }
 }

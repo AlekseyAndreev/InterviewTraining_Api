@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserSkillService, UserSkillService>();
         services.AddScoped<IUserAvailableTimeService, UserAvailableTimeService>();
         services.AddScoped<IInterviewService, InterviewService>();
+        services.AddScoped<IInterviewLanguageService, InterviewLanguageService>();
         return services;
     }
 
@@ -42,6 +43,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserAvailableTimeRepository, UserAvailableTimeRepository>();
         services.AddScoped<IInterviewRepository, InterviewRepository>();
         services.AddScoped<IInterviewVersionRepository, InterviewVersionRepository>();
+        services.AddScoped<IInterviewLanguageRepository, InterviewLanguageRepository>();
         return services;
     }
 }

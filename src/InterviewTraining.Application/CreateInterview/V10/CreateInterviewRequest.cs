@@ -32,4 +32,9 @@ public class CreateInterviewRequest : IMediatorRequest<CreateInterviewResponse>
     /// Комментарий от кандидата
     /// </summary>
     public string Notes { get; set; }
+
+    /// <summary>
+    /// Язык для собеседования
+    /// </summary>
+    public Guid? IntreviewLanguageId { get; set; }
 }

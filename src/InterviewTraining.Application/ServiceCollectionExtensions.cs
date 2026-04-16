@@ -1,12 +1,13 @@
 ﻿using InterviewTraining.Application.CreateInterview.V10;
-using InterviewTraining.Application.UpdateUserSkills.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetAllExperts.V10;
+using InterviewTraining.Application.GetAllInterviewLanguages.V10;
+using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.GetSkillsTree.V10;
 using InterviewTraining.Application.GetUserInfo.V10;
-using InterviewTraining.Application.GetMyInterviews.V10;
-using InterviewTraining.Application.UpdateUserInfo.V10;
 using InterviewTraining.Application.ManageAvailableTime.V10;
+using InterviewTraining.Application.UpdateUserInfo.V10;
+using InterviewTraining.Application.UpdateUserSkills.V10;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InterviewTraining.Application;
@@ -32,8 +33,9 @@ public static class ServiceCollectionExtensions
             .AddScoped<IMediatorHandler<CreateAvailableTimeRequest, CreateAvailableTimeResponse>, CreateAvailableTimeHandler>()
             .AddScoped<IMediatorHandler<UpdateAvailableTimeRequest, UpdateAvailableTimeResponse>, UpdateAvailableTimeHandler>()
             .AddScoped<IMediatorHandler<GetAvailableTimeRequest, GetAvailableTimeResponse>, GetAvailableTimeHandler>()
-          .AddScoped<IMediatorHandler<DeleteAvailableTimeRequest, DeleteAvailableTimeResponse>, DeleteAvailableTimeHandler>()
-          .AddScoped<IMediatorHandler<GetMyInterviewsRequest, GetMyInterviewsResponse>, GetMyInterviewsHandler>()
-          .AddScoped<IMediatorHandler<CreateInterviewRequest, CreateInterviewResponse>, CreateInterviewHandler>();
+            .AddScoped<IMediatorHandler<DeleteAvailableTimeRequest, DeleteAvailableTimeResponse>, DeleteAvailableTimeHandler>()
+            .AddScoped<IMediatorHandler<GetMyInterviewsRequest, GetMyInterviewsResponse>, GetMyInterviewsHandler>()
+            .AddScoped<IMediatorHandler<CreateInterviewRequest, CreateInterviewResponse>, CreateInterviewHandler>()
+            .AddScoped<IMediatorHandler<GetAllInterviewLanguagesRequest, InterviewLanguageResponse[]>, GetAllInterviewLanguagesHandler>();
     }
 }

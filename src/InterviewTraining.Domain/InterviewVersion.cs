@@ -11,4 +11,6 @@ public class InterviewVersion : BaseEntity<Guid>
     public string LinkToVideoCall { get; set; }
     public DateTime StartUtc { get; set; }
     public DateTime? EndUtc { get; set; }
+    public Guid? LanguageId { get; set; }
+    public InterviewLanguage Language { get; set; }
 }

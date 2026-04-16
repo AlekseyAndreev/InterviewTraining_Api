@@ -67,7 +67,7 @@ public class InterviewService : IInterviewService
     /// <summary>
     /// Вычисление статуса интервью на основе данных версии
     /// </summary>
-    private static string CalculateStatus(Domain.InterviewVersion version)
+    private static string CalculateStatus(InterviewVersion version)
     {
         if (version == null)
             return InterviewStatus.PendingConfirmation;
@@ -144,6 +144,20 @@ public class InterviewService : IInterviewService
             throw new BusinessLogicException("Указанный пользователь не является экспертом");
         }
 
+        Guid? interviewLanguageId = null;
+        if (request.IntreviewLanguageId.HasValue)
+        {
+            var existsLang = await _unitOfWork.InterviewLanguages.AnyAsync(x => x.Id == request.IntreviewLanguageId.Value && !x.IsDeleted);
+            if (!existsLang)
+            {
+                throw new BusinessLogicException("Язык собеседования не найден в БД");
+            }
+            else
+            {
+                interviewLanguageId = request.IntreviewLanguageId.Value;
+            }
+        }
+
         var startUtc = ConvertUserTimeToUtc(request.Date, request.Time, candidate.TimeZone?.Code);
 
         var interview = new Interview
@@ -176,7 +190,8 @@ public class InterviewService : IInterviewService
                 IsPaid = false,
                 IsCancelled = false
             },
-            CreatedUtc = DateTime.UtcNow
+            CreatedUtc = DateTime.UtcNow,
+            LanguageId = interviewLanguageId,
         };
 
         await _unitOfWork.InterviewVersions.AddAsync(interviewVersion);

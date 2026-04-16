@@ -60,6 +60,11 @@ public interface IUnitOfWork : IDisposable
     IInterviewVersionRepository InterviewVersions { get; }
 
     /// <summary>
+    /// Репозиторий языки интервью
+    /// </summary>
+    IInterviewLanguageRepository InterviewLanguages { get; }
+
+    /// <summary>
     /// Сохранить все изменения
     /// </summary>
     Task<int> SaveChangesAsync();
