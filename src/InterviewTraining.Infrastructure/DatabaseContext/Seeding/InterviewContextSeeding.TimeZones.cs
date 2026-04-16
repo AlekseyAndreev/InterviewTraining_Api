@@ -5,6 +5,8 @@ namespace InterviewTraining.Infrastructure.DatabaseContext;
 
 public static partial class InterviewContextSeeding
 {
+    public static Guid MoscowGuid = Guid.Parse("20000000-0000-0000-0000-000000000089");
+
     /// <summary>
     /// Возвращает все часовые пояса мира
     /// </summary>
@@ -118,7 +120,7 @@ public static partial class InterviewContextSeeding
             new() { Id = Guid.Parse("20000000-0000-0000-0000-000000000087"), Code = "Asia/Damascus", Description = "Syria Time (UTC+02:00)", CreatedUtc = _utc_date, IsDeleted = false },
             new() { Id = Guid.Parse("20000000-0000-0000-0000-000000000088"), Code = "Asia/Amman", Description = "Jordan Time (UTC+02:00)", CreatedUtc = _utc_date, IsDeleted = false },
             // UTC+03:00
-            new() { Id = Guid.Parse("20000000-0000-0000-0000-000000000089"), Code = "Europe/Moscow", Description = "Moscow Time (UTC+03:00)", CreatedUtc = _utc_date, IsDeleted = false },
+            new() { Id = MoscowGuid, Code = "Europe/Moscow", Description = "Moscow Time (UTC+03:00)", CreatedUtc = _utc_date, IsDeleted = false },
             new() { Id = Guid.Parse("20000000-0000-0000-0000-000000000090"), Code = "Europe/Istanbul", Description = "Turkey Time (UTC+03:00)", CreatedUtc = _utc_date, IsDeleted = false },
             new() { Id = Guid.Parse("20000000-0000-0000-0000-000000000091"), Code = "Europe/Minsk", Description = "Belarus Time (UTC+03:00)", CreatedUtc = _utc_date, IsDeleted = false },
             new() { Id = Guid.Parse("20000000-0000-0000-0000-000000000092"), Code = "Asia/Baghdad", Description = "Iraq Time (UTC+03:00)", CreatedUtc = _utc_date, IsDeleted = false },

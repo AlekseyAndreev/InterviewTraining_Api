@@ -13,14 +13,8 @@ public class AdditionalUserInfo : BaseDeleteEntity<Guid>
     public string Description { get; set; }
     public bool IsCandidate { get; set; }
     public bool IsExpert { get; set; }
-    /// <summary>
-    /// Готов проводить интервью в любое время
-    /// </summary>
-    public bool InterviewScheduleAtAnyTime { get; set; }
-
     public Guid? TimeZoneId { get; set; }
     public TimeZone TimeZone { get; set; }
-
     public List<UserSkill> Skills { get; set; }
     public List<UserRating> MyRatingToUsers { get; set; }
     public List<UserRating> RatingFromUsers { get; set; }

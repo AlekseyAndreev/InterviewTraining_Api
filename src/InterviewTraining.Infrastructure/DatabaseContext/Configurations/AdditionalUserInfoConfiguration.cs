@@ -89,13 +89,6 @@ public class AdditionalUserInfoConfiguration : IEntityTypeConfiguration<Domain.A
             .HasMaxLength(4000);
 
         builder
-            .Property(x => x.InterviewScheduleAtAnyTime)
-            .HasComment("Готов проводить интервью в любое время")
-            .HasColumnName("interview_schedule_at_any_time")
-            .HasDefaultValue(false)
-            .IsRequired();
-
-        builder
             .Property(x => x.IsCandidate)
             .HasComment("Признак кандидата")
             .HasColumnName("is_candidate")
