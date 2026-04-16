@@ -110,7 +110,6 @@ namespace InterviewTraining.Infrastructure.Migrations
                     description = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: true, comment: "Полное описание"),
                     is_candidate = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак кандидата"),
                     is_expert = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак эксперта"),
-                    interview_schedule_at_any_time = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false, comment: "Готов проводить интервью в любое время"),
                     time_zone_id = table.Column<Guid>(type: "uuid", nullable: true, comment: "Идентификатор часового пояса пользователя"),
                     created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
                     modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице"),

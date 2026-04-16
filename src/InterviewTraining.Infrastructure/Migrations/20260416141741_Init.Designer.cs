@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InterviewTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(InterviewContext))]
-    [Migration("20260416102600_Init")]
+    [Migration("20260416141741_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -57,13 +57,6 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnType("character varying(450)")
                         .HasColumnName("identity_user_id")
                         .HasComment("Идентификатор пользователя в Identity");
-
-                    b.Property<bool>("InterviewScheduleAtAnyTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("interview_schedule_at_any_time")
-                        .HasComment("Готов проводить интервью в любое время");
 
                     b.Property<bool>("IsCandidate")
                         .HasColumnType("boolean")

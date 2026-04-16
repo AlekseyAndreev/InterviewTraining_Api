@@ -55,13 +55,6 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("identity_user_id")
                         .HasComment("Идентификатор пользователя в Identity");
 
-                    b.Property<bool>("InterviewScheduleAtAnyTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("interview_schedule_at_any_time")
-                        .HasComment("Готов проводить интервью в любое время");
-
                     b.Property<bool>("IsCandidate")
                         .HasColumnType("boolean")
                         .HasColumnName("is_candidate")
