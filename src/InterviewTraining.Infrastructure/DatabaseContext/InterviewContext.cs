@@ -80,7 +80,33 @@ public class InterviewContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        ApplyUtcDateTimeConverter(modelBuilder);
+
         ApplyConfigurations(modelBuilder);
+    }
+
+    /// <summary>
+    /// Автоматически применяет UTC конвертер ко всем DateTime и DateTime? свойствам всех сущностей
+    /// </summary>
+    private static void ApplyUtcDateTimeConverter(ModelBuilder modelBuilder)
+    {
+        var dateTimeConverter = UtcDateTimeConverter.DateTimeUtcConverter;
+        var nullableDateTimeConverter = UtcDateTimeConverter.NullableDateTimeUtcConverter;
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime))
+                {
+                    property.SetValueConverter(dateTimeConverter);
+                }
+                else if (property.ClrType == typeof(DateTime?))
+                {
+                    property.SetValueConverter(nullableDateTimeConverter);
+                }
+            }
+        }
     }
 
     /// <summary>

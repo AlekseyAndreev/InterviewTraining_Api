@@ -13,14 +13,9 @@ public class InterviewDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Текущий статус интервью
+    /// Идентификатор эксперта
     /// </summary>
-    public string Status { get; set; }
-
-    /// <summary>
-    /// Дата и время интервью в часовом поясе пользователя
-    /// </summary>
-    public DateTime InterviewDate { get; set; }
+    public string ExpertId { get; set; }
 
     /// <summary>
     /// Имя эксперта
@@ -28,7 +23,32 @@ public class InterviewDto
     public string ExpertName { get; set; }
 
     /// <summary>
+    /// Идентификатор кандидата
+    /// </summary>
+    public string CandidateId { get; set; }
+
+    /// <summary>
     /// Имя кандидата
     /// </summary>
     public string CandidateName { get; set; }
+
+    /// <summary>
+    /// Текущий статус интервью
+    /// </summary>
+    public string Status { get; set; }
+
+    /// <summary>
+    /// Текущий статус интервью
+    /// </summary>
+    public string StatusDescription { get; set; }
+
+    /// <summary>
+    /// Дата и время интервью в часовом поясе пользователя
+    /// </summary>
+    public DateTime ScheduledAt { get; set; }
+
+    /// <summary>
+    /// Примечания
+    /// </summary>
+    public string Notes { get; set; }
 }

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InterviewTraining.Infrastructure.Migrations
 {
     [DbContext(typeof(InterviewContext))]
-    [Migration("20260416141741_Init")]
+    [Migration("20260417163646_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -82,12 +82,6 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnType("bytea")
                         .HasColumnName("photo_local")
                         .HasComment("Фото пользователя");
-
-                    b.Property<string>("PhotoUrl")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("photo_url")
-                        .HasComment("URL фото пользователя");
 
                     b.Property<string>("ShortDescription")
                         .HasMaxLength(500)

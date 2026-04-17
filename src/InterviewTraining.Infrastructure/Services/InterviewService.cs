@@ -50,10 +50,14 @@ public class InterviewService : IInterviewService
             var dto = new InterviewDto
             {
                 Id = interview.Id,
-                Status = CalculateStatus(interview.ActiveInterviewVersion),
-                InterviewDate = interviewDate,
+                ExpertId = interview.Expert?.IdentityUserId,
                 ExpertName = interview.Expert?.FullName ?? "Не указан",
-                CandidateName = interview.Candidate?.FullName ?? "Не указан"
+                CandidateId = interview.Candidate?.IdentityUserId,
+                CandidateName = interview.Candidate?.FullName ?? "Не указан",
+                Status = CalculateStatus(interview.ActiveInterviewVersion),
+                StatusDescription = "StatusDescription",
+                ScheduledAt = interviewDate,
+                Notes = interview.ActiveInterviewVersion?.Candidate?.Notes
             };
             
             result.Add(dto);
@@ -119,6 +123,11 @@ public class InterviewService : IInterviewService
 
     public async Task<CreateInterviewResponse> CreateInterviewAsync(CreateInterviewRequest request, CancellationToken cancellationToken)
     {
+        if (request.ExpertId == request.CandidateId)
+        {
+            throw new BusinessLogicException("Эксперт и кандидат один и тот же пользователь");
+        }
+
         var candidate = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.CandidateId, cancellationToken);
         if (candidate == null)
         {
@@ -143,6 +152,16 @@ public class InterviewService : IInterviewService
         {
             _logger.LogWarning("Пользователь {ExpertId} не является экспертом", request.ExpertId);
             throw new BusinessLogicException("Указанный пользователь не является экспертом");
+        }
+
+        if (expert.Id == candidate.Id)
+        {
+            throw new BusinessLogicException("Эксперт и кандидат один и тот же пользователь");
+        }
+
+        if (expert.IdentityUserId == candidate.IdentityUserId)
+        {
+            throw new BusinessLogicException("Эксперт и кандидат один и тот же пользователь");
         }
 
         Guid? interviewLanguageId = null;
@@ -298,7 +317,7 @@ public class InterviewService : IInterviewService
                 : null,
             LinkToVideoCall = activeVersion.LinkToVideoCall,
             Notes = activeVersion.Candidate.Notes,
-            CreatedUtc = interview.CreatedUtc,
+            CreatedUtc = ConvertUtcToUserTimeZone(interview.CreatedUtc, timeZoneCode),
             Candidate = MapParticipant(interview.Candidate),
             Expert = MapParticipant(interview.Expert),
             Language = activeVersion.Language != null ? MapLanguage(activeVersion.Language) : null,
