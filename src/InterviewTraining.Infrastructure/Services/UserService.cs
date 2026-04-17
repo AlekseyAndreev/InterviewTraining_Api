@@ -7,6 +7,7 @@ using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
+using InterviewTraining.Application.UpdateUserTimeZone.V10;
 
 namespace InterviewTraining.Infrastructure.Services;
 
@@ -21,7 +22,6 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
             throw new BusinessLogicException("Не найдена информация по пользователю");
         }
 
-        // Получаем все доступные временные зоны
         var timeZones = await unitOfWork.TimeZones.GetAllAsync();
 
         return new GetUserInfoResponse
@@ -30,7 +30,6 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
             FullName = userInfo.FullName,
             ShortDescription = userInfo.ShortDescription,
             Photo = userInfo.PhotoLocal,
-            PhotoUrl = userInfo.PhotoUrl,
             SelectedTimeZoneId = userInfo.TimeZoneId,
             TimeZones = timeZones
                 .Where(tz => !tz.IsDeleted)
@@ -45,6 +44,27 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
     }
 
     public async Task<UpdateUserInfoResponse> UpdateUserInfoAsync(UpdateUserInfoRequest request, CancellationToken cancellationToken)
+    {
+        var userInfo = await unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.IdentityUserId, cancellationToken);
+        if (userInfo == null)
+        {
+            logger.LogWarning("Не найдена информация по пользователю {UserId}", request.IdentityUserId);
+            throw new BusinessLogicException("Не найдена информация по пользователю");
+        }
+
+        userInfo.PhotoLocal = request.Photo;
+        userInfo.FullName = request.FullName;
+        userInfo.ShortDescription = request.ShortDescription;
+        userInfo.Description = request.Description;
+
+        await unitOfWork.SaveChangesAsync();
+
+        logger.LogInformation("Обновлена информация пользователя {UserId}", request.IdentityUserId);
+
+        return new UpdateUserInfoResponse { Success = true };
+    }
+
+    public async Task<UpdateUserTimeZoneResponse> UpdateUserTimeZoneAsync(UpdateUserTimeZoneRequest request, CancellationToken cancellationToken)
     {
         var userInfo = await unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.IdentityUserId, cancellationToken);
         if (userInfo == null)
@@ -68,16 +88,10 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
             userInfo.TimeZoneId = null;
         }
 
-        userInfo.PhotoUrl = request.PhotoUrl;
-        userInfo.PhotoLocal = request.Photo;
-        userInfo.FullName = request.FullName;
-        userInfo.ShortDescription = request.ShortDescription;
-        userInfo.Description = request.Description;
-
         await unitOfWork.SaveChangesAsync();
 
         logger.LogInformation("Обновлена информация пользователя {UserId}", request.IdentityUserId);
 
-        return new UpdateUserInfoResponse { Success = true };
+        return new UpdateUserTimeZoneResponse { Success = true };
     }
 }

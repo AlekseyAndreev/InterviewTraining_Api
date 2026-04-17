@@ -324,7 +324,7 @@ public class InterviewService : IInterviewService
         {
             Id = user.Id,
             FullName = user.FullName ?? "Не указан",
-            PhotoUrl = user.PhotoUrl,
+            Photo = user.PhotoLocal,
             ShortDescription = user.ShortDescription
         };
     }

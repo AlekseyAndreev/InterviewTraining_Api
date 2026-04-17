@@ -84,9 +84,9 @@ public class InterviewParticipantDto
     public string FullName { get; set; }
 
     /// <summary>
-    /// URL фото
+    /// Фото пользователя
     /// </summary>
-    public string PhotoUrl { get; set; }
+    public byte[] Photo { get; set; }
 
     /// <summary>
     /// Краткое описание

@@ -80,12 +80,6 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("photo_local")
                         .HasComment("Фото пользователя");
 
-                    b.Property<string>("PhotoUrl")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("photo_url")
-                        .HasComment("URL фото пользователя");
-
                     b.Property<string>("ShortDescription")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")

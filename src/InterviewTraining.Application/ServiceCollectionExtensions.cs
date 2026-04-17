@@ -9,6 +9,7 @@ using InterviewTraining.Application.GetUserInfo.V10;
 using InterviewTraining.Application.ManageAvailableTime.V10;
 using InterviewTraining.Application.UpdateUserInfo.V10;
 using InterviewTraining.Application.UpdateUserSkills.V10;
+using InterviewTraining.Application.UpdateUserTimeZone.V10;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InterviewTraining.Application;
@@ -29,6 +30,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IMediatorHandler<GetAllExpertsRequest, GetAllExpertsResponse>, GetAllExpertsHandler>()
             .AddScoped<IMediatorHandler<GetUserInfoRequest, GetUserInfoResponse>, GetUserInfoHandler>()
             .AddScoped<IMediatorHandler<UpdateUserInfoRequest, UpdateUserInfoResponse>, UpdateUserInfoHandler>()
+            .AddScoped<IMediatorHandler<UpdateUserTimeZoneRequest, UpdateUserTimeZoneResponse>, UpdateUserTimeZoneHandler>()
             .AddScoped<IMediatorHandler<GetSkillsTreeRequest, GetSkillsTreeResponse>, GetSkillsTreeHandler>()
             .AddScoped<IMediatorHandler<UpdateUserSkillsRequest, UpdateUserSkillsResponse>, UpdateUserSkillsHandler>()
             .AddScoped<IMediatorHandler<CreateAvailableTimeRequest, CreateAvailableTimeResponse>, CreateAvailableTimeHandler>()

@@ -62,13 +62,6 @@ public class AdditionalUserInfoConfiguration : IEntityTypeConfiguration<Domain.A
             .HasMaxLength(500);
 
         builder
-            .Property(x => x.PhotoUrl)
-            .HasComment("URL фото пользователя")
-            .HasColumnName("photo_url")
-            .IsRequired(false)
-            .HasMaxLength(2000);
-
-        builder
             .Property(x => x.PhotoLocal)
             .HasComment("Фото пользователя")
             .HasColumnName("photo_local")
