@@ -146,16 +146,16 @@ public class InterviewService : IInterviewService
         }
 
         Guid? interviewLanguageId = null;
-        if (request.IntreviewLanguageId.HasValue)
+        if (request.InterviewLanguageId.HasValue)
         {
-            var existsLang = await _unitOfWork.InterviewLanguages.AnyAsync(x => x.Id == request.IntreviewLanguageId.Value && !x.IsDeleted);
+            var existsLang = await _unitOfWork.InterviewLanguages.AnyAsync(x => x.Id == request.InterviewLanguageId.Value && !x.IsDeleted);
             if (!existsLang)
             {
                 throw new BusinessLogicException("Язык собеседования не найден в БД");
             }
             else
             {
-                interviewLanguageId = request.IntreviewLanguageId.Value;
+                interviewLanguageId = request.InterviewLanguageId.Value;
             }
         }
 

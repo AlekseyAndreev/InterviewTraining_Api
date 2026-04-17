@@ -36,5 +36,5 @@ public class CreateInterviewRequest : IMediatorRequest<CreateInterviewResponse>
     /// <summary>
     /// Язык для собеседования
     /// </summary>
-    public Guid? IntreviewLanguageId { get; set; }
+    public Guid? InterviewLanguageId { get; set; }
 }

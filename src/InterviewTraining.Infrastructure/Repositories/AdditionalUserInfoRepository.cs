@@ -22,6 +22,7 @@ public class AdditionalUserInfoRepository : Repository<AdditionalUserInfo, Guid>
     public async Task<AdditionalUserInfo> GetByIdentityUserIdAsync(string identityUserId, CancellationToken cancellationToken)
     {
         return await DbSet
+            .Include(x => x.TimeZone)
             .FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId && !u.IsDeleted, cancellationToken);
     }
 
