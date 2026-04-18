@@ -1,4 +1,5 @@
-﻿using InterviewTraining.Application.CreateInterview.V10;
+﻿using InterviewTraining.Application.CancelInterview.V10;
+using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetAllExperts.V10;
 using InterviewTraining.Application.GetAllInterviewLanguages.V10;
@@ -40,6 +41,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IMediatorHandler<GetMyInterviewsRequest, GetMyInterviewsResponse>, GetMyInterviewsHandler>()
             .AddScoped<IMediatorHandler<CreateInterviewRequest, CreateInterviewResponse>, CreateInterviewHandler>()
             .AddScoped<IMediatorHandler<GetInterviewInfoRequest, GetInterviewInfoResponse>, GetInterviewInfoHandler>()
+            .AddScoped<IMediatorHandler<CancelInterviewRequest, CancelInterviewResponse>, CancelInterviewHandler>()
             .AddScoped<IMediatorHandler<GetAllInterviewLanguagesRequest, InterviewLanguageResponse[]>, GetAllInterviewLanguagesHandler>();
     }
 }

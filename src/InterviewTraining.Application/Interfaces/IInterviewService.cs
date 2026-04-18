@@ -1,4 +1,5 @@
-﻿using InterviewTraining.Application.CreateInterview.V10;
+﻿using InterviewTraining.Application.CancelInterview.V10;
+using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using System.Threading;
@@ -28,4 +29,14 @@ public interface IInterviewService
     /// Доступно только кандидату (кто создал), эксперту (кто проводит) или администратору
     /// </remarks>
     Task<GetInterviewInfoResponse> GetInterviewInfoAsync(GetInterviewInfoRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отменить собеседование
+    /// </summary>
+    /// <remarks>
+    /// Доступно кандидату или эксперту, участвующим в собеседовании.
+    /// При отмене создаётся новая версия интервью с признаком отмены.
+    /// Если одна из сторон уже отменила собеседование, другая сторона не может его отменить.
+    /// </remarks>
+    Task<CancelInterviewResponse> CancelInterviewAsync(CancelInterviewRequest request, CancellationToken cancellationToken);
 }

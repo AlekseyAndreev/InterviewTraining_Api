@@ -1,4 +1,5 @@
-﻿using InterviewTraining.Application.CreateInterview.V10;
+﻿using InterviewTraining.Application.CancelInterview.V10;
+using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
@@ -59,7 +60,7 @@ public class InterviewsController : BaseController<InterviewsController>
     /// Дата и время указываются в часовом поясе кандидата.
     /// После создания собеседование ожидает подтверждения от эксперта.
     /// </remarks>
-    ///<param name="request">Данные для создания собеседования</param>
+    /// <param name="request">Данные для создания собеседования</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Идентификатор созданного собеседования</returns>
     [HttpPost]
@@ -93,6 +94,28 @@ public class InterviewsController : BaseController<InterviewsController>
             IdentityUserId = CurrentUserId,
             IsAdmin = IsAdmin
         };
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Отменить собеседование
+    /// </summary>
+    /// <remarks>
+    /// Позволяет кандидату или эксперту отменить собеседование.
+    /// При отмене создаётся новая версия интервью с признаком отмены.
+    /// Если одна из сторон уже отменила собеседование, другая сторона не может его отменить.
+    /// Причину отмены указывать необязательно.
+    /// </remarks>
+    /// <param name="id">Идентификатор собеседования</param>
+    /// <param name="request">Данные для отмены собеседования</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Результат отмены собеседования</returns>
+    [HttpPost("{id:guid}/cancel")]
+    [Authorize]
+    public async Task<CancelInterviewResponse> CancelInterview(Guid id, [FromBody] CancelInterviewRequest request, CancellationToken cancellationToken)
+    {
+        request.IdentityUserId = CurrentUserId;
+        request.InterviewId = id;
         return await _mediator.SendAsync(request, cancellationToken);
     }
 }
