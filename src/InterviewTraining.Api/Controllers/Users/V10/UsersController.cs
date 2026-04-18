@@ -1,6 +1,7 @@
 ﻿using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.GetUserInfo.V10;
+using InterviewTraining.Application.ManageAvailableTime.V10;
 using InterviewTraining.Application.UpdateUserInfo.V10;
 using InterviewTraining.Application.UpdateUserTimeZone.V10;
 using Microsoft.AspNetCore.Authorization;
@@ -65,6 +66,20 @@ public class UsersController : BaseController<UsersController>
         {
             request.IdentityUserId = userId;
         }
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Получить список доступного времени пользователя
+    /// </summary>
+    [HttpGet("{userId}/available-times")]
+    public async Task<GetAvailableTimeResponse> GetAvailableTime(string userId, CancellationToken cancellationToken)
+    {
+        var request = new GetAvailableTimeRequest
+        {
+            IdentityUserId = userId,
+            CurrentIdentityUserId = CurrentUserId,
+        };
         return await _mediator.SendAsync(request, cancellationToken);
     }
 
