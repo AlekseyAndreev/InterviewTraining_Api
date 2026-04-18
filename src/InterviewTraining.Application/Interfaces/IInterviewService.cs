@@ -3,6 +3,7 @@ using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
+using InterviewTraining.Application.RescheduleInterview.V10;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -51,4 +52,16 @@ public interface IInterviewService
     /// Эксперт может подтвердить только если ещё не подтвердил.
     /// </remarks>
     Task<ConfirmInterviewResponse> ConfirmInterviewAsync(ConfirmInterviewRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Изменить время собеседования
+    /// </summary>
+    /// <remarks>
+    /// Доступно кандидату или эксперту, участвующим в собеседовании.
+    /// Изменить время можно только если собеседование не отменено.
+    /// При изменении времени кандидатом - подтверждение эксперта сбрасывается.
+    /// При изменении времени экспертом - подтверждение кандидата сбрасывается.
+    /// При изменении создаётся новая версия интервью.
+    /// </remarks>
+    Task<RescheduleInterviewResponse> RescheduleInterviewAsync(RescheduleInterviewRequest request, CancellationToken cancellationToken);
 }

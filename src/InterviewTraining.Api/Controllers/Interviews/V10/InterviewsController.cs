@@ -4,6 +4,7 @@ using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
+using InterviewTraining.Application.RescheduleInterview.V10;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -142,6 +143,30 @@ public class InterviewsController : BaseController<InterviewsController>
             IdentityUserId = CurrentUserId,
             InterviewId = id
         };
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Изменить время собеседования
+    /// </summary>
+    /// <remarks>
+    /// Позволяет кандидату или эксперту изменить время собеседования.
+    /// Изменить время можно только если собеседование не отменено.
+    /// При изменении времени кандидатом - подтверждение эксперта сбрасывается (требуется повторное подтверждение).
+    /// При изменении времени экспертом - подтверждение кандидата сбрасывается (требуется повторное подтверждение).
+    /// Новая дата и время указываются в часовом поясе пользователя.
+    /// При изменении создаётся новая версия интервью.
+    /// </remarks>
+    /// <param name="id">Идентификатор собеседования</param>
+    /// <param name="request">Данные для изменения времени</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Результат изменения времени собеседования</returns>
+    [HttpPut("{id:guid}/reschedule")]
+    [Authorize]
+    public async Task<RescheduleInterviewResponse> RescheduleInterview(Guid id, [FromBody] RescheduleInterviewRequest request, CancellationToken cancellationToken)
+    {
+        request.IdentityUserId = CurrentUserId;
+        request.InterviewId = id;
         return await _mediator.SendAsync(request, cancellationToken);
     }
 }
