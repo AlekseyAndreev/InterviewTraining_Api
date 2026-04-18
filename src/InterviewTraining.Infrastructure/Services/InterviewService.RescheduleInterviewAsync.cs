@@ -81,6 +81,9 @@ public partial class InterviewService
             LinkToVideoCall = activeVersion.LinkToVideoCall,
             LanguageId = activeVersion.LanguageId,
             CreatedUtc = DateTime.UtcNow,
+            IsAdminApproved = activeVersion.IsAdminApproved,
+            CurrencyId = activeVersion.CurrencyId,
+            InterviewPrice = activeVersion.InterviewPrice,
             Candidate = new CandidateInterviewData
             {
                 IsRescheduled = isCandidate,

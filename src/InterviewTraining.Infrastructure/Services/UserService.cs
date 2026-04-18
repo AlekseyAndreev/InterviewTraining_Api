@@ -33,8 +33,8 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
             InterviewPrice = userInfo.InterviewPrice,
             CurrencyId = userInfo.CurrencyId,
             CurrencyCode = userInfo.Currency?.Code,
-            CurrencyNameRu = userInfo.Currency.NameRu,
-            CurrencyNameEn = userInfo.Currency.NameEn,
+            CurrencyNameRu = userInfo.Currency?.NameRu,
+            CurrencyNameEn = userInfo.Currency?.NameEn,
             SelectedTimeZoneId = userInfo.TimeZoneId,
             TimeZones = timeZones
                 .Where(tz => !tz.IsDeleted)

@@ -38,6 +38,21 @@ public class GetInterviewInfoResponse
     public DateTime? EndDateTime { get; set; }
 
     /// <summary>
+    /// Сумма за интервью
+    /// </summary>
+    public decimal? InterviewPrice { get; set; }
+
+    /// <summary>
+    /// Наименование валюты на русском
+    /// </summary>
+    public string CurrencyNameRu { get; set; }
+
+    /// <summary>
+    /// Наименование валюты на русском
+    /// </summary>
+    public string CurrencyNameEn { get; set; }
+
+    /// <summary>
     /// Информация о кандидате
     /// </summary>
     public InterviewParticipantDto Candidate { get; set; }
@@ -45,7 +60,7 @@ public class GetInterviewInfoResponse
     /// <summary>
     /// Информация об эксперте
     /// </summary>
-    public InterviewExpertDto Expert { get; set; }
+    public InterviewParticipantDto Expert { get; set; }
 
     /// <summary>
     /// Язык собеседования

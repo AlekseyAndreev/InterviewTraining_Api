@@ -54,6 +54,19 @@ public class InterviewVersionConfiguration : IEntityTypeConfiguration<Domain.Int
             .IsRequired(false);
 
         builder
+            .Property(x => x.InterviewPrice)
+            .HasComment("Сумма оплаты за собеседование")
+            .HasColumnName("interview_price")
+            .HasPrecision(18, 2)
+            .IsRequired(false);
+
+        builder
+            .Property(x => x.CurrencyId)
+            .HasComment("Идентификатор валюты")
+            .HasColumnName("currency_id")
+            .IsRequired(false);
+
+        builder
             .Property(x => x.LinkToVideoCall)
             .HasComment("Ссылка на видеозвонок")
             .HasColumnName("link_to_video_call")

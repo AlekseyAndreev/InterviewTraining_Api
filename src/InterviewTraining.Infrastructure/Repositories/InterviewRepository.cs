@@ -38,6 +38,8 @@ public class InterviewRepository : Repository<Interview, Guid>, IInterviewReposi
             .Include(i => i.Expert)
             .Include(i => i.ActiveInterviewVersion)
                 .ThenInclude(v => v.Language)
+            .Include(i => i.ActiveInterviewVersion)
+                .ThenInclude(v => v.Currency)
             .Include(i => i.Versions)
             .FirstOrDefaultAsync(i => i.Id == id && !i.Candidate.IsDeleted && !i.Expert.IsDeleted, cancellationToken);
     }

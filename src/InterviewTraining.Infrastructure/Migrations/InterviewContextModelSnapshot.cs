@@ -276,6 +276,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("created_utc")
                         .HasComment("Дата и время создания записи в таблице");
 
+                    b.Property<Guid?>("CurrencyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("currency_id")
+                        .HasComment("Идентификатор валюты");
+
                     b.Property<DateTime?>("EndUtc")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("end_utc")
@@ -285,6 +290,12 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("interview_id")
                         .HasComment("Идентификатор интервью");
+
+                    b.Property<decimal?>("InterviewPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("interview_price")
+                        .HasComment("Сумма оплаты за собеседование");
 
                     b.Property<bool>("IsAdminApproved")
                         .HasColumnType("boolean");
@@ -311,6 +322,8 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasComment("Начало собеседования в UTC");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CurrencyId");
 
                     b.HasIndex("InterviewId")
                         .HasDatabaseName("ix_interview_versions_interview_id");
@@ -696,6 +709,10 @@ namespace InterviewTraining.Infrastructure.Migrations
 
             modelBuilder.Entity("InterviewTraining.Domain.InterviewVersion", b =>
                 {
+                    b.HasOne("InterviewTraining.Domain.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId");
+
                     b.HasOne("InterviewTraining.Domain.Interview", "Interview")
                         .WithMany("Versions")
                         .HasForeignKey("InterviewId")
@@ -822,6 +839,8 @@ namespace InterviewTraining.Infrastructure.Migrations
                         });
 
                     b.Navigation("Candidate");
+
+                    b.Navigation("Currency");
 
                     b.Navigation("Expert");
 

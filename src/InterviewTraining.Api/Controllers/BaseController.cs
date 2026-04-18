@@ -50,8 +50,7 @@ public abstract class BaseController<TLogger> : ControllerBase
     {
         get
         {
-            var roles = User?.Claims?.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)
-                .ToArray();
+            var roles = GetRolesFromUser(User);
             if (roles == null || !roles.Any())
             {
                 return false;
@@ -68,8 +67,7 @@ public abstract class BaseController<TLogger> : ControllerBase
     {
         get
         {
-            var roles = User?.Claims?.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)
-                .ToArray();
+            var roles = GetRolesFromUser(User);
             if (roles == null || !roles.Any())
             {
                 return false;
@@ -86,8 +84,7 @@ public abstract class BaseController<TLogger> : ControllerBase
     {
         get
         {
-            var roles = User?.Claims?.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value)
-                .ToArray();
+            var roles = GetRolesFromUser(User);
             if (roles == null || !roles.Any())
             {
                 return false;
@@ -96,4 +93,22 @@ public abstract class BaseController<TLogger> : ControllerBase
             return roles.Contains(AuhConstants.RoleAdmin);
         }
     }
+
+    private static string[] GetRolesFromUser(ClaimsPrincipal user)
+    {
+        var roles = user?.Claims?.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
+        if (roles == null || !roles.Any())
+        {
+            roles = user?.Claims?.Where(c => c.Type == "role").Select(c => c.Value)
+                .ToArray();
+
+            if (roles == null || !roles.Any())
+            {
+                return null;
+            }
+        }
+        
+        return roles;
+    }
+
 }

@@ -112,14 +112,12 @@ public class AdditionalUserInfoConfiguration : IEntityTypeConfiguration<Domain.A
             .HasColumnName("currency_id")
             .IsRequired(false);
 
-        // Связь с часовым поясом
         builder
             .HasOne(x => x.TimeZone)
             .WithMany()
             .HasForeignKey(x => x.TimeZoneId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // Связь с валютой
         builder
             .HasOne(x => x.Currency)
             .WithMany()
@@ -127,39 +125,33 @@ public class AdditionalUserInfoConfiguration : IEntityTypeConfiguration<Domain.A
             .HasConstraintName("fk_additional_user_info_currency")
             .OnDelete(DeleteBehavior.SetNull);
 
-        // Связь: рейтинги, которые пользователь поставил другим
         builder
             .HasMany(x => x.MyRatingToUsers)
             .WithOne(x => x.UserFrom)
             .HasForeignKey(x => x.UserFromId)
             .OnDelete(DeleteBehavior.ClientCascade);
 
-        // Связь: рейтинги, которые пользователю поставили другие
         builder
             .HasMany(x => x.RatingFromUsers)
             .WithOne(x => x.UserTo)
             .HasForeignKey(x => x.UserToId)
             .OnDelete(DeleteBehavior.ClientCascade);
 
-        // Связь: навыки пользователя
         builder
             .HasMany(x => x.Skills)
             .WithOne(x => x.User)
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Индекс для быстрого поиска по IdentityUserId
         builder
             .HasIndex(x => x.IdentityUserId)
             .IsUnique(true)
             .HasDatabaseName("ix_additional_user_info_identity_user_id");
 
-        // Индекс для поиска экспертов
         builder
             .HasIndex(x => x.IsExpert)
             .HasDatabaseName("ix_additional_user_info_is_expert");
 
-        // Индекс для поиска кандидатов
         builder
             .HasIndex(x => x.IsCandidate)
             .HasDatabaseName("ix_additional_user_info_is_candidate");

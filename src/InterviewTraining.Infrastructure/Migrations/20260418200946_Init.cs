@@ -289,12 +289,20 @@ namespace InterviewTraining.Infrastructure.Migrations
                     start_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Начало собеседования в UTC"),
                     end_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Конец собеседования в UTC"),
                     language_id = table.Column<Guid>(type: "uuid", nullable: true, comment: "Идентификатор языка"),
+                    interview_price = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: true, comment: "Сумма оплаты за собеседование"),
+                    currency_id = table.Column<Guid>(type: "uuid", nullable: true, comment: "Идентификатор валюты"),
                     created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
                     modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_interview_versions", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_interview_versions_currencies_currency_id",
+                        column: x => x.currency_id,
+                        principalSchema: "public",
+                        principalTable: "currencies",
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_interview_versions_interview_languages_language_id",
                         column: x => x.language_id,
@@ -375,6 +383,12 @@ namespace InterviewTraining.Infrastructure.Migrations
                 table: "currencies",
                 column: "code",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_interview_versions_currency_id",
+                schema: "public",
+                table: "interview_versions",
+                column: "currency_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_interview_versions_interview_id",
@@ -497,6 +511,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                 name: "fk_additional_user_info_currency",
                 schema: "public",
                 table: "additional_user_infos");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_interview_versions_currencies_currency_id",
+                schema: "public",
+                table: "interview_versions");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_interview_versions_interview_languages_language_id",

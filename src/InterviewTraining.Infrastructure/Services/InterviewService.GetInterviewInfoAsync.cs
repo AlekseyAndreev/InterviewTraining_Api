@@ -69,9 +69,13 @@ public partial class InterviewService
                 : null,
             LinkToVideoCall = activeVersion.LinkToVideoCall,
             Notes = activeVersion.Candidate.Notes,
+            InterviewPrice = activeVersion.InterviewPrice,
+            CurrencyNameEn = activeVersion.Currency?.NameEn,
+            CurrencyNameRu = activeVersion.Currency?.NameRu,
+
             CreatedUtc = ConvertUtcToUserTimeZone(interview.CreatedUtc, timeZoneCode),
             Candidate = MapParticipant(interview.Candidate),
-            Expert = MapExpert(interview.Expert),
+            Expert = MapParticipant(interview.Expert),
             Language = activeVersion.Language != null ? MapLanguage(activeVersion.Language) : null,
             CandidateApproval = activeVersion.Candidate != null
                 ? MapApproval(activeVersion.Candidate)
@@ -101,30 +105,6 @@ public partial class InterviewService
             FullName = user.FullName ?? "Не указан",
             Photo = user.PhotoLocal,
             ShortDescription = user.ShortDescription
-        };
-    }
-
-    /// <summary>
-    /// Маппинг участника интервью
-    /// </summary>
-    private static InterviewExpertDto MapExpert(AdditionalUserInfo user)
-    {
-        if (user == null)
-        {
-            return null;
-        }
-
-        return new InterviewExpertDto
-        {
-            Id = user.Id,
-            IdentityUserId = user.IdentityUserId,
-            FullName = user.FullName ?? "Не указан",
-            Photo = user.PhotoLocal,
-            ShortDescription = user.ShortDescription,
-            CurrencyId = user.CurrencyId,
-            InterviewPrice = user.InterviewPrice,
-            CurrencyNameEn = user.Currency?.NameEn,
-            CurrencyNameRu = user.Currency?.NameRu,
         };
     }
 

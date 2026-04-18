@@ -14,4 +14,7 @@ public class InterviewVersion : BaseEntity<Guid>
     public DateTime? EndUtc { get; set; }
     public Guid? LanguageId { get; set; }
     public InterviewLanguage Language { get; set; }
+    public decimal? InterviewPrice { get; set; }
+    public Guid? CurrencyId { get; set; }
+    public Currency Currency { get; set; }
 }

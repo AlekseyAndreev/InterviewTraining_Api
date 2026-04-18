@@ -94,6 +94,8 @@ public partial class InterviewService
             Id = Guid.NewGuid(),
             InterviewId = interview.Id,
             StartUtc = startUtc,
+            InterviewPrice = expert.InterviewPrice,
+            CurrencyId = expert.CurrencyId,
             Candidate = new CandidateInterviewData
             {
                 IsApproved = true,
