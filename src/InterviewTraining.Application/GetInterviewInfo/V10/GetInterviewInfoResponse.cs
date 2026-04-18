@@ -79,6 +79,11 @@ public class InterviewParticipantDto
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Идентификатор пользователя
+    /// </summary>
+    public string IdentityUserId { get; set; }
+
+    /// <summary>
     /// Полное имя
     /// </summary>
     public string FullName { get; set; }

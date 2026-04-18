@@ -1,4 +1,5 @@
 ﻿using InterviewTraining.Application.CancelInterview.V10;
+using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
@@ -39,4 +40,15 @@ public interface IInterviewService
     /// Если одна из сторон уже отменила собеседование, другая сторона не может его отменить.
     /// </remarks>
     Task<CancelInterviewResponse> CancelInterviewAsync(CancelInterviewRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Подтвердить собеседование
+    /// </summary>
+    /// <remarks>
+    /// Доступно кандидату или эксперту, участвующим в собеседовании.
+    /// При подтверждении создаётся новая версия интервью с признаком подтверждения.
+    /// Кандидат может подтвердить только если ещё не подтвердил.
+    /// Эксперт может подтвердить только если ещё не подтвердил.
+    /// </remarks>
+    Task<ConfirmInterviewResponse> ConfirmInterviewAsync(ConfirmInterviewRequest request, CancellationToken cancellationToken);
 }

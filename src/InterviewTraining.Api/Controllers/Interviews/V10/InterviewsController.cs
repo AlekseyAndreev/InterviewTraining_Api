@@ -1,4 +1,5 @@
 ﻿using InterviewTraining.Application.CancelInterview.V10;
+using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetInterviewInfo.V10;
@@ -116,6 +117,31 @@ public class InterviewsController : BaseController<InterviewsController>
     {
         request.IdentityUserId = CurrentUserId;
         request.InterviewId = id;
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Подтвердить собеседование
+    /// </summary>
+    /// <remarks>
+    /// Позволяет кандидату или эксперту подтвердить собеседование.
+    /// При подтверждении создаётся новая версия интервью с признаком подтверждения.
+    /// Кандидат может подтвердить только если ещё не подтвердил.
+    /// Эксперт может подтвердить только если ещё не подтвердил.
+    /// Нельзя подтвердить отменённое собеседование.
+    /// </remarks>
+    /// <param name="id">Идентификатор собеседования</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Результат подтверждения собеседования</returns>
+    [HttpPost("{id:guid}/confirm")]
+    [Authorize]
+    public async Task<ConfirmInterviewResponse> ConfirmInterview(Guid id, CancellationToken cancellationToken)
+    {
+        var request = new ConfirmInterviewRequest
+        {
+            IdentityUserId = CurrentUserId,
+            InterviewId = id
+        };
         return await _mediator.SendAsync(request, cancellationToken);
     }
 }
