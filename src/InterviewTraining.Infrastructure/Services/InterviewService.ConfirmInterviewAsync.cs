@@ -71,7 +71,7 @@ public partial class InterviewService
         }
 
         var utcNow = DateTime.UtcNow;
-        if (activeVersion.StartUtc > utcNow)
+        if (activeVersion.StartUtc < utcNow)
         {
             throw new BusinessLogicException("Время собеседования уже вышло. Вы уже не можете подтвердить своё участие");
         }
