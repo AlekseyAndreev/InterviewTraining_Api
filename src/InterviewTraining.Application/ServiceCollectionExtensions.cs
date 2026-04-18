@@ -1,4 +1,5 @@
 ﻿using InterviewTraining.Application.CancelInterview.V10;
+using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetAllExperts.V10;
@@ -8,6 +9,7 @@ using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.GetSkillsTree.V10;
 using InterviewTraining.Application.GetUserInfo.V10;
 using InterviewTraining.Application.ManageAvailableTime.V10;
+using InterviewTraining.Application.RescheduleInterview.V10;
 using InterviewTraining.Application.UpdateUserInfo.V10;
 using InterviewTraining.Application.UpdateUserSkills.V10;
 using InterviewTraining.Application.UpdateUserTimeZone.V10;
@@ -42,6 +44,8 @@ public static class ServiceCollectionExtensions
             .AddScoped<IMediatorHandler<CreateInterviewRequest, CreateInterviewResponse>, CreateInterviewHandler>()
             .AddScoped<IMediatorHandler<GetInterviewInfoRequest, GetInterviewInfoResponse>, GetInterviewInfoHandler>()
             .AddScoped<IMediatorHandler<CancelInterviewRequest, CancelInterviewResponse>, CancelInterviewHandler>()
+            .AddScoped<IMediatorHandler<ConfirmInterviewRequest, ConfirmInterviewResponse>, ConfirmInterviewHandler>()
+            .AddScoped<IMediatorHandler<RescheduleInterviewRequest, RescheduleInterviewResponse>, RescheduleInterviewHandler>()
             .AddScoped<IMediatorHandler<GetAllInterviewLanguagesRequest, InterviewLanguageResponse[]>, GetAllInterviewLanguagesHandler>();
     }
 }
