@@ -31,7 +31,10 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
             ShortDescription = userInfo.ShortDescription,
             Photo = userInfo.PhotoLocal,
             InterviewPrice = userInfo.InterviewPrice,
-            SelectedCurrencyId = userInfo.CurrencyId,
+            CurrencyId = userInfo.CurrencyId,
+            CurrencyCode = userInfo.Currency?.Code,
+            CurrencyNameRu = userInfo.Currency.NameRu,
+            CurrencyNameEn = userInfo.Currency.NameEn,
             SelectedTimeZoneId = userInfo.TimeZoneId,
             TimeZones = timeZones
                 .Where(tz => !tz.IsDeleted)
