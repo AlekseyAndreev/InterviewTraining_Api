@@ -17,6 +17,16 @@ public class GetInterviewInfoResponse
     /// </summary>
     public string Status { get; set; }
 
+    /// <summary>
+    /// Текущий статус интервью
+    /// </summary>
+    public string StatusDescriptionRu { get; set; }
+
+    /// <summary>
+    /// Текущий статус интервью
+    /// </summary>
+    public string StatusDescriptionEn { get; set; }
+
     ///<summary>
     /// Дата и время начала интервью (в часовом поясе пользователя)
     /// </summary>
@@ -66,82 +76,4 @@ public class GetInterviewInfoResponse
     /// Дата создания
     /// </summary>
     public DateTime CreatedUtc { get; set; }
-}
-
-/// <summary>
-/// DTO участника интервью
-/// </summary>
-public class InterviewParticipantDto
-{
-    /// <summary>
-    /// Идентификатор пользователя
-    /// </summary>
-    public Guid Id { get; set; }
-
-    /// <summary>
-    /// Идентификатор пользователя
-    /// </summary>
-    public string IdentityUserId { get; set; }
-
-    /// <summary>
-    /// Полное имя
-    /// </summary>
-    public string FullName { get; set; }
-
-    /// <summary>
-    /// Фото пользователя
-    /// </summary>
-    public byte[] Photo { get; set; }
-
-    /// <summary>
-    /// Краткое описание
-    /// </summary>
-    public string ShortDescription { get; set; }
-}
-
-/// <summary>
-/// DTO языка интервью
-/// </summary>
-public class InterviewLanguageDto
-{
-    /// <summary>
-    /// Идентификатор языка
-    /// </summary>
-    public Guid Id { get; set; }
-
-    /// <summary>
-    /// Код языка
-    /// </summary>
-    public string Code { get; set; }
-
-    /// <summary>
-    /// Название на русском
-    /// </summary>
-    public string NameRu { get; set; }
-
-    /// <summary>
-    /// Название на английском
-    /// </summary>
-    public string NameEn { get; set; }
-}
-
-/// <summary>
-/// DTO данных подтверждения участника
-/// </summary>
-public class ParticipantApprovalDto
-{
-    ///<summary>
-    /// Подтверждено ли участие
-    /// </summary>
-    public bool IsApproved { get; set; }
-
-    /// <summary>
-    /// Отменено ли
-    /// </summary>
-    public bool IsCancelled { get; set; }
-
-    /// <summary>
-    /// Причина отмены
-    /// </summary>
-    public string CancelReason { get; set; }
 }

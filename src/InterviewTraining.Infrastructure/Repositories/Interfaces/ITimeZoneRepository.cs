@@ -15,10 +15,4 @@ public interface ITimeZoneRepository : IRepository<Domain.TimeZone, Guid>
     /// <param name="code">Код часового пояса</param>
     /// <returns>Часовой пояс</returns>
     Task<Domain.TimeZone> GetByCodeAsync(string code);
-
-    /// <summary>
-    /// Получить все часовые пояса
-    /// </summary>
-    /// <returns>Список часовых поясов</returns>
-    Task<List<Domain.TimeZone>> GetAllAsync();
 }

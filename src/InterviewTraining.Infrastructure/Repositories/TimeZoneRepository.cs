@@ -28,7 +28,7 @@ public class TimeZoneRepository : Repository<Domain.TimeZone, Guid>, ITimeZoneRe
     }
 
     /// <inheritdoc />
-    public async Task<List<Domain.TimeZone>> GetAllAsync()
+    public new async Task<List<Domain.TimeZone>> GetAllAsync()
     {
         return await Context.TimeZones
             .Where(t => !t.IsDeleted)

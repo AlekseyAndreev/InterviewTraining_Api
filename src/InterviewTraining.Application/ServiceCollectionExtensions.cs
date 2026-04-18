@@ -1,18 +1,5 @@
-﻿using InterviewTraining.Application.CancelInterview.V10;
-using InterviewTraining.Application.ConfirmInterview.V10;
-using InterviewTraining.Application.CreateInterview.V10;
+﻿using System.Linq;
 using InterviewTraining.Application.CustomMediatorLogic;
-using InterviewTraining.Application.GetAllExperts.V10;
-using InterviewTraining.Application.GetAllInterviewLanguages.V10;
-using InterviewTraining.Application.GetInterviewInfo.V10;
-using InterviewTraining.Application.GetMyInterviews.V10;
-using InterviewTraining.Application.GetSkillsTree.V10;
-using InterviewTraining.Application.GetUserInfo.V10;
-using InterviewTraining.Application.ManageAvailableTime.V10;
-using InterviewTraining.Application.RescheduleInterview.V10;
-using InterviewTraining.Application.UpdateUserInfo.V10;
-using InterviewTraining.Application.UpdateUserSkills.V10;
-using InterviewTraining.Application.UpdateUserTimeZone.V10;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InterviewTraining.Application;
@@ -24,28 +11,33 @@ public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container.
+    /// Автоматически сканирует сборку и регистрирует все реализации IMediatorHandler.
     /// </summary>
     ///<param name="services"></param>
     public static IServiceCollection AddCustomMediator(this IServiceCollection services)
     {
-        return services
-            .AddScoped<ICustomMediator, CustomMediator>()
-            .AddScoped<IMediatorHandler<GetAllExpertsRequest, GetAllExpertsResponse>, GetAllExpertsHandler>()
-            .AddScoped<IMediatorHandler<GetUserInfoRequest, GetUserInfoResponse>, GetUserInfoHandler>()
-            .AddScoped<IMediatorHandler<UpdateUserInfoRequest, UpdateUserInfoResponse>, UpdateUserInfoHandler>()
-            .AddScoped<IMediatorHandler<UpdateUserTimeZoneRequest, UpdateUserTimeZoneResponse>, UpdateUserTimeZoneHandler>()
-            .AddScoped<IMediatorHandler<GetSkillsTreeRequest, GetSkillsTreeResponse>, GetSkillsTreeHandler>()
-            .AddScoped<IMediatorHandler<UpdateUserSkillsRequest, UpdateUserSkillsResponse>, UpdateUserSkillsHandler>()
-            .AddScoped<IMediatorHandler<CreateAvailableTimeRequest, CreateAvailableTimeResponse>, CreateAvailableTimeHandler>()
-            .AddScoped<IMediatorHandler<UpdateAvailableTimeRequest, UpdateAvailableTimeResponse>, UpdateAvailableTimeHandler>()
-            .AddScoped<IMediatorHandler<GetAvailableTimeRequest, GetAvailableTimeResponse>, GetAvailableTimeHandler>()
-            .AddScoped<IMediatorHandler<DeleteAvailableTimeRequest, DeleteAvailableTimeResponse>, DeleteAvailableTimeHandler>()
-            .AddScoped<IMediatorHandler<GetMyInterviewsRequest, GetMyInterviewsResponse>, GetMyInterviewsHandler>()
-            .AddScoped<IMediatorHandler<CreateInterviewRequest, CreateInterviewResponse>, CreateInterviewHandler>()
-            .AddScoped<IMediatorHandler<GetInterviewInfoRequest, GetInterviewInfoResponse>, GetInterviewInfoHandler>()
-            .AddScoped<IMediatorHandler<CancelInterviewRequest, CancelInterviewResponse>, CancelInterviewHandler>()
-            .AddScoped<IMediatorHandler<ConfirmInterviewRequest, ConfirmInterviewResponse>, ConfirmInterviewHandler>()
-            .AddScoped<IMediatorHandler<RescheduleInterviewRequest, RescheduleInterviewResponse>, RescheduleInterviewHandler>()
-            .AddScoped<IMediatorHandler<GetAllInterviewLanguagesRequest, InterviewLanguageResponse[]>, GetAllInterviewLanguagesHandler>();
+        services.AddScoped<ICustomMediator, CustomMediator>();
+
+        // Автоматическое сканирование и регистрация всех хендлеров
+        var handlerInterfaceType = typeof(IMediatorHandler<,>);
+        var assembly = typeof(ServiceCollectionExtensions).Assembly;
+
+        var handlerTypes = assembly
+            .GetTypes()
+            .Where(t => t is { IsClass: true, IsAbstract: false })
+            .Select(t => new
+            {
+                ImplementationType = t,
+                InterfaceType = t.GetInterfaces()
+                    .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == handlerInterfaceType)
+            })
+            .Where(x => x.InterfaceType != null);
+
+        foreach (var handler in handlerTypes)
+        {
+            services.AddScoped(handler.InterfaceType, handler.ImplementationType);
+        }
+
+        return services;
     }
 }

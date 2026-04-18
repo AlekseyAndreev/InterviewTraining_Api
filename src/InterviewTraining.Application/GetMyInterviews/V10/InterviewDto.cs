@@ -40,7 +40,12 @@ public class InterviewDto
     /// <summary>
     /// Текущий статус интервью
     /// </summary>
-    public string StatusDescription { get; set; }
+    public string StatusDescriptionRu { get; set; }
+
+    /// <summary>
+    /// Текущий статус интервью
+    /// </summary>
+    public string StatusDescriptionEn { get; set; }
 
     /// <summary>
     /// Дата и время интервью в часовом поясе пользователя
