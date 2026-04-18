@@ -45,6 +45,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInterviewRepository, InterviewRepository>();
         services.AddScoped<IInterviewVersionRepository, InterviewVersionRepository>();
         services.AddScoped<IInterviewLanguageRepository, InterviewLanguageRepository>();
+        services.AddScoped<ICurrencyRepository, CurrencyRepository>();
         return services;
     }
 }

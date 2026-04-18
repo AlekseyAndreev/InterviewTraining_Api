@@ -16,6 +16,7 @@ public static partial class InterviewContextSeeding
         await AddSkillsAndRelated(context);
         await AddTimeZones(context);
         await AddInterviewLanguages(context);
+        await AddCurrencies(context);
     }
 
     private static async Task AddSkillsAndRelated(InterviewContext context)
@@ -54,6 +55,18 @@ public static partial class InterviewContextSeeding
         }
 
         await context.InterviewLanguages.AddRangeAsync(GetInterviewLanguages());
+
+        await context.SaveChangesAsync();
+    }
+
+    private static async Task AddCurrencies(InterviewContext context)
+    {
+        if (await context.Currencies.AnyAsync())
+        {
+            return;
+        }
+
+        await context.Currencies.AddRangeAsync(GetCurrencies());
 
         await context.SaveChangesAsync();
     }

@@ -15,6 +15,23 @@ namespace InterviewTraining.Infrastructure.Migrations
                 name: "public");
 
             migrationBuilder.CreateTable(
+                name: "currencies",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false, comment: "Уникальный идентификатор"),
+                    code = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false, comment: "Код валюты (ISO 4217)"),
+                    name_ru = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false, comment: "Название валюты на русском языке"),
+                    name_en = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false, comment: "Название валюты на английском языке"),
+                    created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
+                    modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_currencies", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "interview_languages",
                 schema: "public",
                 columns: table => new
@@ -110,6 +127,8 @@ namespace InterviewTraining.Infrastructure.Migrations
                     is_candidate = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак кандидата"),
                     is_expert = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак эксперта"),
                     time_zone_id = table.Column<Guid>(type: "uuid", nullable: true, comment: "Идентификатор часового пояса пользователя"),
+                    interview_price = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: true, comment: "Сумма оплаты за собеседование"),
+                    currency_id = table.Column<Guid>(type: "uuid", nullable: true, comment: "Идентификатор валюты оплаты"),
                     created_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: false, comment: "Дата и время создания записи в таблице"),
                     modified_utc = table.Column<DateTime>(type: "timestamp without time zone", nullable: true, comment: "Дата и время последнего изменения записи в таблице"),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, comment: "Признак удалена запись или нет")
@@ -122,6 +141,13 @@ namespace InterviewTraining.Infrastructure.Migrations
                         column: x => x.time_zone_id,
                         principalSchema: "public",
                         principalTable: "time_zones",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "fk_additional_user_info_currency",
+                        column: x => x.currency_id,
+                        principalSchema: "public",
+                        principalTable: "currencies",
                         principalColumn: "id",
                         onDelete: ReferentialAction.SetNull);
                 });
@@ -332,10 +358,23 @@ namespace InterviewTraining.Infrastructure.Migrations
                 column: "is_expert");
 
             migrationBuilder.CreateIndex(
+                name: "IX_additional_user_infos_currency_id",
+                schema: "public",
+                table: "additional_user_infos",
+                column: "currency_id");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_additional_user_infos_time_zone_id",
                 schema: "public",
                 table: "additional_user_infos",
                 column: "time_zone_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_currencies_code",
+                schema: "public",
+                table: "currencies",
+                column: "code",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_interview_versions_interview_id",
@@ -455,6 +494,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                 table: "additional_user_infos");
 
             migrationBuilder.DropForeignKey(
+                name: "fk_additional_user_info_currency",
+                schema: "public",
+                table: "additional_user_infos");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_interview_versions_interview_languages_language_id",
                 schema: "public",
                 table: "interview_versions");
@@ -490,6 +534,10 @@ namespace InterviewTraining.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "time_zones",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "currencies",
                 schema: "public");
 
             migrationBuilder.DropTable(

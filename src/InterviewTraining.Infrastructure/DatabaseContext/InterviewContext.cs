@@ -73,6 +73,11 @@ public class InterviewContext : DbContext
     public DbSet<UserAvailableTime> UserAvailableTimes { get; set; }
 
     /// <summary>
+    /// Валюты
+    /// </summary>
+    public DbSet<Currency> Currencies { get; set; }
+
+    /// <summary>
     /// При создании модели
     /// </summary>
     /// <param name="modelBuilder">modelBuilder</param>
@@ -134,5 +139,6 @@ public class InterviewContext : DbContext
         builder.ApplyConfiguration(new UserSkillConfiguration());
         builder.ApplyConfiguration(new UserAvailableTimeConfiguration());
         builder.ApplyConfiguration(new InterviewLanguageConfiguration());
+        builder.ApplyConfiguration(new CurrencyConfiguration());
     }
 }

@@ -99,11 +99,32 @@ public class AdditionalUserInfoConfiguration : IEntityTypeConfiguration<Domain.A
             .HasColumnName("time_zone_id")
             .IsRequired(false);
 
+        builder
+            .Property(x => x.InterviewPrice)
+            .HasComment("Сумма оплаты за собеседование")
+            .HasColumnName("interview_price")
+            .HasPrecision(18, 2)
+            .IsRequired(false);
+
+        builder
+            .Property(x => x.CurrencyId)
+            .HasComment("Идентификатор валюты оплаты")
+            .HasColumnName("currency_id")
+            .IsRequired(false);
+
         // Связь с часовым поясом
         builder
             .HasOne(x => x.TimeZone)
             .WithMany()
             .HasForeignKey(x => x.TimeZoneId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        // Связь с валютой
+        builder
+            .HasOne(x => x.Currency)
+            .WithMany()
+            .HasForeignKey(x => x.CurrencyId)
+            .HasConstraintName("fk_additional_user_info_currency")
             .OnDelete(DeleteBehavior.SetNull);
 
         // Связь: рейтинги, которые пользователь поставил другим

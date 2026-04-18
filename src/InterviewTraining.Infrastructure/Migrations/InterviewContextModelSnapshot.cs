@@ -36,6 +36,11 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("created_utc")
                         .HasComment("Дата и время создания записи в таблице");
 
+                    b.Property<Guid?>("CurrencyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("currency_id")
+                        .HasComment("Идентификатор валюты оплаты");
+
                     b.Property<string>("Description")
                         .HasMaxLength(4000)
                         .HasColumnType("character varying(4000)")
@@ -54,6 +59,12 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnType("character varying(450)")
                         .HasColumnName("identity_user_id")
                         .HasComment("Идентификатор пользователя в Identity");
+
+                    b.Property<decimal?>("InterviewPrice")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("interview_price")
+                        .HasComment("Сумма оплаты за собеседование");
 
                     b.Property<bool>("IsCandidate")
                         .HasColumnType("boolean")
@@ -93,6 +104,8 @@ namespace InterviewTraining.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CurrencyId");
+
                     b.HasIndex("IdentityUserId")
                         .IsUnique()
                         .HasDatabaseName("ix_additional_user_info_identity_user_id");
@@ -106,6 +119,54 @@ namespace InterviewTraining.Infrastructure.Migrations
                     b.HasIndex("TimeZoneId");
 
                     b.ToTable("additional_user_infos", "public");
+                });
+
+            modelBuilder.Entity("InterviewTraining.Domain.Currency", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasComment("Уникальный идентификатор");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("code")
+                        .HasComment("Код валюты (ISO 4217)");
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_utc")
+                        .HasComment("Дата и время создания записи в таблице");
+
+                    b.Property<DateTime?>("ModifiedUtc")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("modified_utc")
+                        .HasComment("Дата и время последнего изменения записи в таблице");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name_en")
+                        .HasComment("Название валюты на английском языке");
+
+                    b.Property<string>("NameRu")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name_ru")
+                        .HasComment("Название валюты на русском языке");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_currencies_code");
+
+                    b.ToTable("currencies", "public");
                 });
 
             modelBuilder.Entity("InterviewTraining.Domain.Interview", b =>
@@ -591,10 +652,18 @@ namespace InterviewTraining.Infrastructure.Migrations
 
             modelBuilder.Entity("InterviewTraining.Domain.AdditionalUserInfo", b =>
                 {
+                    b.HasOne("InterviewTraining.Domain.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_additional_user_info_currency");
+
                     b.HasOne("InterviewTraining.Domain.TimeZone", "TimeZone")
                         .WithMany()
                         .HasForeignKey("TimeZoneId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Currency");
 
                     b.Navigation("TimeZone");
                 });
