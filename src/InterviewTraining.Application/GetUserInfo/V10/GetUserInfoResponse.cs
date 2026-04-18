@@ -9,6 +9,8 @@ public class GetUserInfoResponse
     public string FullName { get; set; }
     public string ShortDescription { get; set; }
     public string Description { get; set; }
+    public decimal? InterviewPrice { get; set; }
+    public Guid? SelectedCurrencyId { get; set; }
     public Guid? SelectedTimeZoneId { get; set; }
     public List<TimeZoneDto> TimeZones { get; set; }
 }

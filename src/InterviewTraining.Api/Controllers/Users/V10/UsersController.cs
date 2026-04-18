@@ -94,6 +94,8 @@ public class UsersController : BaseController<UsersController>
         [FromForm] string shortDescription,
         [FromForm] string description,
         [FromForm] Guid? timeZoneId,
+        [FromForm] decimal? interviewPrice,
+        [FromForm] Guid? currencyId,
         IFormFile photo,
         CancellationToken cancellationToken)
     {
@@ -111,7 +113,10 @@ public class UsersController : BaseController<UsersController>
             FullName = fullName,
             ShortDescription = shortDescription,
             Description = description,
-            Photo = photoBytes
+            Photo = photoBytes,
+            InterviewPrice = interviewPrice,
+            CurrencyId = currencyId,
+            IsExpert = IsExpert,
         };
 
         return await _mediator.SendAsync(request, cancellationToken);

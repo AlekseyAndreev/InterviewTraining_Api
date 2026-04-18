@@ -45,7 +45,7 @@ public class GetInterviewInfoResponse
     /// <summary>
     /// Информация об эксперте
     /// </summary>
-    public InterviewParticipantDto Expert { get; set; }
+    public InterviewExpertDto Expert { get; set; }
 
     /// <summary>
     /// Язык собеседования

@@ -30,6 +30,8 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
             FullName = userInfo.FullName,
             ShortDescription = userInfo.ShortDescription,
             Photo = userInfo.PhotoLocal,
+            InterviewPrice = userInfo.InterviewPrice,
+            SelectedCurrencyId = userInfo.CurrencyId,
             SelectedTimeZoneId = userInfo.TimeZoneId,
             TimeZones = timeZones
                 .Where(tz => !tz.IsDeleted)
@@ -56,6 +58,30 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
         userInfo.FullName = request.FullName;
         userInfo.ShortDescription = request.ShortDescription;
         userInfo.Description = request.Description;
+
+        if (request.InterviewPrice.HasValue && request.IsExpert)
+        {
+            if (!request.CurrencyId.HasValue)
+            {
+                logger.LogWarning("Не указана валюта для пользователя {UserId}", request.IdentityUserId);
+                throw new BusinessLogicException("При указании суммы должна быть выбрана валюта");
+            }
+
+            var currency = await unitOfWork.Currencies.GetByIdAsync(request.CurrencyId.Value);
+            if (currency == null)
+            {
+                logger.LogWarning("Валюта {CurrencyId} не найдена", request.CurrencyId);
+                throw new BusinessLogicException("Указанная валюта не найдена");
+            }
+
+            userInfo.InterviewPrice = request.InterviewPrice;
+            userInfo.CurrencyId = request.CurrencyId;
+        }
+        else
+        {
+            userInfo.InterviewPrice = null;
+            userInfo.CurrencyId = null;
+        }
 
         await unitOfWork.SaveChangesAsync();
 

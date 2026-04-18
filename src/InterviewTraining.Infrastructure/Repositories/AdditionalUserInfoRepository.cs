@@ -23,6 +23,7 @@ public class AdditionalUserInfoRepository : Repository<AdditionalUserInfo, Guid>
     {
         return await DbSet
             .Include(x => x.TimeZone)
+            .Include(x => x.Currency)
             .FirstOrDefaultAsync(u => u.IdentityUserId == identityUserId && !u.IsDeleted, cancellationToken);
     }
 
