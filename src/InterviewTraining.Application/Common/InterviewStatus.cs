@@ -21,9 +21,24 @@ public static class InterviewStatus
     public const string PendingConfirmation = "PendingConfirmation";
 
     /// <summary>
-    /// Не состоялось
+    /// Время начала собеседования прошло, кандидат не подтвердил время
     /// </summary>
-    public const string DidNotTakePlace = "DidNotTakePlace";
+    public const string TimeExpiredCandidateDidNotApprove = "TimeExpiredCandidateDidNotApprove";
+
+    /// <summary>
+    /// Время начала собеседования прошло, эксперт не подтвердил время
+    /// </summary>
+    public const string TimeExpiredExpertDidNotApprove = "TimeExpiredExpertDidNotApprove";
+
+    /// <summary>
+    /// Время начала собеседования прошло, эксперт не подтвердил время, кандидат не подтвердил время
+    /// </summary>
+    public const string TimeExpiredBothDidNotApprove = "TimeExpiredBothDidNotApprove";
+
+    /// <summary>
+    /// Время начала собеседования прошло, эксперт подтвердил время, кандидат подтвердил время, админ не подтвердил
+    /// </summary>
+    public const string TimeExpiredBothApprovedAdminDidNotApprove = "TimeExpiredBothApprovedAdminDidNotApprove";
 
     /// <summary>
     /// Подтверждено кандидатом
@@ -36,14 +51,14 @@ public static class InterviewStatus
     public const string ConfirmedByExpert = "ConfirmedByExpert";
 
     /// <summary>
-    /// Подтверждено (оба подтвердили, ссылка не существует, время не наступило)
+    /// Подтверждено кандидадом, подтверждено экспертом, не подтверждено админом(ссылка не существует, нет оплаты от кандидата, время не наступило)
     /// </summary>
-    public const string ConfirmedBoth = "ConfirmedBoth";
+    public const string ConfirmedBothAdminNotApproved = "ConfirmedBothAdminNotApproved";
 
     /// <summary>
-    /// Подтверждено (оба подтвердили, ссылка существует, время не наступило)
+    /// Подтверждено кандидадом, подтверждено экспертом, подтверждено админом (ссылка существует, кандидат оплатил, время не наступило)
     /// </summary>
-    public const string ConfirmedBothLinkCreated = "ConfirmedBothLinkCreated";
+    public const string ConfirmedBothAdminApprovedTimeDidNotStart = "ConfirmedBothAdminApprovedTimeDidNotStart";
 
     /// <summary>
     /// В процессе проведения
@@ -69,4 +84,19 @@ public static class InterviewStatus
     /// Отменено экспертом
     /// </summary>
     public const string CancelledByExpert = "CancelledByExpert";
+
+    /// <summary>
+    /// Удалено экспертом
+    /// </summary>
+    public const string DeletedByExpert = "DeletedByExpert";
+
+    /// <summary>
+    /// Удалено кандидатом
+    /// </summary>
+    public const string DeletedByCandidate = "DeletedByCandidate";
+
+    /// <summary>
+    /// Удалено кандидатом и экспертом одновременно
+    /// </summary>
+    public const string DeletedByCandidateAndExpert = "DeletedByCandidateAndExpert";
 }

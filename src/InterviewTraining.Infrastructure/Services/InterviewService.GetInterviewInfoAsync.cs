@@ -135,9 +135,10 @@ public partial class InterviewService
 
         return new ParticipantApprovalDto
         {
+            IsRescheduled = data.IsRescheduled,
             IsApproved = data.IsApproved,
             IsCancelled = data.IsCancelled,
-            CancelReason = data.CancellReason
+            CancelReason = data.CancelReason
         };
     }
  }

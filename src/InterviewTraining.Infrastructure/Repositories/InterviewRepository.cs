@@ -25,7 +25,7 @@ public class InterviewRepository : Repository<Interview, Guid>, IInterviewReposi
             .Include(i => i.Candidate)
             .Include(i => i.Expert)
             .Include(i => i.ActiveInterviewVersion)
-            .Where(i => i.CandidateId == userAdditionalInfoId || i.ExpertId == userAdditionalInfoId)
+            .Where(i => (i.CandidateId == userAdditionalInfoId || i.ExpertId == userAdditionalInfoId) && !i.Candidate.IsDeleted && !i.Expert.IsDeleted)
             .OrderByDescending(i => i.CreatedUtc)
             .ToListAsync(cancellationToken);
     }
@@ -39,7 +39,7 @@ public class InterviewRepository : Repository<Interview, Guid>, IInterviewReposi
             .Include(i => i.ActiveInterviewVersion)
                 .ThenInclude(v => v.Language)
             .Include(i => i.Versions)
-            .FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
+            .FirstOrDefaultAsync(i => i.Id == id && !i.Candidate.IsDeleted && !i.Expert.IsDeleted, cancellationToken);
     }
 
     public override async Task<Interview> GetByIdAsync(Guid id)

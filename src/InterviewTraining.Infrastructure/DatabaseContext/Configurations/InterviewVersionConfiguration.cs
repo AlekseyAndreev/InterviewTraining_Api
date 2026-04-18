@@ -89,9 +89,23 @@ public class InterviewVersionConfiguration : IEntityTypeConfiguration<Domain.Int
                 .IsRequired();
 
             navigationBuilder
-                .Property(x => x.IsPaid)
+                .Property(x => x.IsRescheduled)
+                .HasComment("Признак переноса времени кандидатом")
+                .HasColumnName("candidate_is_rescheduled")
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            navigationBuilder
+                .Property(x => x.IsDeleted)
+                .HasComment("Признак удаления кандидатом")
+                .HasColumnName("candidate_is_deleted")
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            navigationBuilder
+                .Property(x => x.IsPaidByCandidate)
                 .HasComment("Признак оплаты кандидатом")
-                .HasColumnName("candidate_is_paid")
+                .HasColumnName("candidate_is_paid_by")
                 .HasDefaultValue(false)
                 .IsRequired();
 
@@ -103,9 +117,9 @@ public class InterviewVersionConfiguration : IEntityTypeConfiguration<Domain.Int
                 .IsRequired();
 
             navigationBuilder
-                .Property(x => x.CancellReason)
+                .Property(x => x.CancelReason)
                 .HasComment("Причина отмены кандидатом")
-                .HasColumnName("candidate_cancell_reason")
+                .HasColumnName("candidate_cancel_reason")
                 .IsRequired(false)
                 .HasMaxLength(2000);
         });
@@ -120,9 +134,23 @@ public class InterviewVersionConfiguration : IEntityTypeConfiguration<Domain.Int
                 .IsRequired();
 
             navigationBuilder
-                .Property(x => x.IsPaid)
-                .HasComment("Признак оплаты экспертом")
-                .HasColumnName("expert_is_paid")
+                .Property(x => x.IsPaidToExpert)
+                .HasComment("Признак оплаты эксперту")
+                .HasColumnName("expert_is_paid_to")
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            navigationBuilder
+                .Property(x => x.IsRescheduled)
+                .HasComment("Признак переноса времени экспертом")
+                .HasColumnName("expert_is_rescheduled")
+                .HasDefaultValue(false)
+                .IsRequired();
+
+            navigationBuilder
+                .Property(x => x.IsDeleted)
+                .HasComment("Признак удаления экспертом")
+                .HasColumnName("expert_is_deleted")
                 .HasDefaultValue(false)
                 .IsRequired();
 
@@ -134,9 +162,9 @@ public class InterviewVersionConfiguration : IEntityTypeConfiguration<Domain.Int
                 .IsRequired();
 
             navigationBuilder
-                .Property(x => x.CancellReason)
+                .Property(x => x.CancelReason)
                 .HasComment("Причина отмены экспертом")
-                .HasColumnName("expert_cancell_reason")
+                .HasColumnName("expert_cancel_reason")
                 .IsRequired(false)
                 .HasMaxLength(2000);
         });

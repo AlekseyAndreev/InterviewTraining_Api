@@ -225,6 +225,9 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasColumnName("interview_id")
                         .HasComment("Идентификатор интервью");
 
+                    b.Property<bool>("IsAdminApproved")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid?>("LanguageId")
                         .HasColumnType("uuid")
                         .HasColumnName("language_id")
@@ -635,55 +638,15 @@ namespace InterviewTraining.Infrastructure.Migrations
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.ClientCascade);
 
-                    b.OwnsOne("InterviewTraining.Domain.BaseUserInterviewData", "Expert", b1 =>
-                        {
-                            b1.Property<Guid>("InterviewVersionId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("CancellReason")
-                                .HasMaxLength(2000)
-                                .HasColumnType("character varying(2000)")
-                                .HasColumnName("expert_cancell_reason")
-                                .HasComment("Причина отмены экспертом");
-
-                            b1.Property<bool>("IsApproved")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("boolean")
-                                .HasDefaultValue(false)
-                                .HasColumnName("expert_is_approved")
-                                .HasComment("Признак подтверждения экспертом");
-
-                            b1.Property<bool>("IsCancelled")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("boolean")
-                                .HasDefaultValue(false)
-                                .HasColumnName("expert_is_cancelled")
-                                .HasComment("Признак отмены экспертом");
-
-                            b1.Property<bool>("IsPaid")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("boolean")
-                                .HasDefaultValue(false)
-                                .HasColumnName("expert_is_paid")
-                                .HasComment("Признак оплаты экспертом");
-
-                            b1.HasKey("InterviewVersionId");
-
-                            b1.ToTable("interview_versions", "public");
-
-                            b1.WithOwner()
-                                .HasForeignKey("InterviewVersionId");
-                        });
-
                     b.OwnsOne("InterviewTraining.Domain.CandidateInterviewData", "Candidate", b1 =>
                         {
                             b1.Property<Guid>("InterviewVersionId")
                                 .HasColumnType("uuid");
 
-                            b1.Property<string>("CancellReason")
+                            b1.Property<string>("CancelReason")
                                 .HasMaxLength(2000)
                                 .HasColumnType("character varying(2000)")
-                                .HasColumnName("candidate_cancell_reason")
+                                .HasColumnName("candidate_cancel_reason")
                                 .HasComment("Причина отмены кандидатом");
 
                             b1.Property<bool>("IsApproved")
@@ -700,18 +663,86 @@ namespace InterviewTraining.Infrastructure.Migrations
                                 .HasColumnName("candidate_is_cancelled")
                                 .HasComment("Признак отмены кандидатом");
 
-                            b1.Property<bool>("IsPaid")
+                            b1.Property<bool>("IsDeleted")
                                 .ValueGeneratedOnAdd()
                                 .HasColumnType("boolean")
                                 .HasDefaultValue(false)
-                                .HasColumnName("candidate_is_paid")
+                                .HasColumnName("candidate_is_deleted")
+                                .HasComment("Признак удаления кандидатом");
+
+                            b1.Property<bool>("IsPaidByCandidate")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("candidate_is_paid_by")
                                 .HasComment("Признак оплаты кандидатом");
+
+                            b1.Property<bool>("IsRescheduled")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("candidate_is_rescheduled")
+                                .HasComment("Признак переноса времени кандидатом");
 
                             b1.Property<string>("Notes")
                                 .HasMaxLength(2000)
                                 .HasColumnType("character varying(2000)")
                                 .HasColumnName("notes")
                                 .HasComment("Примечания от кандидата при бронировании");
+
+                            b1.HasKey("InterviewVersionId");
+
+                            b1.ToTable("interview_versions", "public");
+
+                            b1.WithOwner()
+                                .HasForeignKey("InterviewVersionId");
+                        });
+
+                    b.OwnsOne("InterviewTraining.Domain.ExpertInterviewData", "Expert", b1 =>
+                        {
+                            b1.Property<Guid>("InterviewVersionId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("CancelReason")
+                                .HasMaxLength(2000)
+                                .HasColumnType("character varying(2000)")
+                                .HasColumnName("expert_cancel_reason")
+                                .HasComment("Причина отмены экспертом");
+
+                            b1.Property<bool>("IsApproved")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("expert_is_approved")
+                                .HasComment("Признак подтверждения экспертом");
+
+                            b1.Property<bool>("IsCancelled")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("expert_is_cancelled")
+                                .HasComment("Признак отмены экспертом");
+
+                            b1.Property<bool>("IsDeleted")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("expert_is_deleted")
+                                .HasComment("Признак удаления экспертом");
+
+                            b1.Property<bool>("IsPaidToExpert")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("expert_is_paid_to")
+                                .HasComment("Признак оплаты эксперту");
+
+                            b1.Property<bool>("IsRescheduled")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("boolean")
+                                .HasDefaultValue(false)
+                                .HasColumnName("expert_is_rescheduled")
+                                .HasComment("Признак переноса времени экспертом");
 
                             b1.HasKey("InterviewVersionId");
 

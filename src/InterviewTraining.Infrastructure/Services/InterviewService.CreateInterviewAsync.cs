@@ -97,15 +97,21 @@ public partial class InterviewService
             Candidate = new CandidateInterviewData
             {
                 IsApproved = true,
-                IsPaid = false,
+                IsPaidByCandidate = false,
+                IsRescheduled = false,
+                IsDeleted = false,
+                CancelReason = null,
                 IsCancelled = false,
                 Notes = request.Notes
             },
-            Expert = new BaseUserInterviewData
+            Expert = new ExpertInterviewData
             {
                 IsApproved = false,
-                IsPaid = false,
-                IsCancelled = false
+                IsPaidToExpert = false,
+                IsCancelled = false,
+                IsRescheduled = false,
+                IsDeleted = false,
+                CancelReason = null,
             },
             CreatedUtc = DateTime.UtcNow,
             LanguageId = interviewLanguageId,

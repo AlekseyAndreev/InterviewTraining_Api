@@ -5,7 +5,12 @@
 /// </summary>
 public class ParticipantApprovalDto
 {
-    ///<summary>
+    /// <summary>
+    /// Был ли перенос времени
+    /// </summary>
+    public bool IsRescheduled { get; set; }
+
+    /// <summary>
     /// Подтверждено ли участие
     /// </summary>
     public bool IsApproved { get; set; }

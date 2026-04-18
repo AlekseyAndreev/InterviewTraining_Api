@@ -48,6 +48,12 @@ public partial class InterviewService
             throw new BusinessLogicException("Не задана активная версия для интервью");
         }
 
+        if (activeVersion.Candidate?.IsDeleted == true || activeVersion.Expert?.IsDeleted == true)
+        {
+            _logger.LogWarning("Попытка подтвердить удалённое интервью {InterviewId}", interview.Id);
+            throw new BusinessLogicException("Невозможно подтвердить удалённое собеседование");
+        }
+
         if (activeVersion.Candidate?.IsCancelled == true || activeVersion.Expert?.IsCancelled == true)
         {
             _logger.LogWarning("Попытка подтвердить отменённое интервью {InterviewId}", interview.Id);
@@ -64,6 +70,12 @@ public partial class InterviewService
             throw new BusinessLogicException("Вы уже подтвердили это собеседование");
         }
 
+        var utcNow = DateTime.UtcNow;
+        if (activeVersion.StartUtc > utcNow)
+        {
+            throw new BusinessLogicException("Время собеседования уже вышло. Вы уже не можете подтвердить своё участие");
+        }
+
         var newVersion = new InterviewVersion
         {
             Id = Guid.NewGuid(),
@@ -76,17 +88,21 @@ public partial class InterviewService
             Candidate = new CandidateInterviewData
             {
                 IsApproved = isCandidate ? true : (activeVersion.Candidate?.IsApproved ?? false),
-                IsPaid = activeVersion.Candidate?.IsPaid ?? false,
+                IsPaidByCandidate = activeVersion.Candidate?.IsPaidByCandidate ?? false,
                 IsCancelled = activeVersion.Candidate?.IsCancelled ?? false,
-                CancellReason = activeVersion.Candidate?.CancellReason,
-                Notes = activeVersion.Candidate?.Notes
+                CancelReason = activeVersion.Candidate?.CancelReason,
+                Notes = activeVersion.Candidate?.Notes,
+                IsDeleted = activeVersion.Candidate?.IsDeleted ?? false,
+                IsRescheduled = activeVersion.Candidate?.IsRescheduled ?? false,
             },
-            Expert = new BaseUserInterviewData
+            Expert = new ExpertInterviewData
             {
                 IsApproved = isExpert ? true : (activeVersion.Expert?.IsApproved ?? false),
-                IsPaid = activeVersion.Expert?.IsPaid ?? false,
+                IsPaidToExpert = activeVersion.Expert?.IsPaidToExpert ?? false,
                 IsCancelled = activeVersion.Expert?.IsCancelled ?? false,
-                CancellReason = activeVersion.Expert?.CancellReason
+                CancelReason = activeVersion.Expert?.CancelReason,
+                IsDeleted = activeVersion.Expert?.IsDeleted ?? false,
+                IsRescheduled = activeVersion.Expert?.IsRescheduled ?? false,
             }
         };
 

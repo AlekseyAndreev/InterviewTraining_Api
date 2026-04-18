@@ -1,5 +1,4 @@
 ﻿using InterviewTraining.Application.Common;
-using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.Interfaces;
 using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
@@ -85,6 +84,21 @@ public partial class InterviewService : IInterviewService
             return InterviewStatus.Draft;
         }
 
+        if (version.Candidate?.IsDeleted == true && version.Expert?.IsDeleted == true)
+        {
+            return InterviewStatus.DeletedByCandidateAndExpert;
+        }
+
+        if (version.Expert?.IsDeleted == true)
+        {
+            return InterviewStatus.DeletedByExpert;
+        }
+
+        if (version.Candidate?.IsDeleted == true)
+        {
+            return InterviewStatus.DeletedByCandidate;
+        }
+
         if (version.Candidate?.IsCancelled == true && version.Expert?.IsCancelled == true)
         {
             return InterviewStatus.CancelledByCandidateAndExpert;
@@ -100,63 +114,71 @@ public partial class InterviewService : IInterviewService
             return InterviewStatus.CancelledByCandidate;
         }
 
-        var now = DateTime.UtcNow;
+        var nowUtc = DateTime.UtcNow;
         var candidateApproved = version.Candidate?.IsApproved ?? false;
         var expertApproved = version.Expert?.IsApproved ?? false;
         var bothApproved = candidateApproved && expertApproved;
+        var isAdminApproved = version.IsAdminApproved;
 
-        var isEnd = (version.EndUtc.HasValue && version.EndUtc.Value < now) || (!version.EndUtc.HasValue && version.StartUtc.AddHours(1) > now);
+        var isEnd = (version.EndUtc.HasValue && version.EndUtc.Value < nowUtc) || (!version.EndUtc.HasValue && version.StartUtc.AddHours(1) < nowUtc);
 
-        if (bothApproved && isEnd)
+        if (bothApproved && isEnd && isAdminApproved)
         {
             return InterviewStatus.Completed;
         }
 
-        var isInProcess = (version.StartUtc <= now && !version.EndUtc.HasValue) || (version.StartUtc <= now && version.EndUtc.HasValue && version.EndUtc.Value < now);
+        var isInProcess = (version.StartUtc <= nowUtc && !version.EndUtc.HasValue && version.StartUtc.AddHours(1) > nowUtc) || (version.StartUtc <= nowUtc && version.EndUtc.HasValue && version.EndUtc.Value > nowUtc);
 
-        if (bothApproved && isInProcess)
+        if (bothApproved && isInProcess && isAdminApproved)
         {
             return InterviewStatus.InProgress;
         }
 
-        if (bothApproved && string.IsNullOrEmpty(version.LinkToVideoCall))
+        var isStartDateExpired = version.StartUtc <= nowUtc;
+
+        if (!candidateApproved && !expertApproved && isStartDateExpired)
         {
-            return InterviewStatus.ConfirmedBoth;
+            return InterviewStatus.TimeExpiredBothDidNotApprove;
         }
 
-        if (bothApproved && !string.IsNullOrEmpty(version.LinkToVideoCall))
+        if (candidateApproved && !expertApproved && isStartDateExpired)
         {
-            return InterviewStatus.ConfirmedBothLinkCreated;
+            return InterviewStatus.TimeExpiredExpertDidNotApprove;
         }
 
-        if (candidateApproved)
+        if (!candidateApproved && expertApproved && isStartDateExpired)
+        {
+            return InterviewStatus.TimeExpiredCandidateDidNotApprove;
+        }
+
+        if (bothApproved && !isAdminApproved && isStartDateExpired)
+        {
+            return InterviewStatus.TimeExpiredBothApprovedAdminDidNotApprove;
+        }
+
+        if (bothApproved && !isAdminApproved && !isStartDateExpired)
+        {
+            return InterviewStatus.ConfirmedBothAdminNotApproved;
+        }
+
+        if (bothApproved && isAdminApproved && !isStartDateExpired)
+        {
+            return InterviewStatus.ConfirmedBothAdminApprovedTimeDidNotStart;
+        }
+
+        if (candidateApproved && !isStartDateExpired)
         {
             return InterviewStatus.ConfirmedByCandidate;
         }
 
-        if (expertApproved)
+        if (expertApproved && !isStartDateExpired)
         {
             return InterviewStatus.ConfirmedByExpert;
         }
 
-        if (!candidateApproved && !expertApproved)
+        if (!candidateApproved && !expertApproved && !isStartDateExpired)
         {
             return InterviewStatus.PendingConfirmation;
-        }
-
-        if (!candidateApproved && !expertApproved && isEnd)
-        {
-            return InterviewStatus.DidNotTakePlace;
-        }
-
-        if (!candidateApproved && expertApproved && isEnd)
-        {
-            return InterviewStatus.DidNotTakePlace;
-        }
-
-        if (candidateApproved && !expertApproved && isEnd)
-        {
-            return InterviewStatus.DidNotTakePlace;
         }
 
         return InterviewStatus.Unknown;

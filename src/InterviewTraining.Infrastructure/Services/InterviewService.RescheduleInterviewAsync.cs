@@ -54,6 +54,12 @@ public partial class InterviewService
             throw new BusinessLogicException("Невозможно изменить время отменённого собеседования");
         }
 
+        if (activeVersion.Candidate?.IsDeleted == true || activeVersion.Expert?.IsDeleted == true)
+        {
+            _logger.LogWarning("Попытка изменить время удалённого собеседования {InterviewId}", interview.Id);
+            throw new BusinessLogicException("Невозможно изменить время удалённого собеседования");
+        }
+
         var userTimeZone = currentUser.TimeZoneId.HasValue
             ? await _unitOfWork.TimeZones.GetByIdAsync(currentUser.TimeZoneId.Value)
             : null;
@@ -77,18 +83,22 @@ public partial class InterviewService
             CreatedUtc = DateTime.UtcNow,
             Candidate = new CandidateInterviewData
             {
+                IsRescheduled = isCandidate,
                 IsApproved = isCandidate,
-                IsPaid = activeVersion.Candidate?.IsPaid ?? false,
+                IsPaidByCandidate = activeVersion.Candidate?.IsPaidByCandidate ?? false,
                 IsCancelled = activeVersion.Candidate?.IsCancelled ?? false,
-                CancellReason = activeVersion.Candidate?.CancellReason,
-                Notes = activeVersion.Candidate?.Notes
+                CancelReason = activeVersion.Candidate?.CancelReason,
+                Notes = activeVersion.Candidate?.Notes,
+                IsDeleted = activeVersion.Candidate?.IsDeleted ?? false,
             },
-            Expert = new BaseUserInterviewData
+            Expert = new ExpertInterviewData
             {
+                IsRescheduled = isExpert,
                 IsApproved = isExpert,
-                IsPaid = activeVersion.Expert?.IsPaid ?? false,
+                IsPaidToExpert = activeVersion.Expert?.IsPaidToExpert ?? false,
                 IsCancelled = activeVersion.Expert?.IsCancelled ?? false,
-                CancellReason = activeVersion.Expert?.CancellReason
+                CancelReason = activeVersion.Expert?.CancelReason,
+                IsDeleted = activeVersion.Expert?.IsDeleted ?? false,
             }
         };
 
