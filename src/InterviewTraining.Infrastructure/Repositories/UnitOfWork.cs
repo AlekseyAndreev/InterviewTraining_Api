@@ -26,6 +26,7 @@ public class UnitOfWork : IUnitOfWork
     private IInterviewRepository _interviews;
     private IInterviewVersionRepository _interviewVersions;
     private IInterviewLanguageRepository _interviewLanguages;
+    private ICurrencyRepository _currencies;
 
     private bool _disposed;
 
@@ -98,6 +99,12 @@ public class UnitOfWork : IUnitOfWork
     /// </summary>
     public IInterviewLanguageRepository InterviewLanguages =>
         _interviewLanguages ??= new InterviewLanguageRepository(_context);
+
+    /// <summary>
+    /// Репозиторий языки интервью
+    /// </summary>
+    public ICurrencyRepository Currencies =>
+        _currencies ??= new CurrencyRepository(_context);
 
     /// <summary>
     /// Сохранить все изменения

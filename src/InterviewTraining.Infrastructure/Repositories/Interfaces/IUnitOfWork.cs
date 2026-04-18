@@ -65,6 +65,11 @@ public interface IUnitOfWork : IDisposable
     IInterviewLanguageRepository InterviewLanguages { get; }
 
     /// <summary>
+    /// Репозиторий валюты
+    /// </summary>
+    ICurrencyRepository Currencies { get; }
+
+    /// <summary>
     /// Сохранить все изменения
     /// </summary>
     Task<int> SaveChangesAsync();

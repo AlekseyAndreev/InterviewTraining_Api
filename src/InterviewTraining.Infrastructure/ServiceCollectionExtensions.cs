@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInterviewService, InterviewService>();
         services.AddScoped<IInterviewLanguageService, InterviewLanguageService>();
         services.AddScoped<IUserSyncService, UserSyncService>();
+        services.AddScoped<ICurrencyService, CurrencyService>();
         return services;
     }
 
