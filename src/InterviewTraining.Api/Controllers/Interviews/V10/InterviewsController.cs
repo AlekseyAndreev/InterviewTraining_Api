@@ -1,10 +1,12 @@
 ﻿using InterviewTraining.Application.CancelInterview.V10;
 using InterviewTraining.Application.ConfirmInterview.V10;
+using InterviewTraining.Application.CreateChatMessage.V10;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.RescheduleInterview.V10;
+using InterviewTraining.Application.UpdateChatMessage.V10;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -167,6 +169,52 @@ public class InterviewsController : BaseController<InterviewsController>
     {
         request.IdentityUserId = CurrentUserId;
         request.InterviewId = id;
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Создать сообщение в чате интервью
+    /// </summary>
+    /// <remarks>
+    /// Создаёт сообщение в чате собеседования.
+    /// Доступно кандидату, эксперту (участвующим в собеседовании) или администратору.
+    /// Тип отправителя определяется автоматически на основе роли пользователя в собеседовании.
+    /// </remarks>
+    /// <param name="id">Идентификатор собеседования</param>
+    /// <param name="request">Данные сообщения</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Идентификатор созданного сообщения</returns>
+    [HttpPost("{id:guid}/chat/messages")]
+    [Authorize]
+    public async Task<CreateChatMessageResponse> CreateChatMessage(Guid id, [FromBody] CreateChatMessageRequest request, CancellationToken cancellationToken)
+    {
+        request.InterviewId = id;
+        request.IdentityUserId = CurrentUserId;
+        request.IsAdmin = IsAdmin;
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Редактировать сообщение в чате интервью
+    /// </summary>
+    /// <remarks>
+    /// Редактирует сообщение в чате собеседования.
+    /// Доступно только автору сообщения.
+    /// При редактировании устанавливается признак IsEdited и дата модификации.
+    /// </remarks>
+    /// <param name="id">Идентификатор собеседования</param>
+    /// <param name="messageId">Идентификатор сообщения</param>
+    /// <param name="request">Новые данные сообщения</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Результат редактирования сообщения</returns>
+    [HttpPut("{id:guid}/chat/messages/{messageId:guid}")]
+    [Authorize]
+    public async Task<UpdateChatMessageResponse> UpdateChatMessage(Guid id, Guid messageId, [FromBody] UpdateChatMessageRequest request, CancellationToken cancellationToken)
+    {
+        request.InterviewId = id;
+        request.MessageId = messageId;
+        request.IdentityUserId = CurrentUserId;
+        request.IsAdmin = IsAdmin;
         return await _mediator.SendAsync(request, cancellationToken);
     }
 }
