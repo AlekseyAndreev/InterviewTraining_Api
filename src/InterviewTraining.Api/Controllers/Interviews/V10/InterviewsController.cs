@@ -3,6 +3,7 @@ using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.CreateChatMessage.V10;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
+using InterviewTraining.Application.GetChatMessages.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.RescheduleInterview.V10;
@@ -215,6 +216,29 @@ public class InterviewsController : BaseController<InterviewsController>
         request.MessageId = messageId;
         request.IdentityUserId = CurrentUserId;
         request.IsAdmin = IsAdmin;
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Получить сообщения чата интервью
+    /// </summary>
+    /// <remarks>
+    /// Возвращает все сообщения чата собеседования.
+    /// Доступно кандидату, эксперту (участвующим в собеседовании) или администратору.
+    /// </remarks>
+    /// <param name="id">Идентификатор собеседования</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Список сообщений чата</returns>
+    [HttpGet("{id:guid}/chat/messages")]
+    [Authorize]
+    public async Task<GetChatMessagesResponse> GetChatMessages(Guid id, CancellationToken cancellationToken)
+    {
+        var request = new GetChatMessagesRequest
+        {
+            InterviewId = id,
+            IdentityUserId = CurrentUserId,
+            IsAdmin = IsAdmin
+        };
         return await _mediator.SendAsync(request, cancellationToken);
     }
 }

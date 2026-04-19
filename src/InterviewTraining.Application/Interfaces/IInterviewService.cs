@@ -2,6 +2,7 @@
 using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.CreateChatMessage.V10;
 using InterviewTraining.Application.CreateInterview.V10;
+using InterviewTraining.Application.GetChatMessages.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.RescheduleInterview.V10;
@@ -84,4 +85,12 @@ public interface IInterviewService
     /// При редактировании устанавливается признак IsEdited и дата модификации.
     /// </remarks>
     Task<UpdateChatMessageResponse> UpdateChatMessageAsync(UpdateChatMessageRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получить сообщения чата интервью
+    /// </summary>
+    /// <remarks>
+    /// Доступно кандидату, эксперту (участвующим в собеседовании) или администратору.
+    /// </remarks>
+    Task<GetChatMessagesResponse> GetChatMessagesAsync(GetChatMessagesRequest request, CancellationToken cancellationToken);
 }
