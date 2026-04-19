@@ -33,7 +33,6 @@ public class InterviewRepository : Repository<Interview, Guid>, IInterviewReposi
     public async Task<Interview> GetWithDetailsAsync(Guid id, CancellationToken cancellationToken)
     {
         return await DbSet
-            .Include(i => i.ChatMessages)
             .Include(i => i.Candidate)
                 .ThenInclude(c => c.TimeZone)
             .Include(i => i.Expert)

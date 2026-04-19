@@ -83,8 +83,6 @@ public class GetInterviewInfoResponse
     /// </summary>
     public ParticipantApprovalDto ExpertApproval { get; set; }
 
-    public List<ChatMessageDto> ChatMessages { get; set; }
-
     /// <summary>
     /// Дата создания
     /// </summary>

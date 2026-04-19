@@ -1,4 +1,4 @@
-using InterviewTraining.Api;
+﻿using InterviewTraining.Api;
 using InterviewTraining.Api.Middlewares;
 using InterviewTraining.Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Builder;
@@ -70,5 +70,9 @@ app.UseAuthorization();
 app.MapHealthChecks("/health");
 
 app.MapControllers();
+
+// SignalR endpoints
+app.MapHub<InterviewTraining.Infrastructure.SignalR.ChatHub>("/hubs/chat");
+app.MapHub<InterviewTraining.Infrastructure.SignalR.InterviewHub>("/hubs/interview");
 
 app.Run();

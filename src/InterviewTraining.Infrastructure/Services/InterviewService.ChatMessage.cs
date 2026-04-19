@@ -6,6 +6,7 @@ using InterviewTraining.Application.CreateChatMessage.V10;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.GetChatMessages.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
+using InterviewTraining.Application.SignalR;
 using InterviewTraining.Application.UpdateChatMessage.V10;
 using InterviewTraining.Domain;
 using Microsoft.Extensions.Logging;
@@ -50,11 +51,26 @@ public partial class InterviewService
             SenderType = senderType,
             SenderUserId = currentUser.Id,
             MessageText = request.MessageText,
-            IsEdited = false
+            IsEdited = false,
+            CreatedUtc = DateTime.UtcNow,
+            Id = Guid.NewGuid(),
+            ModifiedUtc = null,
         };
 
         await _unitOfWork.ChatMessages.AddAsync(chatMessage);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Отправляем уведомление через SignalR
+        await _notificationService.NotifyChatMessageCreatedAsync(new ChatMessageNotificationDto
+        {
+            Id = chatMessage.Id,
+            InterviewId = chatMessage.InterviewId,
+            From = (int)senderType,
+            Text = chatMessage.MessageText,
+            CreatedUtc = chatMessage.CreatedUtc,
+            IsEdited = chatMessage.IsEdited,
+            ModifiedUtc = chatMessage.ModifiedUtc
+        });
 
         _logger.LogInformation("Создано сообщение {MessageId} в чате интервью {InterviewId} от пользователя {UserId}",
             chatMessage.Id, interview.Id, currentUser.Id);
@@ -99,6 +115,18 @@ public partial class InterviewService
 
         _unitOfWork.ChatMessages.Update(chatMessage);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Отправляем уведомление через SignalR
+        await _notificationService.NotifyChatMessageUpdatedAsync(new ChatMessageNotificationDto
+        {
+            Id = chatMessage.Id,
+            InterviewId = chatMessage.InterviewId,
+            From = (int)chatMessage.SenderType,
+            Text = chatMessage.MessageText,
+            CreatedUtc = chatMessage.CreatedUtc,
+            IsEdited = chatMessage.IsEdited,
+            ModifiedUtc = chatMessage.ModifiedUtc
+        });
 
         _logger.LogInformation("Отредактировано сообщение {MessageId} в чате интервью {InterviewId}",
             chatMessage.Id, chatMessage.InterviewId);

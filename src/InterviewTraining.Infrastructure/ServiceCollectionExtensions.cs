@@ -1,7 +1,9 @@
 ﻿using InterviewTraining.Application.Interfaces;
+using InterviewTraining.Application.SignalR;
 using InterviewTraining.Infrastructure.Repositories;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using InterviewTraining.Infrastructure.Services;
+using InterviewTraining.Infrastructure.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InterviewTraining.Infrastructure;
@@ -25,6 +27,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInterviewLanguageService, InterviewLanguageService>();
         services.AddScoped<IUserSyncService, UserSyncService>();
         services.AddScoped<ICurrencyService, CurrencyService>();
+
+        // SignalR
+        services.AddScoped<IInterviewNotificationService, InterviewNotificationService>();
         return services;
     }
 

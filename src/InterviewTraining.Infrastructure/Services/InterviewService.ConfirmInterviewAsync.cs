@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.Exceptions;
+using InterviewTraining.Application.SignalR;
 using InterviewTraining.Domain;
 using Microsoft.Extensions.Logging;
 
@@ -114,6 +115,20 @@ public partial class InterviewService
         _unitOfWork.Interviews.Update(interview);
 
         await _unitOfWork.SaveChangesAsync();
+
+        // Отправляем уведомление через SignalR
+        await _notificationService.NotifyInterviewVersionChangedAsync(new InterviewVersionNotificationDto
+        {
+            InterviewId = interview.Id,
+            VersionId = newVersion.Id,
+            ChangeType = InterviewChangeType.Confirmed,
+            StartUtc = newVersion.StartUtc,
+            EndUtc = newVersion.EndUtc,
+            CandidateApproved = newVersion.Candidate?.IsApproved ?? false,
+            ExpertApproved = newVersion.Expert?.IsApproved ?? false,
+            CandidateCancelled = newVersion.Candidate?.IsCancelled ?? false,
+            ExpertCancelled = newVersion.Expert?.IsCancelled ?? false
+        });
 
         var userRole = isCandidate ? "кандидатом" : "экспертом";
         _logger.LogInformation("Собеседование {InterviewId} подтверждено {Role} {UserId}",

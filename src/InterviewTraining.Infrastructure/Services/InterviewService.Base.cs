@@ -1,5 +1,6 @@
 ﻿using InterviewTraining.Application.Common;
 using InterviewTraining.Application.Interfaces;
+using InterviewTraining.Application.SignalR;
 using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -14,11 +15,16 @@ public partial class InterviewService : IInterviewService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<InterviewService> _logger;
+    private readonly IInterviewNotificationService _notificationService;
 
-    public InterviewService(IUnitOfWork unitOfWork, ILogger<InterviewService> logger)
+    public InterviewService(
+        IUnitOfWork unitOfWork,
+        ILogger<InterviewService> logger,
+        IInterviewNotificationService notificationService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _notificationService = notificationService;
     }
 
     /// <summary>

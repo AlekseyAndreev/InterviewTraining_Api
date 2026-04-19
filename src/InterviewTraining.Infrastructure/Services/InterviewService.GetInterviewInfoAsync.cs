@@ -63,7 +63,6 @@ public partial class InterviewService
         {
             Id = interview.Id,
             Status = status,
-            ChatMessages = MapChatMessages(interview, timeZoneCode),
             StatusDescriptionRu = InterviewStatusDescription.GetStatusDescriptionRu(status),
             StatusDescriptionEn = InterviewStatusDescription.GetStatusDescriptionEn(status),
             StartDateTime = ConvertUtcToUserTimeZone(activeVersion.StartUtc, timeZoneCode),
@@ -88,37 +87,6 @@ public partial class InterviewService
         };
 
         return response;
-    }
-
-    /// <summary>
-    /// Маппинг участника интервью
-    /// </summary>
-    private static List<ChatMessageDto> MapChatMessages(Interview interview, string timeZoneCode)
-    {
-        if (interview.ChatMessages == null || !interview.ChatMessages.Any())
-        {
-            return null;
-        }
-
-        return interview.ChatMessages.Select(x => MapChatMessage(x, timeZoneCode)).Where(x => x != null).ToList();
-    }
-
-    private static ChatMessageDto MapChatMessage(ChatMessage chatMessage, string timeZoneCode)
-    {
-        if (chatMessage == null)
-        {
-            return null;
-        }
-
-        return new ChatMessageDto
-        {
-            Id = chatMessage.Id,
-            Created = ConvertUtcToUserTimeZone(chatMessage.CreatedUtc, timeZoneCode),
-            IsEdited = chatMessage.IsEdited,
-            Modified = ConvertUtcToUserTimeZone(chatMessage.ModifiedUtc, timeZoneCode),
-            From = MapMessageSenderType(chatMessage.SenderType),
-            Text = chatMessage.MessageText,
-        };
     }
 
     private static ChatMessageFrom MapMessageSenderType(MessageSenderType messageSenderType) =>
