@@ -31,7 +31,7 @@ public class ChatMessageRepository : Repository<ChatMessage, Guid>, IChatMessage
     {
         return await DbSet
             .Where(x => x.InterviewId == interviewId)
-            .OrderByDescending(x => x.CreatedUtc)
+            .OrderBy(x => x.CreatedUtc)
             .ToListAsync();
     }
 
