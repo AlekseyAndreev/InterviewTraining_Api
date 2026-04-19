@@ -1,11 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using InterviewTraining.Application.Exceptions;
+﻿using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.RescheduleInterview.V10;
 using InterviewTraining.Application.SignalR;
 using InterviewTraining.Domain;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.Services;
 
@@ -104,7 +104,6 @@ public partial class InterviewService
                 IsDeleted = activeVersion.Expert?.IsDeleted ?? false,
             }
         };
-
         await _unitOfWork.InterviewVersions.AddAsync(newVersion);
 
         interview.ActiveInterviewVersionId = newVersion.Id;
@@ -129,6 +128,9 @@ public partial class InterviewService
         var userRole = isCandidate ? "кандидатом" : "экспертом";
         _logger.LogInformation("Время собеседования {InterviewId} изменено {Role} {UserId} на {NewTime}",
             interview.Id, userRole, currentUser.Id, newStartUtc);
+
+        var message = $"Время собеседования изменено {userRole}";
+        await CreateChatMessageInternal(interview.Id, MessageSenderType.System, null, message, cancellationToken);
 
         return new RescheduleInterviewResponse
         {

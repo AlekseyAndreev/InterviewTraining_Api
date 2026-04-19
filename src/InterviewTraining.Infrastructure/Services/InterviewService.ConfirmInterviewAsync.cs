@@ -134,6 +134,9 @@ public partial class InterviewService
         _logger.LogInformation("Собеседование {InterviewId} подтверждено {Role} {UserId}",
             interview.Id, userRole, currentUser.Id);
 
+        var message = $"Собеседование подтверждено {userRole}";
+        await CreateChatMessageInternal(interview.Id, MessageSenderType.System, null, message, cancellationToken);
+
         return new ConfirmInterviewResponse
         {
             InterviewId = interview.Id,

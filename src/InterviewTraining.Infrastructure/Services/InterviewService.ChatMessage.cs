@@ -45,12 +45,26 @@ public partial class InterviewService
             throw new BusinessLogicException("У вас нет доступа к этому собеседованию");
         }
 
+        var (chatMessageId, chatCreatedAtUtc) = await CreateChatMessageInternal(interview.Id, senderType, currentUser.Id, request.MessageText, cancellationToken);
+
+        _logger.LogInformation("Создано сообщение {MessageId} в чате интервью {InterviewId} от пользователя {UserId}",
+            chatMessageId, interview.Id, currentUser.Id);
+
+        return new CreateChatMessageResponse
+        {
+            MessageId = chatMessageId,
+            CreatedUtc = chatCreatedAtUtc
+        };
+    }
+
+    private async Task<(Guid chatMessageId, DateTime chatCreatedAtUtc)> CreateChatMessageInternal(Guid interviewId, MessageSenderType senderType, Guid? senderUserId, string text, CancellationToken cancellationToken)
+    {
         var chatMessage = new ChatMessage
         {
-            InterviewId = request.InterviewId,
+            InterviewId = interviewId,
             SenderType = senderType,
-            SenderUserId = currentUser.Id,
-            MessageText = request.MessageText,
+            SenderUserId = senderUserId,
+            MessageText = text,
             IsEdited = false,
             CreatedUtc = DateTime.UtcNow,
             Id = Guid.NewGuid(),
@@ -72,14 +86,7 @@ public partial class InterviewService
             ModifiedUtc = chatMessage.ModifiedUtc
         });
 
-        _logger.LogInformation("Создано сообщение {MessageId} в чате интервью {InterviewId} от пользователя {UserId}",
-            chatMessage.Id, interview.Id, currentUser.Id);
-
-        return new CreateChatMessageResponse
-        {
-            MessageId = chatMessage.Id,
-            CreatedUtc = chatMessage.CreatedUtc
-        };
+        return (chatMessage.Id, chatMessage.CreatedUtc);
     }
 
     /// <summary>

@@ -116,7 +116,6 @@ public partial class InterviewService
                 IsRescheduled = activeVersion.Expert?.IsRescheduled ?? false,
             }
         };
-
         await _unitOfWork.InterviewVersions.AddAsync(newVersion);
 
         interview.ActiveInterviewVersionId = newVersion.Id;
@@ -143,6 +142,9 @@ public partial class InterviewService
         var userRole = isCandidate ? "кандидатом" : "экспертом";
         _logger.LogInformation("Собеседование {InterviewId} отменено {Role} {UserId} {Reason}",
             interview.Id, userRole, currentUser.Id, cancelReasonText);
+
+        var message = $"Собеседование отменено {userRole}";
+        await CreateChatMessageInternal(interview.Id, MessageSenderType.System, null, message, cancellationToken);
 
         return new CancelInterviewResponse
         {
