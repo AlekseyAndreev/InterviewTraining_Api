@@ -23,7 +23,7 @@ public class UsersController : BaseController<UsersController>
     private readonly ICustomMediator _mediator;
 
     private static readonly string[] AllowedImageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp" };
-    private const int MaxPhotoSizeBytes = 5 * 1024 * 1024; // 5 MB
+    private const int MaxPhotoSizeBytes = 10 * 1024 * 1024; // 10 MB
 
     /// <summary>
     /// Constructor
