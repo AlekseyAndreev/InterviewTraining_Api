@@ -70,6 +70,11 @@ public interface IUnitOfWork : IDisposable
     ICurrencyRepository Currencies { get; }
 
     /// <summary>
+    /// Репозиторий сообщений чата
+    /// </summary>
+    IChatMessageRepository ChatMessages { get; }
+
+    /// <summary>
     /// Сохранить все изменения
     /// </summary>
     Task<int> SaveChangesAsync();

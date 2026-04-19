@@ -102,7 +102,6 @@ public partial class InterviewService
                 IsPaidByCandidate = activeVersion.Candidate?.IsPaidByCandidate ?? false,
                 IsCancelled = isCandidate ? true : (activeVersion.Candidate?.IsCancelled ?? false),
                 CancelReason = isCandidate ? request.CancelReason : activeVersion.Candidate?.CancelReason,
-                Notes = activeVersion.Candidate?.Notes,
                 IsDeleted = activeVersion.Candidate?.IsDeleted ?? false,
                 IsRescheduled = activeVersion.Candidate?.IsRescheduled ?? false,
             },

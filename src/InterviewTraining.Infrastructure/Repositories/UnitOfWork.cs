@@ -27,6 +27,7 @@ public class UnitOfWork : IUnitOfWork
     private IInterviewVersionRepository _interviewVersions;
     private IInterviewLanguageRepository _interviewLanguages;
     private ICurrencyRepository _currencies;
+    private IChatMessageRepository _chatMessages;
 
     private bool _disposed;
 
@@ -101,10 +102,16 @@ public class UnitOfWork : IUnitOfWork
         _interviewLanguages ??= new InterviewLanguageRepository(_context);
 
     /// <summary>
-    /// Репозиторий языки интервью
+    /// Репозиторий валюты
     /// </summary>
     public ICurrencyRepository Currencies =>
         _currencies ??= new CurrencyRepository(_context);
+
+    /// <summary>
+    /// Репозиторий сообщений чата
+    /// </summary>
+    public IChatMessageRepository ChatMessages =>
+        _chatMessages ??= new ChatMessageRepository(_context);
 
     /// <summary>
     /// Сохранить все изменения

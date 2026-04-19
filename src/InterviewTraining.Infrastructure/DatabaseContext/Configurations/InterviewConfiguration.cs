@@ -84,6 +84,12 @@ public class InterviewConfiguration : IEntityTypeConfiguration<Domain.Interview>
             .OnDelete(DeleteBehavior.ClientCascade);
 
         builder
+            .HasMany(x => x.ChatMessages)
+            .WithOne(x => x.Interview)
+            .HasForeignKey(x => x.InterviewId)
+            .OnDelete(DeleteBehavior.ClientCascade);
+
+        builder
             .HasIndex(x => x.CandidateId)
             .HasDatabaseName("ix_interviews_candidate_id");
 

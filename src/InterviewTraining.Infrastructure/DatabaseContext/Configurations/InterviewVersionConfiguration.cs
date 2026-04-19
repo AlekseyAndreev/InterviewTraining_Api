@@ -88,13 +88,6 @@ public class InterviewVersionConfiguration : IEntityTypeConfiguration<Domain.Int
         builder.OwnsOne(x => x.Candidate, navigationBuilder =>
         {
             navigationBuilder
-                .Property(x => x.Notes)
-                .HasComment("Примечания от кандидата при бронировании")
-                .HasColumnName("notes")
-                .IsRequired(false)
-                .HasMaxLength(2000);
-
-            navigationBuilder
                 .Property(x => x.IsApproved)
                 .HasComment("Признак подтверждения кандидатом")
                 .HasColumnName("candidate_is_approved")

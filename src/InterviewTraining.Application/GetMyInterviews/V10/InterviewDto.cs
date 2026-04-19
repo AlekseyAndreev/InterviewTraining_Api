@@ -51,9 +51,4 @@ public class InterviewDto
     /// Дата и время интервью в часовом поясе пользователя
     /// </summary>
     public DateTime ScheduledAt { get; set; }
-
-    /// <summary>
-    /// Примечания
-    /// </summary>
-    public string Notes { get; set; }
 }

@@ -24,6 +24,19 @@ public partial class InterviewService : IInterviewService
     /// <summary>
     /// Конвертация UTC времени в часовой пояс пользователя
     /// </summary>
+    private static DateTime? ConvertUtcToUserTimeZone(DateTime? utcTime, string timeZoneCode)
+    {
+        if (!utcTime.HasValue)
+        {
+            return null;
+        }
+
+        return ConvertUtcToUserTimeZone(utcTime.Value, timeZoneCode);
+    }
+
+    /// <summary>
+    /// Конвертация UTC времени в часовой пояс пользователя
+    /// </summary>
     private static DateTime ConvertUtcToUserTimeZone(DateTime utcTime, string timeZoneCode)
     {
         if (string.IsNullOrEmpty(timeZoneCode) || timeZoneCode.Equals("UTC", StringComparison.OrdinalIgnoreCase))

@@ -91,7 +91,6 @@ public partial class InterviewService
                 IsPaidByCandidate = activeVersion.Candidate?.IsPaidByCandidate ?? false,
                 IsCancelled = activeVersion.Candidate?.IsCancelled ?? false,
                 CancelReason = activeVersion.Candidate?.CancelReason,
-                Notes = activeVersion.Candidate?.Notes,
                 IsDeleted = activeVersion.Candidate?.IsDeleted ?? false,
             },
             Expert = new ExpertInterviewData

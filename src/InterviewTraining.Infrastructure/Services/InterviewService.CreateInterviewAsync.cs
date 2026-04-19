@@ -104,7 +104,6 @@ public partial class InterviewService
                 IsDeleted = false,
                 CancelReason = null,
                 IsCancelled = false,
-                Notes = request.Notes
             },
             Expert = new ExpertInterviewData
             {
@@ -118,6 +117,22 @@ public partial class InterviewService
             CreatedUtc = DateTime.UtcNow,
             LanguageId = interviewLanguageId,
         };
+
+        if (!string.IsNullOrEmpty(request.Notes))
+        {
+            var chatMessage = new ChatMessage
+            {
+                Id = Guid.NewGuid(),
+                InterviewId = interview.Id,
+                CreatedUtc = DateTime.UtcNow,
+                ModifiedUtc = null,
+                IsEdited = false,
+                SenderType = MessageSenderType.Candidate,
+                SenderUserId = candidate.Id,
+                MessageText = request.Notes,
+            };
+            await _unitOfWork.ChatMessages.AddAsync(chatMessage);
+        }
 
         await _unitOfWork.InterviewVersions.AddAsync(interviewVersion);
 

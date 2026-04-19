@@ -78,6 +78,11 @@ public class InterviewContext : DbContext
     public DbSet<Currency> Currencies { get; set; }
 
     /// <summary>
+    /// Сообщения чата
+    /// </summary>
+    public DbSet<ChatMessage> ChatMessages { get; set; }
+
+    /// <summary>
     /// При создании модели
     /// </summary>
     /// <param name="modelBuilder">modelBuilder</param>
@@ -140,5 +145,6 @@ public class InterviewContext : DbContext
         builder.ApplyConfiguration(new UserAvailableTimeConfiguration());
         builder.ApplyConfiguration(new InterviewLanguageConfiguration());
         builder.ApplyConfiguration(new CurrencyConfiguration());
+        builder.ApplyConfiguration(new ChatMessageConfiguration());
     }
 }

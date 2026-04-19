@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace InterviewTraining.Application.GetInterviewInfo.V10;
 
@@ -73,11 +74,6 @@ public class GetInterviewInfoResponse
     public string LinkToVideoCall { get; set; }
 
     /// <summary>
-    /// Примечания от кандидата
-    /// </summary>
-    public string Notes { get; set; }
-
-    /// <summary>
     /// Данные подтверждения кандидата
     /// </summary>
     public ParticipantApprovalDto CandidateApproval { get; set; }
@@ -86,6 +82,8 @@ public class GetInterviewInfoResponse
     /// Данные подтверждения эксперта
     /// </summary>
     public ParticipantApprovalDto ExpertApproval { get; set; }
+
+    public List<ChatMessageDto> ChatMessages { get; set; }
 
     /// <summary>
     /// Дата создания

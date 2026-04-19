@@ -49,7 +49,6 @@ public partial class InterviewService
                 StatusDescriptionRu = InterviewStatusDescription.GetStatusDescriptionRu(status),
                 StatusDescriptionEn = InterviewStatusDescription.GetStatusDescriptionEn(status),
                 ScheduledAt = interviewDate,
-                Notes = activeVersion?.Candidate?.Notes
             };
             
             result.Add(dto);
