@@ -114,7 +114,8 @@ public class UserSkillService : IUserSkillService
                     {
                         Id = s.Id,
                         Name = s.Name,
-                        IsSelected = selectedSkillIds.Contains(s.Id)
+                        IsSelected = selectedSkillIds.Contains(s.Id),
+                        IsConfirmed = s.IsConfirmed,
                     })
                     .ToList() ?? new List<SkillDto>(),
                 ChildGroups = new List<SkillGroupDto>()
