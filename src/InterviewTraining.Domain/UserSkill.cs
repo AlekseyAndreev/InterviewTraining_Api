@@ -26,4 +26,9 @@ public class UserSkill : BaseEntity<Guid>
     /// Навигационное свойство к навыку
     /// </summary>
     public Skill Skill { get; set; }
+
+    /// <summary>
+    /// Подтверждён навык или нет
+    /// </summary>
+    public bool IsConfirmed { get; set; }
 }

@@ -99,8 +99,7 @@ public class UserSkillService : IUserSkillService
             return new GetSkillsTreeResponse { Groups = new List<SkillGroupDto>() };
         }
 
-        // Получаем выбранные пользователем навыки
-        var selectedSkillIds = await GetUserSelectedSkillIdsAsync(userId, cancellationToken);
+        var userSkillDtos = await GetUserSelectedSkillIdsAsync(userId, cancellationToken);
 
         var groupsDict = allGroups.ToDictionary(
             g => g.Id,
@@ -114,8 +113,8 @@ public class UserSkillService : IUserSkillService
                     {
                         Id = s.Id,
                         Name = s.Name,
-                        IsSelected = selectedSkillIds.Contains(s.Id),
-                        IsConfirmed = s.IsConfirmed,
+                        IsSelected = userSkillDtos.Select(x => x.SkillId).Contains(s.Id), // TODO: подумать как можно оптимизировать
+                        IsConfirmed = userSkillDtos.FirstOrDefault(t => t.SkillId == s.Id)?.IsConfirmed ?? false, // TODO: подумать как можно оптимизировать
                     })
                     .ToList() ?? new List<SkillDto>(),
                 ChildGroups = new List<SkillGroupDto>()
@@ -137,28 +136,28 @@ public class UserSkillService : IUserSkillService
         return new GetSkillsTreeResponse { Groups = rootGroups };
     }
 
+    private record UserSkillDto(Guid SkillId, bool IsConfirmed);
+
     /// <summary>
     /// Получить идентификаторы выбранных пользователем навыков
     /// </summary>
-    private async Task<HashSet<Guid>> GetUserSelectedSkillIdsAsync(string userId, CancellationToken cancellationToken)
+    private async Task<List<UserSkillDto>> GetUserSelectedSkillIdsAsync(string userId, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(userId))
         {
-            return new HashSet<Guid>();
+            return new List<UserSkillDto>();
         }
 
-        // Получаем пользователя по IdentityUserId
         var user = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(userId, cancellationToken);
         if (user == null)
         {
             _logger.LogDebug("Пользователь с IdentityUserId {UserId} не найден", userId);
-            return new HashSet<Guid>();
+            return new List<UserSkillDto>();
         }
 
-        // Получаем все навыки пользователя
         var userSkills = await _unitOfWork.UserSkills.GetByUserIdAsync(user.Id, cancellationToken);
         return userSkills
-            .Select(us => us.SkillId)
-            .ToHashSet();
+            .Select(us => new UserSkillDto(us.SkillId, us.IsConfirmed))
+            .ToList();
     }
 }

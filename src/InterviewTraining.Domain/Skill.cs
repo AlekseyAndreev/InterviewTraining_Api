@@ -9,11 +9,6 @@ namespace InterviewTraining.Domain;
 public class Skill : BaseDeleteEntity<Guid>
 {
     /// <summary>
-    /// Подтверждён навык или нет
-    /// </summary>
-    public bool IsConfirmed { get; set; }
-
-    /// <summary>
     /// Наименование навыка
     /// </summary>
     public string Name { get; set; }

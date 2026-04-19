@@ -53,32 +53,34 @@ public class UserSkillConfiguration : IEntityTypeConfiguration<Domain.UserSkill>
             .HasColumnName("skill_id")
             .IsRequired();
 
-        // Связь с пользователем
+        builder
+            .Property(action => action.IsConfirmed)
+            .HasComment("Признак подтверждён навык у пользователя или нет")
+            .HasColumnName("is_confirmed")
+            .HasDefaultValue(false)
+            .IsRequired();
+
         builder
             .HasOne(x => x.User)
             .WithMany(x => x.Skills)
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Связь с навыком
         builder
             .HasOne(x => x.Skill)
             .WithMany()
             .HasForeignKey(x => x.SkillId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Составной уникальный индекс для предотвращения дублирования
         builder
             .HasIndex(x => new { x.UserId, x.SkillId })
             .IsUnique()
             .HasDatabaseName("ix_user_skills_user_id_skill_id");
 
-        // Индекс для быстрого поиска по UserId
         builder
             .HasIndex(x => x.UserId)
             .HasDatabaseName("ix_user_skills_user_id");
 
-        // Индекс для быстрого поиска по SkillId
         builder
             .HasIndex(x => x.SkillId)
             .HasDatabaseName("ix_user_skills_skill_id");

@@ -45,13 +45,6 @@ public class SkillConfiguration : IEntityTypeConfiguration<Domain.Skill>
             .IsRequired();
 
         builder
-            .Property(action => action.IsConfirmed)
-            .HasComment("Признак подтверждён навык или нет")
-            .HasColumnName("is_confirmed")
-            .HasDefaultValue(false)
-            .IsRequired();
-
-        builder
             .Property(action => action.Name)
             .HasComment("Наимнование навыка")
             .HasColumnName("name")
