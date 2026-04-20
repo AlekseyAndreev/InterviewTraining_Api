@@ -1,10 +1,11 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using InterviewTraining.Application.Common;
+﻿using InterviewTraining.Application.Common;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Domain;
+using InterviewTraining.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.Services;
 
@@ -50,10 +51,7 @@ public partial class InterviewService
             throw new BusinessLogicException("Не задана активная версия для интервью");
         }
 
-        var userTimeZone = currentUser.TimeZoneId.HasValue
-            ? await _unitOfWork.TimeZones.GetByIdAsync(currentUser.TimeZoneId.Value)
-            : null;
-        var timeZoneCode = userTimeZone?.Code;
+        var timeZoneCode = await GetTimeZoneCode(currentUser.TimeZoneId);
 
         var status = CalculateStatus(interview, activeVersion);
 
@@ -63,16 +61,16 @@ public partial class InterviewService
             Status = status,
             StatusDescriptionRu = InterviewStatusDescription.GetStatusDescriptionRu(status),
             StatusDescriptionEn = InterviewStatusDescription.GetStatusDescriptionEn(status),
-            StartDateTime = ConvertUtcToUserTimeZone(activeVersion.StartUtc, timeZoneCode),
+            StartDateTime = DateTimeHelper.ConvertUtcToUserTimeZone(activeVersion.StartUtc, timeZoneCode),
             EndDateTime = activeVersion.EndUtc.HasValue == true
-                ? ConvertUtcToUserTimeZone(activeVersion.EndUtc.Value, timeZoneCode)
+                ? DateTimeHelper.ConvertUtcToUserTimeZone(activeVersion.EndUtc.Value, timeZoneCode)
                 : null,
             LinkToVideoCall = activeVersion.LinkToVideoCall,
             InterviewPrice = activeVersion.InterviewPrice,
             CurrencyNameEn = activeVersion.Currency?.NameEn,
             CurrencyNameRu = activeVersion.Currency?.NameRu,
 
-            CreatedUtc = ConvertUtcToUserTimeZone(interview.CreatedUtc, timeZoneCode),
+            CreatedUtc = DateTimeHelper.ConvertUtcToUserTimeZone(interview.CreatedUtc, timeZoneCode),
             Candidate = MapParticipant(interview.Candidate),
             Expert = MapParticipant(interview.Expert),
             Language = activeVersion.Language != null ? MapLanguage(activeVersion.Language) : null,

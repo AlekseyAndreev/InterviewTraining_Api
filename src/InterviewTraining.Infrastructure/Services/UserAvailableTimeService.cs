@@ -37,7 +37,6 @@ public class UserAvailableTimeService : IUserAvailableTimeService
 
         ValidateRequest(request);
 
-        // Проверяем, если создаем AlwaysAvailable - не должно быть других активных записей этого типа
         if ((AvailabilityType)request.AvailabilityType == AvailabilityType.AlwaysAvailable)
         {
             var hasAlwaysAvailable = await _unitOfWork.UserAvailableTimes.HasAlwaysAvailableAsync(user.Id);
@@ -70,7 +69,6 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             endTimeUtc = request.EndTime;
         }
 
-        // Создаем запись
         var availableTime = new UserAvailableTime
         {
             Id = Guid.NewGuid(),
@@ -152,7 +150,6 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             throw new EntityNotFoundException("Запись не найдена");
         }
 
-        // Soft delete
         availableTime.IsDeleted = true;
         availableTime.ModifiedUtc = DateTime.UtcNow;
         _unitOfWork.UserAvailableTimes.Update(availableTime);
@@ -186,7 +183,6 @@ public class UserAvailableTimeService : IUserAvailableTimeService
 
         ValidateUpdateRequest(request);
 
-        // Проверяем, если обновляем на AlwaysAvailable - не должно быть других активных записей этого типа
         if ((AvailabilityType)request.AvailabilityType == AvailabilityType.AlwaysAvailable)
         {
             var hasAlwaysAvailable = await _unitOfWork.UserAvailableTimes.HasAlwaysAvailableExcludingAsync(user.Id, request.AvailableTimeId);
@@ -219,7 +215,6 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             endTimeUtc = request.EndTime;
         }
 
-        // Обновляем запись
         availableTime.AvailabilityType = (AvailabilityType)request.AvailabilityType;
         availableTime.DayOfWeek = request.DayOfWeek.HasValue ? (DayOfWeek)request.DayOfWeek.Value : null;
         availableTime.SpecificDate = request.SpecificDate;
@@ -432,7 +427,6 @@ public class UserAvailableTimeService : IUserAvailableTimeService
         TimeOnly? displayStartTime = entity.StartTime;
         TimeOnly? displayEndTime = entity.EndTime;
 
-        // Конвертируем время обратно в timezone пользователя для отображения
         if (entity.StartTime.HasValue && timeZoneInfo != null)
         {
             displayStartTime = ConvertTimeFromUtc(entity.StartTime.Value, timeZoneInfo, entity.SpecificDate);

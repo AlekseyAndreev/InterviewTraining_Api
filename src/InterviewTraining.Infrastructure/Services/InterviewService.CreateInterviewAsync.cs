@@ -15,11 +15,6 @@ public partial class InterviewService
 {
     public async Task<CreateInterviewResponse> CreateInterviewAsync(CreateInterviewRequest request, CancellationToken cancellationToken)
     {
-        if (request.ExpertId == request.CandidateId)
-        {
-            throw new BusinessLogicException("Эксперт и кандидат один и тот же пользователь");
-        }
-
         var candidate = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.CandidateId, cancellationToken);
         if (candidate == null)
         {
@@ -56,19 +51,7 @@ public partial class InterviewService
             throw new BusinessLogicException("Эксперт и кандидат один и тот же пользователь");
         }
 
-        Guid? interviewLanguageId = null;
-        if (request.InterviewLanguageId.HasValue)
-        {
-            var existsLang = await _unitOfWork.InterviewLanguages.AnyAsync(x => x.Id == request.InterviewLanguageId.Value && !x.IsDeleted);
-            if (!existsLang)
-            {
-                throw new BusinessLogicException("Язык собеседования не найден в БД");
-            }
-            else
-            {
-                interviewLanguageId = request.InterviewLanguageId.Value;
-            }
-        }
+        var interviewLanguageId = await GetLanguageId(request.InterviewLanguageId);
 
         var startUtc = ConvertUserTimeToUtc(request.Date, request.Time, candidate.TimeZone?.Code);
 
@@ -89,13 +72,73 @@ public partial class InterviewService
         await _unitOfWork.Interviews.AddAsync(interview);
         await _unitOfWork.SaveChangesAsync();
 
-        var interviewVersion = new InterviewVersion
+        var interviewVersion = CreateNewEmptyVersion(interview.Id, startUtc, expert.InterviewPrice, expert.CurrencyId, interviewLanguageId);
+
+        await AddChatMessageForNotes(interview.Id, request.Notes, candidate.Id);
+
+        await _unitOfWork.InterviewVersions.AddAsync(interviewVersion);
+
+        interview.ActiveInterviewVersionId = interviewVersion.Id;
+        _unitOfWork.Interviews.Update(interview);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation("Создано собеседование {InterviewId} кандидатом {CandidateId} с экспертом {ExpertId}",
+            interview.Id, candidate.Id, expert.Id);
+
+        return new CreateInterviewResponse
+        {
+            Id = interview.Id,
+            Success = true
+        };
+    }
+
+    private async Task<Guid?> GetLanguageId(Guid? interviewLanguageIdParam)
+    {
+        if (!interviewLanguageIdParam.HasValue)
+        {
+            return null;
+        }
+
+        var existsLang = await _unitOfWork.InterviewLanguages.AnyAsync(x => x.Id == interviewLanguageIdParam.Value && !x.IsDeleted);
+        if (!existsLang)
+        {
+            throw new BusinessLogicException("Язык собеседования не найден в БД");
+        }
+
+        return interviewLanguageIdParam.Value;
+    }
+
+    private async Task AddChatMessageForNotes(Guid interviewId, string notes, Guid candidateId)
+    {
+        if (string.IsNullOrEmpty(notes))
+        {
+            return;
+        }
+
+        var chatMessage = new ChatMessage
         {
             Id = Guid.NewGuid(),
-            InterviewId = interview.Id,
+            InterviewId = interviewId,
+            CreatedUtc = DateTime.UtcNow,
+            ModifiedUtc = null,
+            IsEdited = false,
+            SenderType = MessageSenderType.Candidate,
+            SenderUserId = candidateId,
+            MessageText = notes,
+        };
+        await _unitOfWork.ChatMessages.AddAsync(chatMessage);
+    }
+
+    private static InterviewVersion CreateNewEmptyVersion(Guid interviewId, DateTime startUtc, decimal? expertInterviewPrice, Guid? expertCurrencyId, Guid? interviewLanguageId)
+    {
+        return new InterviewVersion
+        {
+            Id = Guid.NewGuid(),
+            InterviewId = interviewId,
             StartUtc = startUtc,
-            InterviewPrice = expert.InterviewPrice,
-            CurrencyId = expert.CurrencyId,
+            InterviewPrice = expertInterviewPrice,
+            CurrencyId = expertCurrencyId,
             Candidate = new CandidateInterviewData
             {
                 IsApproved = true,
@@ -117,37 +160,5 @@ public partial class InterviewService
             CreatedUtc = DateTime.UtcNow,
             LanguageId = interviewLanguageId,
         };
-
-        if (!string.IsNullOrEmpty(request.Notes))
-        {
-            var chatMessage = new ChatMessage
-            {
-                Id = Guid.NewGuid(),
-                InterviewId = interview.Id,
-                CreatedUtc = DateTime.UtcNow,
-                ModifiedUtc = null,
-                IsEdited = false,
-                SenderType = MessageSenderType.Candidate,
-                SenderUserId = candidate.Id,
-                MessageText = request.Notes,
-            };
-            await _unitOfWork.ChatMessages.AddAsync(chatMessage);
-        }
-
-        await _unitOfWork.InterviewVersions.AddAsync(interviewVersion);
-
-        interview.ActiveInterviewVersionId = interviewVersion.Id;
-        _unitOfWork.Interviews.Update(interview);
-
-        await _unitOfWork.SaveChangesAsync();
-
-        _logger.LogInformation("Создано собеседование {InterviewId} кандидатом {CandidateId} с экспертом {ExpertId}",
-            interview.Id, candidate.Id, expert.Id);
-
-        return new CreateInterviewResponse
-        {
-            Id = interview.Id,
-            Success = true
-        };
     }
- }
+}

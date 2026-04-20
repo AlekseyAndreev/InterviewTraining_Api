@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using InterviewTraining.Application.CreateChatMessage.V10;
 using InterviewTraining.Application.Exceptions;
-using InterviewTraining.Application.GetChatMessages.V10;
-using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.SignalR;
 using InterviewTraining.Application.UpdateChatMessage.V10;
-using InterviewTraining.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace InterviewTraining.Infrastructure.Services;
@@ -52,7 +47,6 @@ public partial class InterviewService
         _unitOfWork.ChatMessages.Update(chatMessage);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Отправляем уведомление через SignalR
         await _notificationService.NotifyChatMessageUpdatedAsync(new ChatMessageNotificationDto
         {
             Id = chatMessage.Id,

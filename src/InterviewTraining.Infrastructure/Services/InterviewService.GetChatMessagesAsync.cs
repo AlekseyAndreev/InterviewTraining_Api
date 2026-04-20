@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.GetChatMessages.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
+using InterviewTraining.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
 
 namespace InterviewTraining.Infrastructure.Services;
@@ -57,9 +57,9 @@ public partial class InterviewService
            Id = x.Id,
            From = MapMessageSenderType(x.SenderType),
            Text = x.MessageText,
-           Created = ConvertUtcToUserTimeZone(x.CreatedUtc, timeZoneCode),
+           Created = DateTimeHelper.ConvertUtcToUserTimeZone(x.CreatedUtc, timeZoneCode),
            IsEdited = x.IsEdited,
-           Modified = ConvertUtcToUserTimeZone(x.ModifiedUtc, timeZoneCode)
+           Modified = DateTimeHelper.ConvertUtcToUserTimeZone(x.ModifiedUtc, timeZoneCode)
        }).ToList();
 
        return new GetChatMessagesResponse

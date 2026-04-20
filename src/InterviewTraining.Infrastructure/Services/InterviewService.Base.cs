@@ -1,10 +1,13 @@
 ﻿using InterviewTraining.Application.Common;
+using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.Interfaces;
 using InterviewTraining.Application.SignalR;
 using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.Services;
 
@@ -25,44 +28,6 @@ public partial class InterviewService : IInterviewService
         _unitOfWork = unitOfWork;
         _logger = logger;
         _notificationService = notificationService;
-    }
-
-    /// <summary>
-    /// Конвертация UTC времени в часовой пояс пользователя
-    /// </summary>
-    private static DateTime? ConvertUtcToUserTimeZone(DateTime? utcTime, string timeZoneCode)
-    {
-        if (!utcTime.HasValue)
-        {
-            return null;
-        }
-
-        return ConvertUtcToUserTimeZone(utcTime.Value, timeZoneCode);
-    }
-
-    /// <summary>
-    /// Конвертация UTC времени в часовой пояс пользователя
-    /// </summary>
-    private static DateTime ConvertUtcToUserTimeZone(DateTime utcTime, string timeZoneCode)
-    {
-        if (string.IsNullOrEmpty(timeZoneCode) || timeZoneCode.Equals("UTC", StringComparison.OrdinalIgnoreCase))
-        {
-            return utcTime;
-        }
-
-        try
-        {
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneCode);
-            return TimeZoneInfo.ConvertTimeFromUtc(utcTime, timeZoneInfo);
-        }
-        catch (TimeZoneNotFoundException)
-        {
-            return utcTime;
-        }
-        catch (InvalidTimeZoneException)
-        {
-            return utcTime;
-        }
     }
 
     /// <summary>
@@ -202,4 +167,95 @@ public partial class InterviewService : IInterviewService
 
         return InterviewStatus.Unknown;
     }
+
+    private async Task<string> GetTimeZoneCode(Guid? timeZoneId)
+    {
+        if (!timeZoneId.HasValue)
+        {
+            return null;
+        }
+
+        var timeZone = await _unitOfWork.TimeZones.GetByIdAsync(timeZoneId.Value);
+        return timeZone?.Code;
+    }
+
+    private async Task<(bool isCandidate, bool isExpert, Interview interview, InterviewVersion activeVersion, AdditionalUserInfo currentUser)> GetBaseToChangeInterviewAsync(string currentUserId, Guid interviewId, string actionName, CancellationToken cancellationToken)
+    {
+        var currentUser = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(currentUserId, cancellationToken);
+        if (currentUser == null)
+        {
+            _logger.LogWarning("Не найдена информация по пользователю {UserId}", currentUserId);
+            throw new BusinessLogicException("Не найдена информация по текущему пользователю");
+        }
+
+        var interview = await _unitOfWork.Interviews.GetWithDetailsAsync(interviewId, cancellationToken);
+        if (interview == null)
+        {
+            _logger.LogWarning("Собеседования с идентификатором {InterviewId} не найдено", interviewId);
+            throw new EntityNotFoundException("Собеседование не найдено");
+        }
+
+        var isCandidate = interview.CandidateId == currentUser.Id;
+        var isExpert = interview.ExpertId == currentUser.Id;
+
+        if (!isCandidate && !isExpert)
+        {
+            _logger.LogWarning("Пользователь {UserId} не является участником интервью {InterviewId}",
+                currentUser.Id, interview.Id);
+            throw new BusinessLogicException("Вы не являетесь участником этого собеседования");
+        }
+
+        var activeVersion = interview.ActiveInterviewVersion;
+        if (activeVersion == null)
+        {
+            throw new BusinessLogicException("Не задана активная версия для собеседования");
+        }
+
+        if (activeVersion.Candidate?.IsDeleted == true || activeVersion.Expert?.IsDeleted == true)
+        {
+            _logger.LogWarning("Попытка выполнить действие {ActionName} для удалённого собеседования {InterviewId}", actionName, interview.Id);
+            throw new BusinessLogicException($"Невозможно выполнить действие {actionName}, так как собеседование удалено");
+        }
+
+        if (activeVersion.Candidate?.IsCancelled == true || activeVersion.Expert?.IsCancelled == true)
+        {
+            _logger.LogWarning("Попытка выполнить действие {ActionName} для отменённого собеседования {InterviewId}", actionName, interview.Id);
+            throw new BusinessLogicException($"Невозможно выполнить действие {actionName}, так как собеседование отменено");
+        }
+
+        return (isCandidate, isExpert, interview, activeVersion, currentUser);
+    }
+
+    private static InterviewVersion CopyFrom(Guid interviewId, InterviewVersion activeVersion) =>
+        new()
+        {
+            Id = Guid.NewGuid(),
+            InterviewId = interviewId,
+            StartUtc = activeVersion.StartUtc,
+            EndUtc = activeVersion.EndUtc,
+            LinkToVideoCall = activeVersion.LinkToVideoCall,
+            LanguageId = activeVersion.LanguageId,
+            CreatedUtc = DateTime.UtcNow,
+            IsAdminApproved = activeVersion.IsAdminApproved,
+            CurrencyId = activeVersion.CurrencyId,
+            InterviewPrice = activeVersion.InterviewPrice,
+            Candidate = new CandidateInterviewData
+            {
+                IsApproved = activeVersion.Candidate?.IsApproved ?? false,
+                IsPaidByCandidate = activeVersion.Candidate?.IsPaidByCandidate ?? false,
+                IsCancelled = activeVersion.Candidate?.IsCancelled ?? false,
+                CancelReason = activeVersion.Candidate?.CancelReason,
+                IsDeleted = activeVersion.Candidate?.IsDeleted ?? false,
+                IsRescheduled = activeVersion.Candidate?.IsRescheduled ?? false,
+            },
+            Expert = new ExpertInterviewData
+            {
+                IsApproved = activeVersion.Expert?.IsApproved ?? false,
+                IsPaidToExpert = activeVersion.Expert?.IsPaidToExpert ?? false,
+                IsCancelled = activeVersion.Expert?.IsCancelled ?? false,
+                CancelReason = activeVersion.Expert?.CancelReason,
+                IsDeleted = activeVersion.Expert?.IsDeleted ?? false,
+                IsRescheduled = activeVersion.Expert?.IsRescheduled ?? false,
+            }
+        };
 }

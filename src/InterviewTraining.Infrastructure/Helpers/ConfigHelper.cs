@@ -5,8 +5,7 @@ namespace InterviewTraining.Infrastructure.Helpers;
 
 public static class ConfigHelper
 {
-    public static string GetSettingFromConfig(IConfiguration configuration, string firstName,
-string secondName, bool throwIfEmpty = true)
+    public static string GetSettingFromConfig(IConfiguration configuration, string firstName, string secondName, bool throwIfEmpty = true)
     {
         return GetSettingFromConfig((IConfigurationRoot)configuration, firstName, secondName, throwIfEmpty);
     }

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using InterviewTraining.Application.Common;
+using InterviewTraining.Application.Exceptions;
+using InterviewTraining.Application.GetMyInterviews.V10;
+using InterviewTraining.Infrastructure.Helpers;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using InterviewTraining.Application.Common;
-using InterviewTraining.Application.Exceptions;
-using InterviewTraining.Application.GetMyInterviews.V10;
-using Microsoft.Extensions.Logging;
 
 namespace InterviewTraining.Infrastructure.Services;
 
@@ -25,9 +26,7 @@ public partial class InterviewService
 
         var interviews = await _unitOfWork.Interviews.GetByUserIdAsync(currentUser.Id, cancellationToken);
 
-        var userTimeZone = currentUser.TimeZoneId.HasValue
-            ? await _unitOfWork.TimeZones.GetByIdAsync(currentUser.TimeZoneId.Value)
-            : null;
+        var timeZoneCode = await GetTimeZoneCode(currentUser.TimeZoneId);
 
         var result = new List<InterviewDto>();
 
@@ -35,7 +34,7 @@ public partial class InterviewService
         {
             var activeVersion = interview.ActiveInterviewVersion;
             var interviewDate = activeVersion != null
-                ? ConvertUtcToUserTimeZone(activeVersion.StartUtc, userTimeZone?.Code)
+                ? DateTimeHelper.ConvertUtcToUserTimeZone(activeVersion.StartUtc, timeZoneCode)
                 : DateTime.MinValue;
             var status = CalculateStatus(interview, activeVersion);
             var dto = new InterviewDto
