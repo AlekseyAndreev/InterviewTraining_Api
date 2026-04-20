@@ -71,7 +71,6 @@ app.MapHealthChecks("/health");
 
 app.MapControllers();
 
-// SignalR endpoints
 app.MapHub<InterviewTraining.Infrastructure.SignalR.ChatHub>("/hubs/chat");
 app.MapHub<InterviewTraining.Infrastructure.SignalR.InterviewHub>("/hubs/interview");
 
