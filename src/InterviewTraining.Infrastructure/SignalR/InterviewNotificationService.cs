@@ -26,9 +26,9 @@ public class InterviewNotificationService : IInterviewNotificationService
     }
 
     /// <summary>
-    /// Отправить уведомление о новом сообщении в чате
+    /// Отправить уведомление о новом сообщении в чате собеседования
     /// </summary>
-    public async Task NotifyChatMessageCreatedAsync(ChatMessageNotificationDto message)
+    public async Task NotifyChatMessageCreatedAsync(InterviewChatMessageNotificationDto message)
     {
         try
         {
@@ -48,7 +48,7 @@ public class InterviewNotificationService : IInterviewNotificationService
     /// <summary>
     /// Отправить уведомление об обновлении сообщения в чате
     /// </summary>
-    public async Task NotifyChatMessageUpdatedAsync(ChatMessageNotificationDto message)
+    public async Task NotifyChatMessageUpdatedAsync(InterviewChatMessageNotificationDto message)
     {
         try
         {

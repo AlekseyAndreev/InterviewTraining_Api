@@ -235,11 +235,6 @@ public partial class InterviewService : IInterviewService
             ChangeType = InterviewChangeType.Cancelled,
             StartUtc = newVersion.StartUtc,
             EndUtc = newVersion.EndUtc,
-            // CandidateApproved = newVersion.Candidate?.IsApproved ?? false,
-            // ExpertApproved = newVersion.Expert?.IsApproved ?? false,
-            // CandidateCancelled = newVersion.Candidate?.IsCancelled ?? false,
-            // ExpertCancelled = newVersion.Expert?.IsCancelled ?? false,
-            // CancelReason = isCandidate ? request.CancelReason : newVersion.Expert?.CancelReason
         });
 
         await CreateChatMessageInternal(interview.Id, MessageSenderType.System, null, chatMessageText, cancellationToken);

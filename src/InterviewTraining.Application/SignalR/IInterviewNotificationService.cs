@@ -10,12 +10,12 @@ public interface IInterviewNotificationService
     /// <summary>
     /// Отправить уведомление о новом сообщении в чате
     /// </summary>
-    Task NotifyChatMessageCreatedAsync(ChatMessageNotificationDto message);
+    Task NotifyChatMessageCreatedAsync(InterviewChatMessageNotificationDto message);
 
     ///<summary>
     /// Отправить уведомление об обновлении сообщения в чате
     /// </summary>
-    Task NotifyChatMessageUpdatedAsync(ChatMessageNotificationDto message);
+    Task NotifyChatMessageUpdatedAsync(InterviewChatMessageNotificationDto message);
 
     /// <summary>
     /// Отправить уведомление об изменении версии интервью

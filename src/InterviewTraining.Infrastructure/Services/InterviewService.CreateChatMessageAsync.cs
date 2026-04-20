@@ -70,7 +70,7 @@ public partial class InterviewService
         await _unitOfWork.ChatMessages.AddAsync(chatMessage);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await _notificationService.NotifyChatMessageCreatedAsync(new ChatMessageNotificationDto
+        await _notificationService.NotifyChatMessageCreatedAsync(new InterviewChatMessageNotificationDto
         {
             Id = chatMessage.Id,
             InterviewId = chatMessage.InterviewId,

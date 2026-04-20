@@ -5,7 +5,7 @@ namespace InterviewTraining.Application.SignalR;
 /// <summary>
 /// DTO для уведомления о сообщении чата через SignalR
 /// </summary>
-public class ChatMessageNotificationDto
+public class InterviewChatMessageNotificationDto
 {
     /// <summary>
     /// Идентификатор сообщения
