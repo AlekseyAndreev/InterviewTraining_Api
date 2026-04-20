@@ -1,7 +1,5 @@
 ﻿using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.RescheduleInterview.V10;
-using InterviewTraining.Application.SignalR;
-using InterviewTraining.Domain;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;

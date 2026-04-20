@@ -27,8 +27,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInterviewLanguageService, InterviewLanguageService>();
         services.AddScoped<IUserSyncService, UserSyncService>();
         services.AddScoped<ICurrencyService, CurrencyService>();
-
-        // SignalR
         services.AddScoped<IInterviewNotificationService, InterviewNotificationService>();
         return services;
     }
