@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 
 var builder = WebApplication
@@ -33,7 +34,6 @@ var app = builder.Build();
 using (var scope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
 {
     using var context = scope.ServiceProvider.GetRequiredService<InterviewContext>();
-    // Применяем миграции
     var pendingMigrations = context.Database.GetPendingMigrations();
     if (pendingMigrations != null && pendingMigrations.Any())
     {
@@ -43,10 +43,12 @@ using (var scope = app.Services.GetService<IServiceScopeFactory>().CreateScope()
 
 await InterviewContextSeeding.SeedAllAsync(app.Services);
 
+var uiUrls = app.Configuration.GetSection("UiUrls").Get<string[]>() ?? Array.Empty<string>();
 app.UseCors(builder => builder
-    .AllowAnyOrigin()
+    .WithOrigins(uiUrls)
     .AllowAnyHeader()
-    .AllowAnyMethod());
+    .AllowAnyMethod()
+    .AllowCredentials());
 
 if (app.Environment.IsDevelopment())
 {
@@ -71,7 +73,7 @@ app.MapHealthChecks("/health");
 
 app.MapControllers();
 
-app.MapHub<InterviewTraining.Infrastructure.SignalR.ChatHub>("/hubs/chat");
-app.MapHub<InterviewTraining.Infrastructure.SignalR.InterviewHub>("/hubs/interview");
+app.MapHub<InterviewTraining.Infrastructure.SignalR.InterviewChatHub>("/hubs/interview-chat").RequireAuthorization();
+app.MapHub<InterviewTraining.Infrastructure.SignalR.InterviewHub>("/hubs/interview").RequireAuthorization();
 
 app.Run();

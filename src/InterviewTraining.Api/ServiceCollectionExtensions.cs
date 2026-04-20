@@ -1,11 +1,13 @@
-﻿using InterviewTraining.Infrastructure.DatabaseContext;
+﻿using InterviewTraining.Application;
+using InterviewTraining.Infrastructure;
+using InterviewTraining.Infrastructure.DatabaseContext;
 using InterviewTraining.Infrastructure.Helpers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using InterviewTraining.Application;
-using InterviewTraining.Infrastructure;
 using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
 
 namespace InterviewTraining.Api;
 
@@ -34,6 +36,20 @@ public static class ServiceCollectionExtensions
         services.AddAuthentication()
             .AddJwtBearer(options =>
             {
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
                 options.Authority = identityServerAuthenticationAuthority;
                 options.TokenValidationParameters.ValidateAudience = false;
                 options.TokenValidationParameters.RoleClaimType = "role";

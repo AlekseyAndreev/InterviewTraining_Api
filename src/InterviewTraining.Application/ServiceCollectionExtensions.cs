@@ -18,7 +18,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ICustomMediator, CustomMediator>();
 
-        // Автоматическое сканирование и регистрация всех хендлеров
         var handlerInterfaceType = typeof(IMediatorHandler<,>);
         var assembly = typeof(ServiceCollectionExtensions).Assembly;
 

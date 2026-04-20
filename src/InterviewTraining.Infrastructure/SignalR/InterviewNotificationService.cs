@@ -11,12 +11,12 @@ namespace InterviewTraining.Infrastructure.SignalR;
 /// </summary>
 public class InterviewNotificationService : IInterviewNotificationService
 {
-    private readonly IHubContext<ChatHub> _chatHubContext;
+    private readonly IHubContext<InterviewChatHub> _chatHubContext;
     private readonly IHubContext<InterviewHub> _interviewHubContext;
     private readonly ILogger<InterviewNotificationService> _logger;
 
     public InterviewNotificationService(
-        IHubContext<ChatHub> chatHubContext,
+        IHubContext<InterviewChatHub> chatHubContext,
         IHubContext<InterviewHub> interviewHubContext,
         ILogger<InterviewNotificationService> logger)
     {
@@ -34,7 +34,7 @@ public class InterviewNotificationService : IInterviewNotificationService
         {
             var groupName = $"interview_{message.InterviewId}_chat";
             await _chatHubContext.Clients.Group(groupName)
-                .SendAsync(ChatHub.MessageCreatedMethod, message);
+                .SendAsync(InterviewChatHub.MessageCreatedMethod, message);
 
             _logger.LogDebug("Отправлено уведомление о создании сообщения {MessageId} в интервью {InterviewId}",
                 message.Id, message.InterviewId);
@@ -54,7 +54,7 @@ public class InterviewNotificationService : IInterviewNotificationService
         {
             var groupName = $"interview_{message.InterviewId}_chat";
             await _chatHubContext.Clients.Group(groupName)
-                .SendAsync(ChatHub.MessageUpdatedMethod, message);
+                .SendAsync(InterviewChatHub.MessageUpdatedMethod, message);
 
             _logger.LogDebug("Отправлено уведомление об обновлении сообщения {MessageId} в интервью {InterviewId}",
                 message.Id, message.InterviewId);

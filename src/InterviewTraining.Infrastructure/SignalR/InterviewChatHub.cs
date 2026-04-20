@@ -9,7 +9,7 @@ namespace InterviewTraining.Infrastructure.SignalR;
 /// SignalR хаб для уведомлений о сообщениях чата
 /// </summary>
 [Authorize]
-public class ChatHub : Hub
+public class InterviewChatHub : Hub
 {
     /// <summary>
     /// Присоединиться к группе чата интервью
