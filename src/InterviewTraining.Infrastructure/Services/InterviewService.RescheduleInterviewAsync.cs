@@ -40,25 +40,11 @@ public partial class InterviewService
 
         await _unitOfWork.SaveChangesAsync();
 
-        await _notificationService.NotifyInterviewVersionChangedAsync(new InterviewVersionNotificationDto
-        {
-            InterviewId = interview.Id,
-            VersionId = newVersion.Id,
-            ChangeType = InterviewChangeType.Rescheduled,
-            StartUtc = newVersion.StartUtc,
-            EndUtc = newVersion.EndUtc,
-            CandidateApproved = newVersion.Candidate?.IsApproved ?? false,
-            ExpertApproved = newVersion.Expert?.IsApproved ?? false,
-            CandidateCancelled = newVersion.Candidate?.IsCancelled ?? false,
-            ExpertCancelled = newVersion.Expert?.IsCancelled ?? false
-        });
-
         var userRole = isCandidate ? "кандидатом" : "экспертом";
         _logger.LogInformation("Время собеседования {InterviewId} изменено {Role} {UserId} на {NewTime}",
             interview.Id, userRole, currentUser.Id, newStartUtc);
 
-        var message = $"Время собеседования изменено {userRole}";
-        await CreateChatMessageInternal(interview.Id, MessageSenderType.System, null, message, cancellationToken);
+        await NotifyInterviewChanged(interview, newVersion, $"Время собеседования изменено {userRole}", cancellationToken);
 
         return new RescheduleInterviewResponse
         {

@@ -20,5 +20,5 @@ public interface IInterviewNotificationService
     /// <summary>
     /// Отправить уведомление об изменении версии интервью
     /// </summary>
-    Task NotifyInterviewVersionChangedAsync(InterviewVersionNotificationDto notification);
+    Task NotifyInterviewVersionChangedAsync(InterviewVersionChangedNotificationDto notification);
 }

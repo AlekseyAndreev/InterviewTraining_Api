@@ -243,6 +243,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
         return identityUser;
     }
 
+    // TODO: объеденить с получением временной зоны и кода в интервью
     private async Task<TimeZoneInfo> GetUserTimeZoneAsync(Guid? timeZoneId)
     {
         if (!timeZoneId.HasValue)
@@ -398,6 +399,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
     /// </summary>
     private static TimeOnly ConvertTimeToUtc(TimeOnly localTime, TimeZoneInfo timeZoneInfo, int? dayOfWeek, DateOnly? specificDate)
     {
+        // TODO: объеденить с логикой DateTimeHelper и туда вынести
         DateOnly dateToUse = specificDate ?? DateOnly.FromDateTime(DateTime.Today);
         var localDateTime = dateToUse.ToDateTime(localTime);
         
@@ -411,6 +413,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
     /// </summary>
     private static TimeOnly ConvertTimeFromUtc(TimeOnly utcTime, TimeZoneInfo timeZoneInfo, DateOnly? specificDate)
     {
+        // TODO: объеденить с логикой DateTimeHelper и туда вынести
         DateOnly dateToUse = specificDate ?? DateOnly.FromDateTime(DateTime.Today);
         
         var utcDateTime = dateToUse.ToDateTime(utcTime);

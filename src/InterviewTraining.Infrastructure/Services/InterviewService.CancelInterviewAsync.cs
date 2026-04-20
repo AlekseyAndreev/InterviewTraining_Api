@@ -40,27 +40,12 @@ public partial class InterviewService
 
         await _unitOfWork.SaveChangesAsync();
 
-        await _notificationService.NotifyInterviewVersionChangedAsync(new InterviewVersionNotificationDto
-        {
-            InterviewId = interview.Id,
-            VersionId = newVersion.Id,
-            ChangeType = InterviewChangeType.Cancelled,
-            StartUtc = newVersion.StartUtc,
-            EndUtc = newVersion.EndUtc,
-            CandidateApproved = newVersion.Candidate?.IsApproved ?? false,
-            ExpertApproved = newVersion.Expert?.IsApproved ?? false,
-            CandidateCancelled = newVersion.Candidate?.IsCancelled ?? false,
-            ExpertCancelled = newVersion.Expert?.IsCancelled ?? false,
-            CancelReason = isCandidate ? request.CancelReason : newVersion.Expert?.CancelReason
-        });
-
         var cancelReasonText = string.IsNullOrEmpty(request.CancelReason) ? "без указания причины" : $"по причине: {request.CancelReason}";
         var userRole = isCandidate ? "кандидатом" : "экспертом";
         _logger.LogInformation("Собеседование {InterviewId} отменено {Role} {UserId} {Reason}",
             interview.Id, userRole, currentUser.Id, cancelReasonText);
 
-        var message = $"Собеседование отменено {userRole}";
-        await CreateChatMessageInternal(interview.Id, MessageSenderType.System, null, message, cancellationToken);
+        await NotifyInterviewChanged(interview, newVersion, $"Собеседование отменено {userRole}", cancellationToken);
 
         return new CancelInterviewResponse
         {

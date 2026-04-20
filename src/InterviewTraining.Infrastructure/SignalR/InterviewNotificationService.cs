@@ -68,7 +68,7 @@ public class InterviewNotificationService : IInterviewNotificationService
     /// <summary>
     /// Отправить уведомление об изменении версии интервью
     /// </summary>
-    public async Task NotifyInterviewVersionChangedAsync(InterviewVersionNotificationDto notification)
+    public async Task NotifyInterviewVersionChangedAsync(InterviewVersionChangedNotificationDto notification)
     {
         try
         {

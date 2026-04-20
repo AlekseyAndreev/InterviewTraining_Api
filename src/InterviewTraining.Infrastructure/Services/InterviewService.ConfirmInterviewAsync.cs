@@ -48,26 +48,11 @@ public partial class InterviewService
 
         await _unitOfWork.SaveChangesAsync();
 
-        // Отправляем уведомление через SignalR
-        await _notificationService.NotifyInterviewVersionChangedAsync(new InterviewVersionNotificationDto
-        {
-            InterviewId = interview.Id,
-            VersionId = newVersion.Id,
-            ChangeType = InterviewChangeType.Confirmed,
-            StartUtc = newVersion.StartUtc,
-            EndUtc = newVersion.EndUtc,
-            CandidateApproved = newVersion.Candidate?.IsApproved ?? false,
-            ExpertApproved = newVersion.Expert?.IsApproved ?? false,
-            CandidateCancelled = newVersion.Candidate?.IsCancelled ?? false,
-            ExpertCancelled = newVersion.Expert?.IsCancelled ?? false
-        });
-
         var userRole = isCandidate ? "кандидатом" : "экспертом";
         _logger.LogInformation("Собеседование {InterviewId} подтверждено {Role} {UserId}",
             interview.Id, userRole, currentUser.Id);
 
-        var message = $"Собеседование подтверждено {userRole}";
-        await CreateChatMessageInternal(interview.Id, MessageSenderType.System, null, message, cancellationToken);
+        await NotifyInterviewChanged(interview, newVersion, $"Собеседование подтверждено {userRole}", cancellationToken);
 
         return new ConfirmInterviewResponse
         {
