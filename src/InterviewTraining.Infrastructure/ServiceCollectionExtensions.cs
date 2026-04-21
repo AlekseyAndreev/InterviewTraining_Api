@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserSyncService, UserSyncService>();
         services.AddScoped<ICurrencyService, CurrencyService>();
         services.AddScoped<IInterviewNotificationService, InterviewNotificationService>();
+        services.AddScoped<IUserNotificationService, UserNotificationService>();
         return services;
     }
 
@@ -50,6 +51,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInterviewVersionRepository, InterviewVersionRepository>();
         services.AddScoped<IInterviewLanguageRepository, InterviewLanguageRepository>();
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+        services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
         return services;
     }
 }

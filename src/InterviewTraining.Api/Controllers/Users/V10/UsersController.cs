@@ -1,6 +1,7 @@
 ﻿using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.GetUserInfo.V10;
+using InterviewTraining.Application.GetUserNotifications.V10;
 using InterviewTraining.Application.ManageAvailableTime.V10;
 using InterviewTraining.Application.UpdateUserInfo.V10;
 using InterviewTraining.Application.UpdateUserTimeZone.V10;
@@ -13,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using InterviewTraining.Infrastructure.Repositories.Interfaces;
 
 namespace InterviewTraining.Api.Controllers.Users.V10;
 
@@ -29,6 +31,8 @@ public class UsersController : BaseController<UsersController>
     /// Constructor
     /// </summary>
     ///<param name="mediator"></param>
+    ///<param name="userService"></param>
+    ///<param name="unitOfWork"></param>
     ///<param name="logger"></param>
     public UsersController(ICustomMediator mediator,
         ILogger<UsersController> logger
@@ -132,6 +136,18 @@ public class UsersController : BaseController<UsersController>
         CancellationToken cancellationToken)
     {
         request.IdentityUserId = CurrentUserId;
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Получить уведомления текущего пользователя
+    /// </summary>
+    [HttpGet("me/notifications")]
+    [Authorize]
+    public async Task<GetUserNotificationsResponse> GetUserNotifications(CancellationToken cancellationToken)
+    {
+        var request = new GetUserNotificationsRequest();
+        request.IdenitityUserId = CurrentUserId;
         return await _mediator.SendAsync(request, cancellationToken);
     }
 
