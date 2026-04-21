@@ -3,8 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Application.CancelInterview.V10;
 using InterviewTraining.Application.Exceptions;
-using InterviewTraining.Application.SignalR;
-using InterviewTraining.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace InterviewTraining.Infrastructure.Services;
