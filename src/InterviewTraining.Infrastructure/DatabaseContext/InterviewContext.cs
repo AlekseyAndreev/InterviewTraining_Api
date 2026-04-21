@@ -83,6 +83,11 @@ public class InterviewContext : DbContext
     public DbSet<ChatMessage> ChatMessages { get; set; }
 
     /// <summary>
+    /// Уведомления пользователей
+    /// </summary>
+    public DbSet<UserNotification> UserNotifications { get; set; }
+
+    /// <summary>
     /// При создании модели
     /// </summary>
     /// <param name="modelBuilder">modelBuilder</param>
@@ -146,5 +151,6 @@ public class InterviewContext : DbContext
         builder.ApplyConfiguration(new InterviewLanguageConfiguration());
         builder.ApplyConfiguration(new CurrencyConfiguration());
         builder.ApplyConfiguration(new ChatMessageConfiguration());
+        builder.ApplyConfiguration(new UserNotificationConfiguration());
     }
 }

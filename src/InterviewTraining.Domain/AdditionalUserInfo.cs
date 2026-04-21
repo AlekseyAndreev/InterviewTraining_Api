@@ -33,4 +33,5 @@ public class AdditionalUserInfo : BaseDeleteEntity<Guid>
     public List<UserSkill> Skills { get; set; }
     public List<UserRating> MyRatingToUsers { get; set; }
     public List<UserRating> RatingFromUsers { get; set; }
+    public List<UserNotification> Notifications { get; set; }
 }

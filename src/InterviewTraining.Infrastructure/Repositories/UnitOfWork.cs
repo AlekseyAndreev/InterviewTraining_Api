@@ -28,6 +28,7 @@ public class UnitOfWork : IUnitOfWork
     private IInterviewLanguageRepository _interviewLanguages;
     private ICurrencyRepository _currencies;
     private IChatMessageRepository _chatMessages;
+    private IUserNotificationRepository _userNotifications;
 
     private bool _disposed;
 
@@ -112,6 +113,12 @@ public class UnitOfWork : IUnitOfWork
     /// </summary>
     public IChatMessageRepository ChatMessages =>
         _chatMessages ??= new ChatMessageRepository(_context);
+
+    /// <summary>
+    /// Репозиторий уведомлений пользователей
+    /// </summary>
+    public IUserNotificationRepository UserNotifications =>
+        _userNotifications ??= new UserNotificationRepository(_context);
 
     /// <summary>
     /// Сохранить все изменения

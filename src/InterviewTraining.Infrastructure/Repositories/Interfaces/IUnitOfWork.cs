@@ -75,6 +75,11 @@ public interface IUnitOfWork : IDisposable
     IChatMessageRepository ChatMessages { get; }
 
     /// <summary>
+    /// Репозиторий уведомлений пользователей
+    /// </summary>
+    IUserNotificationRepository UserNotifications { get; }
+
+    /// <summary>
     /// Сохранить все изменения
     /// </summary>
     Task<int> SaveChangesAsync();
