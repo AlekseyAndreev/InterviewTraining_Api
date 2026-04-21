@@ -26,7 +26,7 @@ public partial class InterviewService
 
         var interviews = await _unitOfWork.Interviews.GetByUserIdAsync(currentUser.Id, cancellationToken);
 
-        var timeZoneCode = await GetTimeZoneCode(currentUser.TimeZoneId);
+        var timeZoneCode = await _userTimeZoneService.GetTimeZoneCode(currentUser.TimeZoneId);
 
         var result = new List<InterviewDto>();
 

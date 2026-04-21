@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICurrencyService, CurrencyService>();
         services.AddScoped<IInterviewNotificationService, InterviewNotificationService>();
         services.AddScoped<IUserNotificationService, UserNotificationService>();
+        services.AddScoped<IUserTimeZoneService, UserTimeZoneService>();
         return services;
     }
 

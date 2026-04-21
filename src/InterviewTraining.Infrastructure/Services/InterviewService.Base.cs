@@ -14,22 +14,11 @@ namespace InterviewTraining.Infrastructure.Services;
 /// <summary>
 /// Сервис для работы с интервью
 /// </summary>
-public partial class InterviewService : IInterviewService
+public partial class InterviewService(IUnitOfWork _unitOfWork,
+        ILogger<InterviewService> _logger,
+        IInterviewNotificationService _notificationService,
+        IUserTimeZoneService _userTimeZoneService) : IInterviewService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<InterviewService> _logger;
-    private readonly IInterviewNotificationService _notificationService;
-
-    public InterviewService(
-        IUnitOfWork unitOfWork,
-        ILogger<InterviewService> logger,
-        IInterviewNotificationService notificationService)
-    {
-        _unitOfWork = unitOfWork;
-        _logger = logger;
-        _notificationService = notificationService;
-    }
-
     /// <summary>
     /// Конвертация времени пользователя в UTC
     /// </summary>
@@ -166,17 +155,6 @@ public partial class InterviewService : IInterviewService
         }
 
         return InterviewStatus.Unknown;
-    }
-
-    private async Task<string> GetTimeZoneCode(Guid? timeZoneId)
-    {
-        if (!timeZoneId.HasValue)
-        {
-            return null;
-        }
-
-        var timeZone = await _unitOfWork.TimeZones.GetByIdAsync(timeZoneId.Value);
-        return timeZone?.Code;
     }
 
     private async Task<(bool isCandidate, bool isExpert, Interview interview, InterviewVersion activeVersion, AdditionalUserInfo currentUser)> GetBaseToChangeInterviewAsync(string currentUserId, Guid interviewId, string actionName, CancellationToken cancellationToken)

@@ -19,7 +19,7 @@ public partial class InterviewService
     {
         var (isCandidate, isExpert, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Перенос времени", cancellationToken);
 
-        var timeZoneCode = await GetTimeZoneCode(currentUser.TimeZoneId);
+        var timeZoneCode = await _userTimeZoneService.GetTimeZoneCode(currentUser.TimeZoneId);
         var newStartUtc = ConvertUserTimeToUtc(request.NewDate, request.NewTime, timeZoneCode);
         if (newStartUtc < DateTime.UtcNow)
         {
