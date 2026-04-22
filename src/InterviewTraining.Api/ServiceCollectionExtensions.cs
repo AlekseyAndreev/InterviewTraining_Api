@@ -70,7 +70,6 @@ public static class ServiceCollectionExtensions
         services.AddRepositories();
         ConfigureContext(services, configuration);
 
-        // SignalR
         services.AddSignalR();
 
         services.AddSwaggerGen();

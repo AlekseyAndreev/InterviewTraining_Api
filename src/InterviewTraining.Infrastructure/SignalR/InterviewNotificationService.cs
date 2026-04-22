@@ -1,8 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using InterviewTraining.Application.SignalR;
+﻿using InterviewTraining.Application.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.SignalR;
 
@@ -32,7 +32,7 @@ public class InterviewNotificationService : IInterviewNotificationService
     {
         try
         {
-            var groupName = $"interview_{message.InterviewId}_chat";
+            var groupName = InterviewChatHub.GetGroupName(message.InterviewId);
             await _chatHubContext.Clients.Group(groupName)
                 .SendAsync(InterviewChatHub.MessageCreatedMethod, message);
 
@@ -52,7 +52,7 @@ public class InterviewNotificationService : IInterviewNotificationService
     {
         try
         {
-            var groupName = $"interview_{message.InterviewId}_chat";
+            var groupName = InterviewChatHub.GetGroupName(message.InterviewId);
             await _chatHubContext.Clients.Group(groupName)
                 .SendAsync(InterviewChatHub.MessageUpdatedMethod, message);
 
@@ -72,7 +72,7 @@ public class InterviewNotificationService : IInterviewNotificationService
     {
         try
         {
-            var groupName = $"interview_{notification.InterviewId}";
+            var groupName = InterviewHub.GetGroupName(notification.InterviewId);
             await _interviewHubContext.Clients.Group(groupName)
                 .SendAsync(InterviewHub.VersionChangedMethod, notification);
 

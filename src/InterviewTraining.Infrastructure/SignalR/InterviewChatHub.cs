@@ -11,12 +11,17 @@ namespace InterviewTraining.Infrastructure.SignalR;
 [Authorize]
 public class InterviewChatHub : Hub
 {
+    public static string GetGroupName(Guid interviewId)
+    {
+        return $"interview_{interviewId}_chat";
+    }
+
     /// <summary>
     /// Присоединиться к группе чата интервью
     /// </summary>
     public async Task JoinInterviewChat(Guid interviewId)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, $"interview_{interviewId}_chat");
+        await Groups.AddToGroupAsync(Context.ConnectionId, GetGroupName(interviewId));
     }
 
     /// <summary>
@@ -24,7 +29,7 @@ public class InterviewChatHub : Hub
     /// </summary>
     public async Task LeaveInterviewChat(Guid interviewId)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"interview_{interviewId}_chat");
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetGroupName(interviewId));
     }
 
     /// <summary>
