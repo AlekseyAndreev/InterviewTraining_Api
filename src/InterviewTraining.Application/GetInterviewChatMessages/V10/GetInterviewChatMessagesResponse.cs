@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 
-namespace InterviewTraining.Application.GetChatMessages.V10;
+namespace InterviewTraining.Application.GetInterviewChatMessages.V10;
 
 /// <summary>
 /// Ответ на получение сообщений чата интервью
 /// </summary>
-public class GetChatMessagesResponse
+public class GetInterviewChatMessagesResponse
 {
     /// <summary>
     /// Идентификатор собеседования
@@ -17,5 +17,5 @@ public class GetChatMessagesResponse
     /// <summary>
     /// Список сообщений чата
     /// </summary>
-    public List<ChatMessageDto> Messages { get; set; }
+    public List<InterviewChatMessageDto> Messages { get; set; }
 }

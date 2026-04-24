@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace InterviewTraining.Application.CreateChatMessage.V10;
+namespace InterviewTraining.Application.CreateInterviewChatMessage.V10;
 
 /// <summary>
 /// Ответ на создание сообщения в чате интервью
 /// </summary>
-public class CreateChatMessageResponse
+public class CreateInterviewChatMessageResponse
 {
     /// <summary>
     /// Идентификатор созданного сообщения
@@ -15,5 +15,5 @@ public class CreateChatMessageResponse
     /// <summary>
     /// Дата и время создания сообщения (UTC)
     /// </summary>
-    public DateTime CreatedUtc { get; set; }
+    public DateTime? CreatedUtc { get; set; }
 }

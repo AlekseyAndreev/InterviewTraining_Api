@@ -8,14 +8,14 @@ namespace InterviewTraining.Infrastructure.Repositories.Interfaces;
 /// <summary>
 /// Интерфейс репозитория для работы с сообщениями чата
 /// </summary>
-public interface IChatMessageRepository : IRepository<ChatMessage, Guid>
+public interface IInterviewChatMessageRepository : IRepository<InterviewChatMessage, Guid>
 {
     /// <summary>
     /// Получить сообщения по идентификатору интервью
     /// </summary>
     ///<param name="interviewId">Идентификатор интервью</param>
     /// <returns>Список сообщений</returns>
-    Task<IEnumerable<ChatMessage>> GetByInterviewIdAsync(Guid interviewId);
+    Task<IEnumerable<InterviewChatMessage>> GetByInterviewIdAsync(Guid interviewId);
 
     /// <summary>
     /// Получить сообщения по идентификатору интервью с пагинацией
@@ -24,13 +24,13 @@ public interface IChatMessageRepository : IRepository<ChatMessage, Guid>
     ///<param name="skip">Количество пропускаемых сообщений</param>
     /// <param name="take">Количество получаемых сообщений</param>
     /// <returns>Список сообщений</returns>
-    Task<IEnumerable<ChatMessage>> GetByInterviewIdAsync(Guid interviewId, int skip, int take);
+    Task<IEnumerable<InterviewChatMessage>> GetByInterviewIdAsync(Guid interviewId, int skip, int take);
 
     /// <summary>
     /// Получить сообщение с проверкой автора
     /// </summary>
     ///<param name="messageId">Идентификатор сообщения</param>
-    /// <param name="senderUserId">Идентификатор пользователя-отправителя</param>
+    ///<param name="senderUserId">Идентификатор пользователя-отправителя</param>
     /// <returns>Сообщение или null</returns>
-    Task<ChatMessage> GetByIdAndSenderAsync(Guid messageId, Guid senderUserId);
+    Task<InterviewChatMessage> GetByIdAndSenderAsync(Guid messageId, Guid senderUserId);
 }

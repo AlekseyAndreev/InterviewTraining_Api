@@ -1,11 +1,10 @@
-﻿using InterviewTraining.Application.Interfaces;
-using InterviewTraining.Infrastructure.Repositories.Interfaces;
+﻿using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using System;
 using System.Threading.Tasks;
 
-namespace InterviewTraining.Infrastructure.Services;
+namespace InterviewTraining.Infrastructure.Providers;
 
-public class UserTimeZoneService(IUnitOfWork unitOfWork) : IUserTimeZoneService
+public class UserTimeZoneProvider(IUnitOfWork unitOfWork) : IUserTimeZoneProvider
 {
     public async Task<string> GetTimeZoneCode(Guid? timeZoneId)
     {

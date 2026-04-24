@@ -80,7 +80,7 @@ public class InterviewContext : DbContext
     /// <summary>
     /// Сообщения чата
     /// </summary>
-    public DbSet<ChatMessage> ChatMessages { get; set; }
+    public DbSet<InterviewChatMessage> InterviewChatMessages { get; set; }
 
     /// <summary>
     /// Уведомления пользователей
@@ -150,7 +150,7 @@ public class InterviewContext : DbContext
         builder.ApplyConfiguration(new UserAvailableTimeConfiguration());
         builder.ApplyConfiguration(new InterviewLanguageConfiguration());
         builder.ApplyConfiguration(new CurrencyConfiguration());
-        builder.ApplyConfiguration(new ChatMessageConfiguration());
+        builder.ApplyConfiguration(new InterviewChatMessageConfiguration());
         builder.ApplyConfiguration(new UserNotificationConfiguration());
     }
 }

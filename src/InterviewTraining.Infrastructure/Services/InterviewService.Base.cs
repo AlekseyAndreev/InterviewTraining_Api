@@ -3,6 +3,7 @@ using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.Interfaces;
 using InterviewTraining.Application.SignalR;
 using InterviewTraining.Domain;
+using InterviewTraining.Infrastructure.Providers;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -15,38 +16,11 @@ namespace InterviewTraining.Infrastructure.Services;
 /// Сервис для работы с интервью
 /// </summary>
 public partial class InterviewService(IUnitOfWork _unitOfWork,
+        IInterviewChatMessageProvider interviewChatMessageProvider,
         ILogger<InterviewService> _logger,
-        IInterviewNotificationService _notificationService,
-        IUserTimeZoneService _userTimeZoneService) : IInterviewService
+        IInterviewNotificationProvider _notificationProvider,
+        IUserTimeZoneProvider _userTimeZoneService) : IInterviewService
 {
-    /// <summary>
-    /// Конвертация времени пользователя в UTC
-    /// </summary>
-    private static DateTime ConvertUserTimeToUtc(DateOnly date, TimeOnly time, string timeZoneCode)
-    {
-        var localDateTime = date.ToDateTime(time);
-
-        if (string.IsNullOrEmpty(timeZoneCode) || timeZoneCode.Equals("UTC", StringComparison.OrdinalIgnoreCase))
-        {
-            return localDateTime;
-        }
-
-        try
-        {
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneCode);
-            return TimeZoneInfo.ConvertTimeToUtc(localDateTime, timeZoneInfo);
-        }
-        catch (TimeZoneNotFoundException)
-        {
-            // Если часовой пояс не найден, считаем что время уже в UTC
-            return localDateTime;
-        }
-        catch (InvalidTimeZoneException)
-        {
-            return localDateTime;
-        }
-    }
-
     /// <summary>
     /// Вычисление статуса интервью на основе данных версии
     /// </summary>
@@ -206,7 +180,7 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
 
     private async Task NotifyInterviewChanged(Interview interview, InterviewVersion newVersion, string chatMessageText, CancellationToken cancellationToken)
     {
-        await _notificationService.NotifyInterviewVersionChangedAsync(new InterviewVersionChangedNotificationDto
+        await _notificationProvider.NotifyInterviewVersionChangedAsync(new InterviewVersionChangedNotificationDto
         {
             InterviewId = interview.Id,
             VersionId = newVersion.Id,
@@ -215,7 +189,7 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
             EndUtc = newVersion.EndUtc,
         });
 
-        await CreateChatMessageInternal(interview.Id, MessageSenderType.System, null, chatMessageText, cancellationToken);
+        await interviewChatMessageProvider.CreateInterviewChatMessage(interview.Id, MessageSenderType.System, null, chatMessageText, cancellationToken);
     }
 
     private static InterviewVersion CopyFrom(Guid interviewId, InterviewVersion activeVersion) =>

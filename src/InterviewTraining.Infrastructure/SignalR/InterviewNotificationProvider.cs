@@ -9,16 +9,16 @@ namespace InterviewTraining.Infrastructure.SignalR;
 /// <summary>
 /// Реализация сервиса уведомлений через SignalR
 /// </summary>
-public class InterviewNotificationService : IInterviewNotificationService
+public class InterviewNotificationProvider : IInterviewNotificationProvider
 {
     private readonly IHubContext<InterviewChatHub> _chatHubContext;
     private readonly IHubContext<InterviewHub> _interviewHubContext;
-    private readonly ILogger<InterviewNotificationService> _logger;
+    private readonly ILogger<InterviewNotificationProvider> _logger;
 
-    public InterviewNotificationService(
+    public InterviewNotificationProvider(
         IHubContext<InterviewChatHub> chatHubContext,
         IHubContext<InterviewHub> interviewHubContext,
-        ILogger<InterviewNotificationService> logger)
+        ILogger<InterviewNotificationProvider> logger)
     {
         _chatHubContext = chatHubContext;
         _interviewHubContext = interviewHubContext;

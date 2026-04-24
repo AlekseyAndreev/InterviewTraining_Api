@@ -46,4 +46,32 @@ public static class DateTimeHelper
             return utcTime;
         }
     }
+
+    /// <summary>
+    /// Конвертация времени пользователя в UTC
+    /// </summary>
+    public static DateTime ConvertUserTimeToUtc(DateOnly date, TimeOnly time, string timeZoneCode)
+    {
+        var localDateTime = date.ToDateTime(time);
+
+        if (string.IsNullOrEmpty(timeZoneCode) || timeZoneCode.Equals("UTC", StringComparison.OrdinalIgnoreCase))
+        {
+            return localDateTime;
+        }
+
+        try
+        {
+            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZoneCode);
+            return TimeZoneInfo.ConvertTimeToUtc(localDateTime, timeZoneInfo);
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            // Если часовой пояс не найден, считаем что время уже в UTC
+            return localDateTime;
+        }
+        catch (InvalidTimeZoneException)
+        {
+            return localDateTime;
+        }
+    }
 }

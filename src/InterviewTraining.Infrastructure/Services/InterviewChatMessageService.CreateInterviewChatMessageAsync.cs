@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using InterviewTraining.Application.CreateChatMessage.V10;
+using InterviewTraining.Application.CreateInterviewChatMessage.V10;
 using InterviewTraining.Application.Exceptions;
-using InterviewTraining.Application.SignalR;
 using InterviewTraining.Domain;
 using Microsoft.Extensions.Logging;
 
@@ -12,12 +10,12 @@ namespace InterviewTraining.Infrastructure.Services;
 /// <summary>
 /// Сервис для работы с интервью
 /// </summary>
-public partial class InterviewService
+public partial class InterviewChatMessageService
 {
     /// <summary>
     /// Создать сообщение в чате интервью
     /// </summary>
-    public async Task<CreateChatMessageResponse> CreateChatMessageAsync(CreateChatMessageRequest request, CancellationToken cancellationToken)
+    public async Task<CreateInterviewChatMessageResponse> CreateInterviewChatMessageAsync(CreateInterviewChatMessageRequest request, CancellationToken cancellationToken)
     {
         var currentUser = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.IdentityUserId, cancellationToken);
         if (currentUser == null)
@@ -41,48 +39,26 @@ public partial class InterviewService
             throw new BusinessLogicException("У вас нет доступа к этому собеседованию");
         }
 
-        var (chatMessageId, chatCreatedAtUtc) = await CreateChatMessageInternal(interview.Id, senderType, currentUser.Id, request.MessageText, cancellationToken);
+        var (interviewChatMessageId, chatCreatedAtUtc) = await interviewChatMessageProvider.CreateInterviewChatMessage(interview.Id, senderType, currentUser.Id, request.MessageText, cancellationToken);
 
-        _logger.LogInformation("Создано сообщение {MessageId} в чате интервью {InterviewId} от пользователя {UserId}",
-            chatMessageId, interview.Id, currentUser.Id);
-
-        return new CreateChatMessageResponse
+        if (!interviewChatMessageId.HasValue)
         {
-            MessageId = chatMessageId,
-            CreatedUtc = chatCreatedAtUtc
-        };
+            _logger.LogInformation("Сообщение в чате интервью {InterviewId} от пользователя {UserId} не было создано", interview.Id, currentUser.Id);
+            throw new BusinessLogicException("Сообщение в чате интервью не было создано");
+        }
+        else
+        {
+            _logger.LogInformation("Создано сообщение {MessageId} в чате интервью {InterviewId} от пользователя {UserId}",
+                interviewChatMessageId, interview.Id, currentUser.Id);
+
+            return new CreateInterviewChatMessageResponse
+            {
+                MessageId = interviewChatMessageId.Value,
+                CreatedUtc = chatCreatedAtUtc
+            };
+        }
     }
 
-    private async Task<(Guid chatMessageId, DateTime chatCreatedAtUtc)> CreateChatMessageInternal(Guid interviewId, MessageSenderType senderType, Guid? senderUserId, string text, CancellationToken cancellationToken)
-    {
-        var chatMessage = new ChatMessage
-        {
-            InterviewId = interviewId,
-            SenderType = senderType,
-            SenderUserId = senderUserId,
-            MessageText = text,
-            IsEdited = false,
-            CreatedUtc = DateTime.UtcNow,
-            Id = Guid.NewGuid(),
-            ModifiedUtc = null,
-        };
-
-        await _unitOfWork.ChatMessages.AddAsync(chatMessage);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        await _notificationService.NotifyChatMessageCreatedAsync(new InterviewChatMessageNotificationDto
-        {
-            Id = chatMessage.Id,
-            InterviewId = chatMessage.InterviewId,
-            From = (int)senderType,
-            Text = chatMessage.MessageText,
-            CreatedUtc = chatMessage.CreatedUtc,
-            IsEdited = chatMessage.IsEdited,
-            ModifiedUtc = chatMessage.ModifiedUtc
-        });
-
-        return (chatMessage.Id, chatMessage.CreatedUtc);
-    }
 
     /// <summary>
     /// Определить тип отправителя сообщения на основе роли пользователя в интервью

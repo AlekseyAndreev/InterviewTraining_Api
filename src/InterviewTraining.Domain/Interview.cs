@@ -12,6 +12,6 @@ public class Interview : BaseEntity<Guid>
     public Guid? ActiveInterviewVersionId { get; set; }
     public InterviewVersion ActiveInterviewVersion { get; set; }
     public List<InterviewVersion> Versions { get; set; }
-    public List<ChatMessage> ChatMessages { get; set; }
+    public List<InterviewChatMessage> InterviewChatMessages { get; set; }
 }
 

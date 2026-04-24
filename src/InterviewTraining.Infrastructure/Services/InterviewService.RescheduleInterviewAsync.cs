@@ -1,5 +1,6 @@
 ﻿using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.RescheduleInterview.V10;
+using InterviewTraining.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -20,7 +21,7 @@ public partial class InterviewService
         var (isCandidate, isExpert, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Перенос времени", cancellationToken);
 
         var timeZoneCode = await _userTimeZoneService.GetTimeZoneCode(currentUser.TimeZoneId);
-        var newStartUtc = ConvertUserTimeToUtc(request.NewDate, request.NewTime, timeZoneCode);
+        var newStartUtc = DateTimeHelper.ConvertUserTimeToUtc(request.NewDate, request.NewTime, timeZoneCode);
         if (newStartUtc < DateTime.UtcNow)
         {
             throw new BusinessLogicException("Нельзя переносить собеседование в прошлое");

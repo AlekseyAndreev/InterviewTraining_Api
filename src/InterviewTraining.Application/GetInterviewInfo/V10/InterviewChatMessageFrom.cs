@@ -1,6 +1,6 @@
 ﻿namespace InterviewTraining.Application.GetInterviewInfo.V10;
 
-public enum ChatMessageFrom
+public enum InterviewChatMessageFrom
 {
     Unknown = 0,
     Candidate = 1,

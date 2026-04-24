@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace InterviewTraining.Application.Interfaces;
+namespace InterviewTraining.Infrastructure.Providers;
 
-public interface IUserTimeZoneService
+public interface IUserTimeZoneProvider
 {
     Task<string> GetTimeZoneCode(Guid? timeZoneId);
 }

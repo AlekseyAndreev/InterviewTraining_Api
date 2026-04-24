@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Application.Exceptions;
-using InterviewTraining.Application.GetChatMessages.V10;
+using InterviewTraining.Application.GetInterviewChatMessages.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
@@ -12,12 +12,12 @@ namespace InterviewTraining.Infrastructure.Services;
 /// <summary>
 /// Сервис для работы с интервью
 /// </summary>
-public partial class InterviewService
+public partial class InterviewChatMessageService
 {
    /// <summary>
    /// Получить сообщения чата интервью
    /// </summary>
-   public async Task<GetChatMessagesResponse> GetChatMessagesAsync(GetChatMessagesRequest request, CancellationToken cancellationToken)
+   public async Task<GetInterviewChatMessagesResponse> GetInterviewChatMessagesAsync(GetInterviewChatMessagesRequest request, CancellationToken cancellationToken)
    {
        var currentUser = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.IdentityUserId, cancellationToken);
        if (currentUser == null)
@@ -49,10 +49,10 @@ public partial class InterviewService
            : null;
        var timeZoneCode = userTimeZone?.Code;
 
-       var chatMessages = await _unitOfWork.ChatMessages.GetByInterviewIdAsync(request.InterviewId);
+       var interviewChatMessages = await _unitOfWork.InterviewChatMessages.GetByInterviewIdAsync(request.InterviewId);
 
        // Маппим сообщения
-       var messages = chatMessages.Select(x => new ChatMessageDto
+       var messages = interviewChatMessages.Select(x => new InterviewChatMessageDto
        {
            Id = x.Id,
            From = MapMessageSenderType(x.SenderType),
@@ -62,7 +62,7 @@ public partial class InterviewService
            Modified = DateTimeHelper.ConvertUtcToUserTimeZone(x.ModifiedUtc, timeZoneCode)
        }).ToList();
 
-       return new GetChatMessagesResponse
+       return new GetInterviewChatMessagesResponse
        {
            InterviewId = request.InterviewId,
            Messages = messages

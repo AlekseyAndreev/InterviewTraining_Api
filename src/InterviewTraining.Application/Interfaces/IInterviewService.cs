@@ -1,12 +1,9 @@
 ﻿using InterviewTraining.Application.CancelInterview.V10;
 using InterviewTraining.Application.ConfirmInterview.V10;
-using InterviewTraining.Application.CreateChatMessage.V10;
 using InterviewTraining.Application.CreateInterview.V10;
-using InterviewTraining.Application.GetChatMessages.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.RescheduleInterview.V10;
-using InterviewTraining.Application.UpdateChatMessage.V10;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -67,30 +64,4 @@ public interface IInterviewService
     /// При изменении создаётся новая версия интервью.
     /// </remarks>
     Task<RescheduleInterviewResponse> RescheduleInterviewAsync(RescheduleInterviewRequest request, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Создать сообщение в чате интервью
-    /// </summary>
-    /// <remarks>
-    /// Доступно кандидату, эксперту (участвующим в собеседовании) или администратору.
-    /// Тип отправителя определяется автоматически на основе роли пользователя в собеседовании.
-    /// </remarks>
-    Task<CreateChatMessageResponse> CreateChatMessageAsync(CreateChatMessageRequest request, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Редактировать сообщение в чате интервью
-    /// </summary>
-    /// <remarks>
-    /// Доступно только автору сообщения.
-    /// При редактировании устанавливается признак IsEdited и дата модификации.
-    /// </remarks>
-    Task<UpdateChatMessageResponse> UpdateChatMessageAsync(UpdateChatMessageRequest request, CancellationToken cancellationToken);
-
-    /// <summary>
-    /// Получить сообщения чата интервью
-    /// </summary>
-    /// <remarks>
-    /// Доступно кандидату, эксперту (участвующим в собеседовании) или администратору.
-    /// </remarks>
-    Task<GetChatMessagesResponse> GetChatMessagesAsync(GetChatMessagesRequest request, CancellationToken cancellationToken);
 }

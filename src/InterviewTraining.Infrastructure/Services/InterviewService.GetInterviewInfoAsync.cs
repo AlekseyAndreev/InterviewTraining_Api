@@ -85,16 +85,6 @@ public partial class InterviewService
         return response;
     }
 
-    private static ChatMessageFrom MapMessageSenderType(MessageSenderType messageSenderType) =>
-        messageSenderType switch
-        {
-            MessageSenderType.Admin => ChatMessageFrom.Admin,
-            MessageSenderType.Candidate => ChatMessageFrom.Candidate,
-            MessageSenderType.Expert => ChatMessageFrom.Expert,
-            MessageSenderType.System => ChatMessageFrom.System,
-            _ => ChatMessageFrom.Unknown,
-        };
-
     /// <summary>
     /// Маппинг участника интервью
     /// </summary>

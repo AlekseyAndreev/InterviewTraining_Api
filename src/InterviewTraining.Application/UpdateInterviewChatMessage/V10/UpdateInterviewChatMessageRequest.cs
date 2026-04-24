@@ -1,17 +1,27 @@
 ﻿using InterviewTraining.Application.CustomMediatorLogic;
 using System;
 
-namespace InterviewTraining.Application.GetChatMessages.V10;
+namespace InterviewTraining.Application.UpdateInterviewChatMessage.V10;
 
 /// <summary>
-/// Запрос на получение сообщений чата интервью
+/// Запрос на редактирование сообщения в чате интервью
 /// </summary>
-public class GetChatMessagesRequest : IMediatorRequest<GetChatMessagesResponse>
+public class UpdateInterviewChatMessageRequest : IMediatorRequest<UpdateInterviewChatMessageResponse>
 {
     /// <summary>
     /// Идентификатор собеседования
     /// </summary>
     public Guid InterviewId { get; set; }
+
+    /// <summary>
+    /// Идентификатор сообщения
+    /// </summary>
+    public Guid MessageId { get; set; }
+
+    /// <summary>
+    /// Новый текст сообщения
+    /// </summary>
+    public string MessageText { get; set; }
 
     /// <summary>
     /// Идентификатор текущего пользователя (IdentityUserId)

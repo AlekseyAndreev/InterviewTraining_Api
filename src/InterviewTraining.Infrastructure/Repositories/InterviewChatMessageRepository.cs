@@ -12,13 +12,13 @@ namespace InterviewTraining.Infrastructure.Repositories;
 /// <summary>
 /// Репозиторий для работы с сообщениями чата
 /// </summary>
-public class ChatMessageRepository : Repository<ChatMessage, Guid>, IChatMessageRepository
+public class InterviewChatMessageRepository : Repository<InterviewChatMessage, Guid>, IInterviewChatMessageRepository
 {
     /// <summary>
     /// Конструктор
     /// </summary>
     ///<param name="context">Контекст базы данных</param>
-    public ChatMessageRepository(InterviewContext context) : base(context)
+    public InterviewChatMessageRepository(InterviewContext context) : base(context)
     {
     }
 
@@ -27,7 +27,7 @@ public class ChatMessageRepository : Repository<ChatMessage, Guid>, IChatMessage
     /// </summary>
     ///<param name="interviewId">Идентификатор интервью</param>
     /// <returns>Список сообщений</returns>
-    public async Task<IEnumerable<ChatMessage>> GetByInterviewIdAsync(Guid interviewId)
+    public async Task<IEnumerable<InterviewChatMessage>> GetByInterviewIdAsync(Guid interviewId)
     {
         return await DbSet
             .Where(x => x.InterviewId == interviewId)
@@ -42,7 +42,7 @@ public class ChatMessageRepository : Repository<ChatMessage, Guid>, IChatMessage
     ///<param name="skip">Количество пропускаемых сообщений</param>
     /// <param name="take">Количество получаемых сообщений</param>
     /// <returns>Список сообщений</returns>
-    public async Task<IEnumerable<ChatMessage>> GetByInterviewIdAsync(Guid interviewId, int skip, int take)
+    public async Task<IEnumerable<InterviewChatMessage>> GetByInterviewIdAsync(Guid interviewId, int skip, int take)
     {
         return await DbSet
             .Where(x => x.InterviewId == interviewId)
@@ -58,7 +58,7 @@ public class ChatMessageRepository : Repository<ChatMessage, Guid>, IChatMessage
     ///<param name="messageId">Идентификатор сообщения</param>
     /// <param name="senderUserId">Идентификатор пользователя-отправителя</param>
     /// <returns>Сообщение или null</returns>
-    public async Task<ChatMessage> GetByIdAndSenderAsync(Guid messageId, Guid senderUserId)
+    public async Task<InterviewChatMessage> GetByIdAndSenderAsync(Guid messageId, Guid senderUserId)
     {
         return await DbSet
             .FirstOrDefaultAsync(x => x.Id == messageId && x.SenderUserId == senderUserId);

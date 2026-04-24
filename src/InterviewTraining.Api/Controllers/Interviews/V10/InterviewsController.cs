@@ -1,13 +1,13 @@
 ﻿using InterviewTraining.Application.CancelInterview.V10;
 using InterviewTraining.Application.ConfirmInterview.V10;
-using InterviewTraining.Application.CreateChatMessage.V10;
+using InterviewTraining.Application.CreateInterviewChatMessage.V10;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
-using InterviewTraining.Application.GetChatMessages.V10;
+using InterviewTraining.Application.GetInterviewChatMessages.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.RescheduleInterview.V10;
-using InterviewTraining.Application.UpdateChatMessage.V10;
+using InterviewTraining.Application.UpdateInterviewChatMessage.V10;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -187,7 +187,7 @@ public class InterviewsController : BaseController<InterviewsController>
     /// <returns>Идентификатор созданного сообщения</returns>
     [HttpPost("{id:guid}/chat/messages")]
     [Authorize]
-    public async Task<CreateChatMessageResponse> CreateChatMessage(Guid id, [FromBody] CreateChatMessageRequest request, CancellationToken cancellationToken)
+    public async Task<CreateInterviewChatMessageResponse> CreateInterviewChatMessage(Guid id, [FromBody] CreateInterviewChatMessageRequest request, CancellationToken cancellationToken)
     {
         request.InterviewId = id;
         request.IdentityUserId = CurrentUserId;
@@ -210,7 +210,7 @@ public class InterviewsController : BaseController<InterviewsController>
     /// <returns>Результат редактирования сообщения</returns>
     [HttpPut("{id:guid}/chat/messages/{messageId:guid}")]
     [Authorize]
-    public async Task<UpdateChatMessageResponse> UpdateChatMessage(Guid id, Guid messageId, [FromBody] UpdateChatMessageRequest request, CancellationToken cancellationToken)
+    public async Task<UpdateInterviewChatMessageResponse> UpdateInterviewChatMessage(Guid id, Guid messageId, [FromBody] UpdateInterviewChatMessageRequest request, CancellationToken cancellationToken)
     {
         request.InterviewId = id;
         request.MessageId = messageId;
@@ -231,9 +231,9 @@ public class InterviewsController : BaseController<InterviewsController>
     /// <returns>Список сообщений чата</returns>
     [HttpGet("{id:guid}/chat/messages")]
     [Authorize]
-    public async Task<GetChatMessagesResponse> GetChatMessages(Guid id, CancellationToken cancellationToken)
+    public async Task<GetInterviewChatMessagesResponse> GetInterviewChatMessages(Guid id, CancellationToken cancellationToken)
     {
-        var request = new GetChatMessagesRequest
+        var request = new GetInterviewChatMessagesRequest
         {
             InterviewId = id,
             IdentityUserId = CurrentUserId,

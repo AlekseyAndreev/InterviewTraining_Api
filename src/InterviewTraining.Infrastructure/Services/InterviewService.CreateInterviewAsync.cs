@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Domain;
+using InterviewTraining.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
 
 namespace InterviewTraining.Infrastructure.Services;
@@ -53,7 +54,7 @@ public partial class InterviewService
 
         var interviewLanguageId = await GetLanguageId(request.InterviewLanguageId);
 
-        var startUtc = ConvertUserTimeToUtc(request.Date, request.Time, candidate.TimeZone?.Code);
+        var startUtc = DateTimeHelper.ConvertUserTimeToUtc(request.Date, request.Time, candidate.TimeZone?.Code);
 
         if (startUtc < DateTime.UtcNow)
         {
@@ -70,11 +71,11 @@ public partial class InterviewService
         };
 
         await _unitOfWork.Interviews.AddAsync(interview);
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var interviewVersion = CreateNewEmptyVersion(interview.Id, startUtc, expert.InterviewPrice, expert.CurrencyId, interviewLanguageId);
 
-        await AddChatMessageForNotes(interview.Id, request.Notes, candidate.Id);
+        await interviewChatMessageProvider.CreateInterviewChatMessage(interview.Id, MessageSenderType.Candidate, candidate.Id, request.Notes, cancellationToken);
 
         await _unitOfWork.InterviewVersions.AddAsync(interviewVersion);
 
@@ -107,27 +108,6 @@ public partial class InterviewService
         }
 
         return interviewLanguageIdParam.Value;
-    }
-
-    private async Task AddChatMessageForNotes(Guid interviewId, string notes, Guid candidateId)
-    {
-        if (string.IsNullOrEmpty(notes))
-        {
-            return;
-        }
-
-        var chatMessage = new ChatMessage
-        {
-            Id = Guid.NewGuid(),
-            InterviewId = interviewId,
-            CreatedUtc = DateTime.UtcNow,
-            ModifiedUtc = null,
-            IsEdited = false,
-            SenderType = MessageSenderType.Candidate,
-            SenderUserId = candidateId,
-            MessageText = notes,
-        };
-        await _unitOfWork.ChatMessages.AddAsync(chatMessage);
     }
 
     private static InterviewVersion CreateNewEmptyVersion(Guid interviewId, DateTime startUtc, decimal? expertInterviewPrice, Guid? expertCurrencyId, Guid? interviewLanguageId)

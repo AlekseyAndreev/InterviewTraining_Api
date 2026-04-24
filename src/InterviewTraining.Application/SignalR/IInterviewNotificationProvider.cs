@@ -5,7 +5,7 @@ namespace InterviewTraining.Application.SignalR;
 /// <summary>
 /// Интерфейс сервиса для отправки уведомлений через SignalR
 /// </summary>
-public interface IInterviewNotificationService
+public interface IInterviewNotificationProvider
 {
     /// <summary>
     /// Отправить уведомление о новом сообщении в чате

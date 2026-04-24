@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace InterviewTraining.Application.UpdateChatMessage.V10;
+namespace InterviewTraining.Application.UpdateInterviewChatMessage.V10;
 
 /// <summary>
 /// Ответ на редактирование сообщения в чате интервью
 /// </summary>
-public class UpdateChatMessageResponse
+public class UpdateInterviewChatMessageResponse
 {
     /// <summary>
     /// Идентификатор сообщения

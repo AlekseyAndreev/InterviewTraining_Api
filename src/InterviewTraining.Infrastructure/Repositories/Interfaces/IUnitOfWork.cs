@@ -72,7 +72,7 @@ public interface IUnitOfWork : IDisposable
     /// <summary>
     /// Репозиторий сообщений чата
     /// </summary>
-    IChatMessageRepository ChatMessages { get; }
+    IInterviewChatMessageRepository InterviewChatMessages { get; }
 
     /// <summary>
     /// Репозиторий уведомлений пользователей

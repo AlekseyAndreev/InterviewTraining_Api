@@ -5,7 +5,7 @@ namespace InterviewTraining.Domain;
 /// <summary>
 /// Сообщение чата в интервью
 /// </summary>
-public class ChatMessage : BaseEntity<Guid>
+public class InterviewChatMessage : BaseEntity<Guid>
 {
     /// <summary>
     /// Идентификатор интервью

@@ -1,5 +1,6 @@
 ﻿using InterviewTraining.Application.Interfaces;
 using InterviewTraining.Application.SignalR;
+using InterviewTraining.Infrastructure.Providers;
 using InterviewTraining.Infrastructure.Repositories;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using InterviewTraining.Infrastructure.Services;
@@ -24,12 +25,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserSkillService, UserSkillService>();
         services.AddScoped<IUserAvailableTimeService, UserAvailableTimeService>();
         services.AddScoped<IInterviewService, InterviewService>();
+        services.AddScoped<IInterviewChatMessageService, InterviewChatMessageService>();
         services.AddScoped<IInterviewLanguageService, InterviewLanguageService>();
         services.AddScoped<IUserSyncService, UserSyncService>();
         services.AddScoped<ICurrencyService, CurrencyService>();
-        services.AddScoped<IInterviewNotificationService, InterviewNotificationService>();
         services.AddScoped<IUserNotificationService, UserNotificationService>();
-        services.AddScoped<IUserTimeZoneService, UserTimeZoneService>();
+        services.AddInfrastructureProviders();
         return services;
     }
 
@@ -53,6 +54,18 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInterviewLanguageRepository, InterviewLanguageRepository>();
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
         services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
+        return services;
+    }
+
+    /// <summary>
+    /// This method gets called by the runtime. Use this method to add services to the container.
+    /// </summary>
+    ///<param name="services"></param>
+    private static IServiceCollection AddInfrastructureProviders(this IServiceCollection services)
+    {
+        services.AddScoped<IInterviewNotificationProvider, InterviewNotificationProvider>();
+        services.AddScoped<IUserTimeZoneProvider, UserTimeZoneProvider>();
+        services.AddScoped<IInterviewChatMessageProvider, InterviewChatMessageProvider>();
         return services;
     }
 }

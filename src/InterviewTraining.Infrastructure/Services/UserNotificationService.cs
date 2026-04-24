@@ -1,7 +1,7 @@
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.Interfaces;
-using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.Helpers;
+using InterviewTraining.Infrastructure.Providers;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using AppUserNotificationDto = InterviewTraining.Application.GetUserNotification
 
 namespace InterviewTraining.Infrastructure.Services;
 
-public class UserNotificationService(IUnitOfWork unitOfWork, IUserTimeZoneService userTimeZoneService) : IUserNotificationService
+public class UserNotificationService(IUnitOfWork unitOfWork, IUserTimeZoneProvider userTimeZoneService) : IUserNotificationService
 {
     public async Task DeleteAsync(Guid notificationId, string identityUserId, CancellationToken cancellationToken)
     {

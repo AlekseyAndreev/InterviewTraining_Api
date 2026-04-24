@@ -1,12 +1,12 @@
 ﻿using InterviewTraining.Application.CustomMediatorLogic;
 using System;
 
-namespace InterviewTraining.Application.CreateChatMessage.V10;
+namespace InterviewTraining.Application.CreateInterviewChatMessage.V10;
 
 /// <summary>
 /// Запрос на создание сообщения в чате интервью
 /// </summary>
-public class CreateChatMessageRequest : IMediatorRequest<CreateChatMessageResponse>
+public class CreateInterviewChatMessageRequest : IMediatorRequest<CreateInterviewChatMessageResponse>
 {
     /// <summary>
     /// Идентификатор собеседования

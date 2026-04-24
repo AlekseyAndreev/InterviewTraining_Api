@@ -4,20 +4,20 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace InterviewTraining.Infrastructure.DatabaseContext.Configurations;
 
 /// <summary>
-/// Конфигурация сущности ChatMessage
+/// Конфигурация сущности InterviewChatMessage
 /// </summary>
-public class ChatMessageConfiguration : IEntityTypeConfiguration<Domain.ChatMessage>
+public class InterviewChatMessageConfiguration : IEntityTypeConfiguration<Domain.InterviewChatMessage>
 {
     /// <summary>
     /// Configure
     /// </summary>
     ///<param name="builder">builder</param>
-    public void Configure(EntityTypeBuilder<Domain.ChatMessage> builder)
+    public void Configure(EntityTypeBuilder<Domain.InterviewChatMessage> builder)
     {
         builder
             .ToTable(t =>
             {
-                t.Metadata.SetTableName("chat_messages");
+                t.Metadata.SetTableName("interview_chat_messages");
                 t.Metadata.SetSchema(null);
             });
 
@@ -75,7 +75,7 @@ public class ChatMessageConfiguration : IEntityTypeConfiguration<Domain.ChatMess
 
         builder
             .HasOne(x => x.Interview)
-            .WithMany(x => x.ChatMessages)
+            .WithMany(x => x.InterviewChatMessages)
             .HasForeignKey(x => x.InterviewId)
             .OnDelete(DeleteBehavior.ClientCascade);
 
