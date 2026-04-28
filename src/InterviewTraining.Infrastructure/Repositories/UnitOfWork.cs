@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace InterviewTraining.Infrastructure.Repositories;
 
-/// <summary>
-/// Реализация паттерна Unit of Work
-/// </summary>
+///<summary>
+/// Unit of Work implementation
+///</summary>
 public class UnitOfWork : IUnitOfWork
 {
     private readonly InterviewContext _context;
@@ -29,130 +29,136 @@ public class UnitOfWork : IUnitOfWork
     private ICurrencyRepository _currencies;
     private IInterviewChatMessageRepository _interviewChatMessages;
     private IUserNotificationRepository _userNotifications;
+    private IUserChatMessageRepository _userChatMessages;
 
     private bool _disposed;
 
-    /// <summary>
-    /// Конструктор
-    /// </summary>
+    ///<summary>
+    /// Constructor
+    ///</summary>
     public UnitOfWork(InterviewContext context)
     {
         _context = context;
     }
 
-    /// <summary>
-    /// Репозиторий навыков
-    /// </summary>
+    ///<summary>
+    /// Skills repository
+    ///</summary>
     public ISkillRepository Skills => _skills ??= new SkillRepository(_context);
 
-    /// <summary>
-    /// Репозиторий групп навыков
-    /// </summary>
+    ///<summary>
+    /// Skill groups repository
+    ///</summary>
     public ISkillGroupRepository SkillGroups => _skillGroups ??= new SkillGroupRepository(_context);
 
-    /// <summary>
-    /// Репозиторий тегов навыков
-    /// </summary>
+    ///<summary>
+    /// Skill tags repository
+    ///</summary>
     public ISkillTagRepository SkillTags => _skillTags ??= new SkillTagRepository(_context);
 
-    /// <summary>
-    /// Репозиторий рейтингов пользователей
-    /// </summary>
+    ///<summary>
+    /// User ratings repository
+    ///</summary>
     public IUserRatingRepository UserRatings => _userRatings ??= new UserRatingRepository(_context);
 
-    /// <summary>
-    /// Репозиторий дополнительной информации пользователей
-    /// </summary>
+    ///<summary>
+    /// Additional user info repository
+    ///</summary>
     public IAdditionalUserInfoRepository AdditionalUserInfos =>
         _additionalUserInfos ??= new AdditionalUserInfoRepository(_context);
 
-    /// <summary>
-    /// Репозиторий часовых поясов
-    /// </summary>
+    ///<summary>
+    /// Time zones repository
+    ///</summary>
     public ITimeZoneRepository TimeZones =>
         _timeZones ??= new TimeZoneRepository(_context);
 
-    /// <summary>
-    /// Репозиторий связей пользователей и навыков
-    /// </summary>
+    ///<summary>
+    /// User skills repository
+    ///</summary>
     public IUserSkillRepository UserSkills =>
         _userSkills ??= new UserSkillRepository(_context);
 
-    /// <summary>
-    /// Репозиторий доступного времени пользователей
-    /// </summary>
+    ///<summary>
+    /// User available times repository
+    ///</summary>
     public IUserAvailableTimeRepository UserAvailableTimes =>
         _userAvailableTimes ??= new UserAvailableTimeRepository(_context);
 
-    /// <summary>
-    /// Репозиторий интервью
-    /// </summary>
+    ///<summary>
+    /// Interviews repository
+    ///</summary>
     public IInterviewRepository Interviews =>
         _interviews ??= new InterviewRepository(_context);
 
-    /// <summary>
-    /// Репозиторий версий интервью
-    /// </summary>
+    ///<summary>
+    /// Interview versions repository
+    ///</summary>
     public IInterviewVersionRepository InterviewVersions =>
         _interviewVersions ??= new InterviewVersionRepository(_context);
 
-    /// <summary>
-    /// Репозиторий языки интервью
-    /// </summary>
+    ///<summary>
+    /// Interview languages repository
+    ///</summary>
     public IInterviewLanguageRepository InterviewLanguages =>
         _interviewLanguages ??= new InterviewLanguageRepository(_context);
 
-    /// <summary>
-    /// Репозиторий валюты
-    /// </summary>
+    ///<summary>
+    /// Currencies repository
+    ///</summary>
     public ICurrencyRepository Currencies =>
         _currencies ??= new CurrencyRepository(_context);
 
-    /// <summary>
-    /// Репозиторий сообщений чата
-    /// </summary>
+    ///<summary>
+    /// Interview chat messages repository
+    ///</summary>
     public IInterviewChatMessageRepository InterviewChatMessages =>
         _interviewChatMessages ??= new InterviewChatMessageRepository(_context);
 
-    /// <summary>
-    /// Репозиторий уведомлений пользователей
-    /// </summary>
+    ///<summary>
+    /// User notifications repository
+    ///</summary>
     public IUserNotificationRepository UserNotifications =>
         _userNotifications ??= new UserNotificationRepository(_context);
 
-    /// <summary>
-    /// Сохранить все изменения
-    /// </summary>
+    ///<summary>
+    /// User chat messages repository
+    ///</summary>
+    public IUserChatMessageRepository UserChatMessages =>
+        _userChatMessages ??= new UserChatMessageRepository(_context);
+
+    ///<summary>
+    /// Save all changes
+    ///</summary>
     public async Task<int> SaveChangesAsync()
     {
         return await _context.SaveChangesAsync();
     }
 
-    /// <summary>
-    /// Сохранить все изменения
-    /// </summary>
+    ///<summary>
+    /// Save all changes
+    ///</summary>
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {
         return await _context.SaveChangesAsync(cancellationToken);
     }
 
-    /// <summary>
-    /// Начать транзакцию
-    /// </summary>
+    ///<summary>
+    /// Begin transaction
+    ///</summary>
     public async Task BeginTransactionAsync()
     {
         _transaction ??= await _context.Database.BeginTransactionAsync();
     }
 
-    /// <summary>
-    /// Зафиксировать транзакцию
-    /// </summary>
+    ///<summary>
+    /// Commit transaction
+    ///</summary>
     public async Task CommitTransactionAsync()
     {
         try
         {
             await _context.SaveChangesAsync();
-            
             if (_transaction != null)
             {
                 await _transaction.CommitAsync();
@@ -168,9 +174,9 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    /// <summary>
-    /// Откатить транзакцию
-    /// </summary>
+    ///<summary>
+    /// Rollback transaction
+    ///</summary>
     public async Task RollbackTransactionAsync()
     {
         try
@@ -190,18 +196,18 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    /// <summary>
-    /// Освободить ресурсы
-    /// </summary>
+    ///<summary>
+    /// Dispose
+    ///</summary>
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Освободить ресурсы
-    /// </summary>
+    ///<summary>
+    /// Dispose
+    ///</summary>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)

@@ -9,15 +9,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace InterviewTraining.Infrastructure;
 
-/// <summary>
+///<summary>
 /// Startup
-/// </summary>
+///</summary>
 public static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to add services to the container.
-    /// </summary>
-    ///<param name="services"></param>
+    ///<summary>
+    /// Add infrastructure services
+    ///</summary>
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
     {
         services.AddScoped<IExpertService, ExpertService>();
@@ -30,14 +29,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserSyncService, UserSyncService>();
         services.AddScoped<ICurrencyService, CurrencyService>();
         services.AddScoped<IUserNotificationService, UserNotificationService>();
+        services.AddScoped<IUserChatMessageService, UserChatMessageService>();
         services.AddInfrastructureProviders();
         return services;
     }
 
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to add services to the container.
-    /// </summary>
-    ///<param name="services"></param>
+    ///<summary>
+    /// Add repositories
+    ///</summary>
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -54,13 +53,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInterviewLanguageRepository, InterviewLanguageRepository>();
         services.AddScoped<ICurrencyRepository, CurrencyRepository>();
         services.AddScoped<IUserNotificationRepository, UserNotificationRepository>();
+        services.AddScoped<IUserChatMessageRepository, UserChatMessageRepository>();
         return services;
     }
 
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to add services to the container.
-    /// </summary>
-    ///<param name="services"></param>
     private static IServiceCollection AddInfrastructureProviders(this IServiceCollection services)
     {
         services.AddScoped<IInterviewNotificationProvider, InterviewNotificationProvider>();

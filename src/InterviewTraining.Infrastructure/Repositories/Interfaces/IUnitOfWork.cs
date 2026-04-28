@@ -4,103 +4,108 @@ using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.Repositories.Interfaces;
 
-/// <summary>
-/// Интерфейс паттерна Unit of Work для управления транзакциями и репозиториями
-/// </summary>
+///<summary>
+/// Unit of Work interface
+///</summary>
 public interface IUnitOfWork : IDisposable
 {
-    /// <summary>
-    /// Репозиторий навыков
-    /// </summary>
+    ///<summary>
+    /// Skills repository
+    ///</summary>
     ISkillRepository Skills { get; }
 
-    /// <summary>
-    /// Репозиторий групп навыков
-    /// </summary>
+    ///<summary>
+    /// Skill groups repository
+    ///</summary>
     ISkillGroupRepository SkillGroups { get; }
 
-    /// <summary>
-    /// Репозиторий тегов навыков
-    /// </summary>
+    ///<summary>
+    /// Skill tags repository
+    ///</summary>
     ISkillTagRepository SkillTags { get; }
 
-    /// <summary>
-    /// Репозиторий рейтингов пользователей
-    /// </summary>
+    ///<summary>
+    /// User ratings repository
+    ///</summary>
     IUserRatingRepository UserRatings { get; }
 
-    /// <summary>
-    /// Репозиторий дополнительной информации пользователей
-    /// </summary>
+    ///<summary>
+    /// Additional user info repository
+    ///</summary>
     IAdditionalUserInfoRepository AdditionalUserInfos { get; }
 
-    /// <summary>
-    /// Репозиторий часовых поясов
-    /// </summary>
+    ///<summary>
+    /// Time zones repository
+    ///</summary>
     ITimeZoneRepository TimeZones { get; }
 
-    /// <summary>
-    /// Репозиторий связей пользователей и навыков
-    /// </summary>
+    ///<summary>
+    /// User skills repository
+    ///</summary>
     IUserSkillRepository UserSkills { get; }
 
-    /// <summary>
-    /// Репозиторий доступного времени пользователей
-    /// </summary>
+    ///<summary>
+    /// User available times repository
+    ///</summary>
     IUserAvailableTimeRepository UserAvailableTimes { get; }
 
-    /// <summary>
-    /// Репозиторий интервью
-    /// </summary>
+    ///<summary>
+    /// Interviews repository
+    ///</summary>
     IInterviewRepository Interviews { get; }
 
-    /// <summary>
-    /// Репозиторий версий интервью
-    /// </summary>
+    ///<summary>
+    /// Interview versions repository
+    ///</summary>
     IInterviewVersionRepository InterviewVersions { get; }
 
-    /// <summary>
-    /// Репозиторий языки интервью
-    /// </summary>
+    ///<summary>
+    /// Interview languages repository
+    ///</summary>
     IInterviewLanguageRepository InterviewLanguages { get; }
 
-    /// <summary>
-    /// Репозиторий валюты
-    /// </summary>
+    ///<summary>
+    /// Currencies repository
+    ///</summary>
     ICurrencyRepository Currencies { get; }
 
-    /// <summary>
-    /// Репозиторий сообщений чата
-    /// </summary>
+    ///<summary>
+    /// Interview chat messages repository
+    ///</summary>
     IInterviewChatMessageRepository InterviewChatMessages { get; }
 
-    /// <summary>
-    /// Репозиторий уведомлений пользователей
-    /// </summary>
+    ///<summary>
+    /// User notifications repository
+    ///</summary>
     IUserNotificationRepository UserNotifications { get; }
 
-    /// <summary>
-    /// Сохранить все изменения
-    /// </summary>
+    ///<summary>
+    /// User chat messages repository
+    ///</summary>
+    IUserChatMessageRepository UserChatMessages { get; }
+
+    ///<summary>
+    /// Save all changes
+    ///</summary>
     Task<int> SaveChangesAsync();
 
-    /// <summary>
-    /// Сохранить все изменения
-    /// </summary>
+    ///<summary>
+    /// Save all changes
+    ///</summary>
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 
-    /// <summary>
-    /// Начать транзакцию
-    /// </summary>
+    ///<summary>
+    /// Begin transaction
+    ///</summary>
     Task BeginTransactionAsync();
 
-    /// <summary>
-    /// Зафиксировать транзакцию
-    /// </summary>
+    ///<summary>
+    /// Commit transaction
+    ///</summary>
     Task CommitTransactionAsync();
 
-    /// <summary>
-    /// Откатить транзакцию
-    /// </summary>
+    ///<summary>
+    /// Rollback transaction
+    ///</summary>
     Task RollbackTransactionAsync();
 }

@@ -7,90 +7,93 @@ namespace InterviewTraining.Infrastructure.DatabaseContext;
 
 public class InterviewContext : DbContext
 {
-    /// <summary>
+    ///<summary>
     /// Конструктор
-    /// </summary>
-    /// <param name="options"></param>
+    ///</summary>
     public InterviewContext(DbContextOptions<InterviewContext> options) : base(options)
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
     }
 
-    /// <summary>
+    ///<summary>
     /// Навыки
-    /// </summary>
+    ///</summary>
     public DbSet<Skill> Skills { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Тэги для навыков
-    /// </summary>
+    ///</summary>
     public DbSet<SkillTag> SkillTags { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Группы для навыков
-    /// </summary>
+    ///</summary>
     public DbSet<SkillGroup> SkillGroups { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Дополнительная информация пользователей
-    /// </summary>
+    ///</summary>
     public DbSet<AdditionalUserInfo> AdditionalUserInfos { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Рейтинги пользователей
-    /// </summary>
+    ///</summary>
     public DbSet<UserRating> UserRatings { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Интервью
-    /// </summary>
+    ///</summary>
     public DbSet<Interview> Interviews { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Версии интервью
-    /// </summary>
+    ///</summary>
     public DbSet<InterviewVersion> InterviewVersions { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Часовые пояса
-    /// </summary>
+    ///</summary>
     public DbSet<Domain.TimeZone> TimeZones { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Языки для собеседования
-    /// </summary>
+    ///</summary>
     public DbSet<InterviewLanguage> InterviewLanguages { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Связи пользователей и навыков
-    /// </summary>
+    ///</summary>
     public DbSet<UserSkill> UserSkills { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Доступное время пользователей для собеседований
-    /// </summary>
+    ///</summary>
     public DbSet<UserAvailableTime> UserAvailableTimes { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Валюты
-    /// </summary>
+    ///</summary>
     public DbSet<Currency> Currencies { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Сообщения чата
-    /// </summary>
+    ///</summary>
     public DbSet<InterviewChatMessage> InterviewChatMessages { get; set; }
 
-    /// <summary>
+    ///<summary>
     /// Уведомления пользователей
-    /// </summary>
+    ///</summary>
     public DbSet<UserNotification> UserNotifications { get; set; }
 
-    /// <summary>
+    ///<summary>
+    /// Сообщения чата между пользователями
+    ///</summary>
+    public DbSet<UserChatMessage> UserChatMessages { get; set; }
+
+    ///<summary>
     /// При создании модели
-    /// </summary>
-    /// <param name="modelBuilder">modelBuilder</param>
+    ///</summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -100,9 +103,9 @@ public class InterviewContext : DbContext
         ApplyConfigurations(modelBuilder);
     }
 
-    /// <summary>
+    ///<summary>
     /// Автоматически применяет UTC конвертер ко всем DateTime и DateTime? свойствам всех сущностей
-    /// </summary>
+    ///</summary>
     private static void ApplyUtcDateTimeConverter(ModelBuilder modelBuilder)
     {
         var dateTimeConverter = UtcDateTimeConverter.DateTimeUtcConverter;
@@ -124,10 +127,9 @@ public class InterviewContext : DbContext
         }
     }
 
-    /// <summary>
+    ///<summary>
     /// При конфигурации
-    /// </summary>
-    /// <param name="optionsBuilder">optionsBuilder</param>
+    ///</summary>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
@@ -152,5 +154,6 @@ public class InterviewContext : DbContext
         builder.ApplyConfiguration(new CurrencyConfiguration());
         builder.ApplyConfiguration(new InterviewChatMessageConfiguration());
         builder.ApplyConfiguration(new UserNotificationConfiguration());
+        builder.ApplyConfiguration(new UserChatMessageConfiguration());
     }
 }
