@@ -1,13 +1,14 @@
-﻿using System.Linq;
-using InterviewTraining.Application.Exceptions;
+﻿using InterviewTraining.Application.Exceptions;
+using InterviewTraining.Application.GetAllUsersForAdmin.V10;
 using InterviewTraining.Application.GetUserInfo.V10;
 using InterviewTraining.Application.Interfaces;
 using InterviewTraining.Application.UpdateUserInfo.V10;
+using InterviewTraining.Application.UpdateUserTimeZone.V10;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using InterviewTraining.Application.UpdateUserTimeZone.V10;
 
 namespace InterviewTraining.Infrastructure.Services;
 
@@ -122,5 +123,46 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
         logger.LogInformation("Обновлена информация пользователя {UserId}", request.IdentityUserId);
 
         return new UpdateUserTimeZoneResponse { Success = true };
+    }
+
+    ///<summary>
+    /// Get all users (admin only)
+    ///</summary>
+    public async Task<GetAllUsersForAdminResponse> GetAllUsersForAdminAsync(
+        GetAllUsersForAdminRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var allUsers = await unitOfWork.AdditionalUserInfos.GetAllAsync();
+
+        // Apply search filter if provided
+        var filteredUsers = string.IsNullOrWhiteSpace(request.SearchFilter)
+            ? allUsers
+            : allUsers.Where(u =>
+                (u.FullName != null && u.FullName.Contains(request.SearchFilter, System.StringComparison.OrdinalIgnoreCase)));
+
+        var totalCount = filteredUsers.Count();
+
+        var pagedUsers = filteredUsers
+            .OrderBy(u => u.FullName)
+            .Skip((request.PageNumber - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .Select(u => new UserDto
+            {
+                Id = u.Id,
+                IdentityUserId = u.IdentityUserId,
+                FullName = u.FullName,
+                IsExpert = u.IsExpert,
+                IsCandidate = u.IsCandidate,
+                IsDeleted = u.IsDeleted,
+            })
+            .ToList();
+
+        return new GetAllUsersForAdminResponse
+        {
+            Data = pagedUsers,
+            TotalRecords = totalCount,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize
+        };
     }
 }

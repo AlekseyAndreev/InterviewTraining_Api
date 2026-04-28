@@ -26,13 +26,6 @@ public partial class UserChatMessageService
             throw new BusinessLogicException("User not found");
         }
 
-        // Get all admin users
-        var adminUsers = await _unitOfWork.AdditionalUserInfos.GetAllAsync();
-        var adminIds = adminUsers
-            .Where(u => u.IsExpert && !u.IsCandidate)
-            .Select(u => u.Id)
-            .ToList();
-
         var messages = await _unitOfWork.UserChatMessages.GetMessagesWithAdminsAsync(
             user.Id, cancellationToken);
 

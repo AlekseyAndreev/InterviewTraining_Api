@@ -1,6 +1,8 @@
-﻿using InterviewTraining.Application.CustomMediatorLogic;
+﻿using InterviewTraining.Api.Constants;
+using InterviewTraining.Application.CustomMediatorLogic;
 using InterviewTraining.Application.DeleteUserNotification.V10;
 using InterviewTraining.Application.Exceptions;
+using InterviewTraining.Application.GetAllUsersForAdmin.V10;
 using InterviewTraining.Application.GetUserInfo.V10;
 using InterviewTraining.Application.GetUserNotifications.V10;
 using InterviewTraining.Application.ManageAvailableTime.V10;
@@ -193,6 +195,27 @@ public class UsersController : BaseController<UsersController>
             NotificationId = notificationId,
             IsRead = false,
             IdentityUserId = CurrentUserId,
+        };
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    ///<summary>
+    /// Get all users (admin only)
+    ///</summary>
+    [HttpGet("all")]
+    [Authorize(Roles = AuhConstants.RoleAdmin)]
+    public async Task<GetAllUsersForAdminResponse> GetAllUsers(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string searchFilter = null,
+        CancellationToken cancellationToken = default)
+    {
+        var request = new GetAllUsersForAdminRequest
+        {
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            SearchFilter = searchFilter,
+            IsAdmin = IsAdmin,
         };
         return await _mediator.SendAsync(request, cancellationToken);
     }

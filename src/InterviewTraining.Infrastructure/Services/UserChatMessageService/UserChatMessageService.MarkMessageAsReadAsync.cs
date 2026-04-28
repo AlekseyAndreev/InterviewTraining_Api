@@ -33,10 +33,10 @@ public partial class UserChatMessageService
             throw new EntityNotFoundException("Message not found");
         }
 
-        if (message.SenderUserId != user.Id)
+        if (message.ReceiverUserId != user.Id)
         {
-            _logger.LogWarning("User {UserId} is not authorized to edit message {MessageId}", user.Id, request.MessageId);
-            throw new BusinessLogicException("You can only edit your own messages");
+            _logger.LogWarning("User {UserId} is not authorized to mark as read message {MessageId}", user.Id, request.MessageId);
+            throw new BusinessLogicException("You can not mark as read");
         }
 
         if (message.IsDeleted)

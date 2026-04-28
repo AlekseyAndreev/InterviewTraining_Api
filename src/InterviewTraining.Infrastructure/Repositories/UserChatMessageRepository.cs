@@ -34,7 +34,7 @@ public class UserChatMessageRepository : Repository<UserChatMessage, Guid>, IUse
             .Include(x => x.ReceiverUser)
             .Where(x =>
                 !x.IsDeleted &&
-                (x.SenderUserId == userId) || (x.ReceiverUserId == userId))
+                ((x.SenderUserId == userId) || (x.ReceiverUserId == userId)))
             .OrderBy(x => x.CreatedUtc)
             .ToListAsync(cancellationToken);
     }
