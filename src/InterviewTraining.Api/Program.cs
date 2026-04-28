@@ -75,5 +75,6 @@ app.MapControllers();
 
 app.MapHub<InterviewTraining.Infrastructure.SignalR.InterviewChatHub>("/hubs/interview-chat").RequireAuthorization();
 app.MapHub<InterviewTraining.Infrastructure.SignalR.InterviewHub>("/hubs/interview").RequireAuthorization();
+app.MapHub<InterviewTraining.Infrastructure.SignalR.UserWithAdminChatHub>("/hubs/user-with-admin-chat").RequireAuthorization();
 
 app.Run();
