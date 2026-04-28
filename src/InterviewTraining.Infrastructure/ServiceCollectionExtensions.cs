@@ -62,6 +62,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInterviewNotificationProvider, InterviewNotificationProvider>();
         services.AddScoped<IUserTimeZoneProvider, UserTimeZoneProvider>();
         services.AddScoped<IInterviewChatMessageProvider, InterviewChatMessageProvider>();
+        services.AddScoped<IUserWithAdminChatNotificationProvider, UserWithAdminChatNotificationProvider>();
         return services;
     }
 }
