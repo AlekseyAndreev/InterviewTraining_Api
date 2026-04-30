@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Linq;
 
@@ -19,13 +20,15 @@ builder.Configuration.AddJsonFile("secrets/appsettings.secrets.json", optional: 
 builder.Configuration.AddEnvironmentVariables();
 builder.Configuration.AddCommandLine(args);
 
-builder.Services
-    .AddLogging(builder =>
+builder.Services.AddLogging(builder =>
+{
+    builder.ClearProviders();
+    builder.AddConsole(options =>
     {
-        builder.ClearProviders();
-        builder.AddConsole();
-        builder.SetMinimumLevel(LogLevel.Debug);
+        options.FormatterName = ConsoleFormatterNames.Json;
     });
+    builder.SetMinimumLevel(LogLevel.Debug);
+});
 
 builder.Services.ConfigureServices(builder.Configuration);
 
