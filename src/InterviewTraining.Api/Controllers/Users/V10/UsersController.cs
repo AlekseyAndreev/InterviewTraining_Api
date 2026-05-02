@@ -98,7 +98,6 @@ public class UsersController : BaseController<UsersController>
         [FromForm] string fullName,
         [FromForm] string shortDescription,
         [FromForm] string description,
-        [FromForm] Guid? timeZoneId,
         [FromForm] decimal? interviewPrice,
         [FromForm] Guid? currencyId,
         IFormFile photo,
@@ -130,7 +129,7 @@ public class UsersController : BaseController<UsersController>
     /// <summary>
     /// Обновить временную зону у текущего пользователе
     /// </summary>
-    [HttpPut]
+    [HttpPut("time-zone")]
     [Authorize]
     public async Task<UpdateUserTimeZoneResponse> UpdateUserTimeZoneInfo(
         [FromBody] UpdateUserTimeZoneRequest request,
