@@ -331,3 +331,5 @@ ASALocalRun/
 
 
 AuthenticationConfigurator.cs.txt
+/src/InterviewTraining.Api/secrets/appsettings.secrets.json
+/src/InterviewTraining.Api/secrets/appsettings.secrets.json.example
