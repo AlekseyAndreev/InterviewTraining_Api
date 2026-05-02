@@ -1,4 +1,5 @@
-﻿using InterviewTraining.Api;
+﻿using Elastic.Serilog.Sinks;
+using InterviewTraining.Api;
 using InterviewTraining.Api.Middlewares;
 using InterviewTraining.Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Builder;
@@ -8,13 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
-using Elastic.Serilog.Sinks;
 using System;
 using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog - AFTER builder is created so we can access Configuration
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -27,6 +26,7 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.WithProperty("Application", "InterviewTraining.Api")
     .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
     .WriteTo.Elasticsearch()
+    .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
 
 try
