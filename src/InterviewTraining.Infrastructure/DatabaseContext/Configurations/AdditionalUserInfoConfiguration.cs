@@ -94,6 +94,12 @@ public class AdditionalUserInfoConfiguration : IEntityTypeConfiguration<Domain.A
             .IsRequired();
 
         builder
+            .Property(x => x.IsExpertAvailableInSearch)
+            .HasComment("Признак доступности эксперта в поиске")
+            .HasColumnName("is_expert_available_in_search")
+            .IsRequired();
+
+        builder
             .Property(x => x.TimeZoneId)
             .HasComment("Идентификатор часового пояса пользователя")
             .HasColumnName("time_zone_id")

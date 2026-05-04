@@ -30,7 +30,7 @@ public class AdditionalUserInfoRepository : Repository<AdditionalUserInfo, Guid>
     public async Task<IEnumerable<AdditionalUserInfo>> GetExpertsAsync(CancellationToken cancellationToken)
     {
         return await DbSet
-            .Where(u => u.IsExpert && !u.IsDeleted)
+            .Where(u => u.IsExpert && !u.IsDeleted && u.IsExpertAvailableInSearch)
             .ToArrayAsync(cancellationToken);
     }
 

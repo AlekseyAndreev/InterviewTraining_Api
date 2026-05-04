@@ -12,24 +12,12 @@ public class AdditionalUserInfo : BaseDeleteEntity<Guid>
     public string Description { get; set; }
     public bool IsCandidate { get; set; }
     public bool IsExpert { get; set; }
+    public bool IsExpertAvailableInSearch { get; set; }
     public Guid? TimeZoneId { get; set; }
     public TimeZone TimeZone { get; set; }
-
-    /// <summary>
-    /// Сумма оплаты за собеседование
-    /// </summary>
     public decimal? InterviewPrice { get; set; }
-
-    /// <summary>
-    /// Идентификатор валюты оплаты
-    /// </summary>
     public Guid? CurrencyId { get; set; }
-
-    /// <summary>
-    /// Валюта оплаты
-    /// </summary>
     public Currency Currency { get; set; }
-
     public List<UserSkill> Skills { get; set; }
     public List<UserRating> MyRatingToUsers { get; set; }
     public List<UserRating> RatingFromUsers { get; set; }
