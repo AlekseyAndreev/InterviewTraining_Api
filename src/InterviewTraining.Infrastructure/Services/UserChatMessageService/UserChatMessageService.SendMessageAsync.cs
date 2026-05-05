@@ -36,7 +36,7 @@ public partial class UserChatMessageService
             if (receiver == null)
             {
                 _logger.LogWarning("Receiver not found: {ReceiverId}", request.ReceiverIdentityUserId);
-                throw new EntityNotFoundException("Receiver not found");
+                throw new EntityNotFoundException("Receiver");
             }
         }
         else 
@@ -45,7 +45,7 @@ public partial class UserChatMessageService
             if (receiver == null)
             {
                 _logger.LogWarning("DefaultAdminUserId receiver not found: {ReceiverId}", DefaultAdminUserId);
-                throw new EntityNotFoundException("Receiver not found");
+                throw new EntityNotFoundException("Receiver admin");
             }
         }
 

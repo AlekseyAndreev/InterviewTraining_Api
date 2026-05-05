@@ -19,7 +19,7 @@ public class UserNotificationService(IUnitOfWork unitOfWork, IUserTimeZoneProvid
         var notification = await unitOfWork.UserNotifications.GetByIdWithRelatedAsync(notificationId, cancellationToken);
         if (notification == null || notification.IsDeleted)
         {
-            throw new EntityNotFoundException("Уведомление не найдено");
+            throw new EntityNotFoundException("UserNotification");
         }
 
         if (notification.User.IdentityUserId != identityUserId)
@@ -53,7 +53,7 @@ public class UserNotificationService(IUnitOfWork unitOfWork, IUserTimeZoneProvid
         var notification = await unitOfWork.UserNotifications.GetByIdWithRelatedAsync(notificationId, cancellationToken);
         if (notification == null || notification.IsDeleted)
         {
-            throw new EntityNotFoundException("Уведомление не найдено");
+            throw new EntityNotFoundException("UserNotification");
         }
 
         if(notification.User.IdentityUserId != identityUserId)

@@ -144,7 +144,7 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
         if (interview == null)
         {
             _logger.LogWarning("Собеседования с идентификатором {InterviewId} не найдено", interviewId);
-            throw new EntityNotFoundException("Собеседование не найдено");
+            throw new EntityNotFoundException("Interview");
         }
 
         var isCandidate = interview.CandidateId == currentUser.Id;

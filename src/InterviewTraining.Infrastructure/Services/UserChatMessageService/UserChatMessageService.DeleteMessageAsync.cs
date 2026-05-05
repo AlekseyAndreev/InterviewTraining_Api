@@ -30,7 +30,7 @@ public partial class UserChatMessageService
         {
             _logger.LogWarning("Message {MessageId} not found or not owned by user {UserId}",
                 request.MessageId, user.Id);
-            throw new EntityNotFoundException("Message not found or you don't have permission to delete it");
+            throw new EntityNotFoundException("UserChatMessage");
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

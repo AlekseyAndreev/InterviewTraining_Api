@@ -30,7 +30,7 @@ public partial class UserChatMessageService
         if (message == null)
         {
             _logger.LogWarning("Message not found: {MessageId}", request.MessageId);
-            throw new EntityNotFoundException("Message not found");
+            throw new EntityNotFoundException("UserChatMessage");
         }
 
         if (message.ReceiverUserId != user.Id)

@@ -32,7 +32,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
         var user = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.IdentityUserId, cancellationToken);
         if (user == null)
         {
-            throw new EntityNotFoundException("Пользователь не найден");
+            throw new EntityNotFoundException("User");
         }
 
         ValidateRequest(request);
@@ -141,13 +141,13 @@ public class UserAvailableTimeService : IUserAvailableTimeService
         var user = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(identityUserId, cancellationToken);
         if (user == null)
         {
-            throw new EntityNotFoundException("Пользователь не найден");
+            throw new EntityNotFoundException("User");
         }
 
         var availableTime = await _unitOfWork.UserAvailableTimes.GetByIdAsync(id);
         if (availableTime == null || availableTime.UserId != user.Id)
         {
-            throw new EntityNotFoundException("Запись не найдена");
+            throw new EntityNotFoundException("UserAvailableTime");
         }
 
         availableTime.IsDeleted = true;
@@ -172,13 +172,13 @@ public class UserAvailableTimeService : IUserAvailableTimeService
         var user = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.IdentityUserId, cancellationToken);
         if (user == null)
         {
-            throw new EntityNotFoundException("Пользователь не найден");
+            throw new EntityNotFoundException("User");
         }
 
         var availableTime = await _unitOfWork.UserAvailableTimes.GetByIdAsync(request.AvailableTimeId);
         if (availableTime == null || availableTime.UserId != user.Id)
         {
-            throw new EntityNotFoundException("Запись не найдена");
+            throw new EntityNotFoundException("UserAvailableTime");
         }
 
         ValidateUpdateRequest(request);
@@ -237,7 +237,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
         var identityUser = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(userId, cancellationToken);
         if (identityUser == null)
         {
-            throw new EntityNotFoundException("Пользователь не найден");
+            throw new EntityNotFoundException("User");
         }
 
         return identityUser;

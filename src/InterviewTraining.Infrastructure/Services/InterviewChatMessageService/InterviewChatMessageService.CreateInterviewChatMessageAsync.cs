@@ -28,7 +28,7 @@ public partial class InterviewChatMessageService
         if (interview == null)
         {
             _logger.LogWarning("Интервью с идентификатором {InterviewId} не найдено", request.InterviewId);
-            throw new EntityNotFoundException("Собеседование не найдено");
+            throw new EntityNotFoundException("Interview");
         }
 
         var senderType = DetermineSenderType(interview, currentUser, request.IsAdmin);

@@ -30,7 +30,7 @@ public partial class InterviewChatMessageService
         {
             _logger.LogWarning("Сообщение {MessageId} не найдено или пользователь {UserId} не является его автором",
                 request.MessageId, currentUser.Id);
-            throw new EntityNotFoundException("Сообщение не найдено или вы не являетесь его автором");
+            throw new EntityNotFoundException("Interview");
         }
 
         if (interviewChatMessage.InterviewId != request.InterviewId)
