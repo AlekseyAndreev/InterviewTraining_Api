@@ -14,7 +14,7 @@ namespace InterviewTraining.Infrastructure.Services;
 /// </summary>
 public class UserSyncService(IUnitOfWork _unitOfWork, ILogger<UserSyncService> _logger) : IUserSyncService
 {
-    public async Task SyncUserAsync(string identityUserId, bool isCandidate, bool isExpert, CancellationToken cancellationToken = default)
+    public async Task SyncUserAsync(string identityUserId, bool isCandidate, bool isExpert, bool isAdmin, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Синхронизация пользователя {UserId}: IsCandidate={IsCandidate}, IsExpert={IsExpert}", 
             identityUserId, isCandidate, isExpert);
@@ -25,6 +25,7 @@ public class UserSyncService(IUnitOfWork _unitOfWork, ILogger<UserSyncService> _
         {
             existingUser.IsCandidate = isCandidate;
             existingUser.IsExpert = isExpert;
+            existingUser.IsAdmin = isAdmin;
             existingUser.IsDeleted = false;
             existingUser.ModifiedUtc = DateTime.UtcNow;
             
@@ -38,6 +39,7 @@ public class UserSyncService(IUnitOfWork _unitOfWork, ILogger<UserSyncService> _
                 IdentityUserId = identityUserId,
                 IsCandidate = isCandidate,
                 IsExpert = isExpert,
+                IsAdmin = isAdmin,
                 IsDeleted = false,
                 CreatedUtc = DateTime.UtcNow,
                 ModifiedUtc = DateTime.UtcNow,

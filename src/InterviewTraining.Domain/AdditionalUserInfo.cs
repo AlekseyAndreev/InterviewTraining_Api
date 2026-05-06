@@ -12,6 +12,7 @@ public class AdditionalUserInfo : BaseDeleteEntity<Guid>
     public string Description { get; set; }
     public bool IsCandidate { get; set; }
     public bool IsExpert { get; set; }
+    public bool IsAdmin { get; set; }
     public bool IsExpertAvailableInSearch { get; set; }
     public Guid? TimeZoneId { get; set; }
     public TimeZone TimeZone { get; set; }

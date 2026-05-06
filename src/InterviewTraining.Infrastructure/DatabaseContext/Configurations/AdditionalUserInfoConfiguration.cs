@@ -94,6 +94,12 @@ public class AdditionalUserInfoConfiguration : IEntityTypeConfiguration<Domain.A
             .IsRequired();
 
         builder
+            .Property(x => x.IsAdmin)
+            .HasComment("Признак админа")
+            .HasColumnName("is_admin")
+            .IsRequired();
+
+        builder
             .Property(x => x.IsExpertAvailableInSearch)
             .HasComment("Признак доступности эксперта в поиске")
             .HasColumnName("is_expert_available_in_search")

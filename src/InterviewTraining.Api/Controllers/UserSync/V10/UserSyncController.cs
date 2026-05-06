@@ -52,7 +52,7 @@ public class UserSyncController : ControllerBase
 
         try
         {
-            await _userSyncService.SyncUserAsync(request.IdentityUserId, request.IsCandidate, request.IsExpert, cancellationToken);
+            await _userSyncService.SyncUserAsync(request.IdentityUserId, request.IsCandidate, request.IsExpert, request.IsAdmin, cancellationToken);
 
             _logger.LogInformation("Пользователь {UserId} успешно синхронизирован", request.IdentityUserId);
             return Ok(new { success = true, identityUserId = request.IdentityUserId });
@@ -101,4 +101,10 @@ public class UserSyncRequest
     /// </summary>
     [JsonPropertyName("isExpert")]
     public bool IsExpert { get; set; }
+
+    /// <summary>
+    /// Является ли админом
+    /// </summary>
+    [JsonPropertyName("isAdmin")]
+    public bool IsAdmin { get; set; }
 }

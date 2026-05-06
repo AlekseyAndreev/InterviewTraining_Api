@@ -11,5 +11,5 @@ public interface IUserSyncService
     /// <summary>
     /// Синхронизировать пользователя
     /// </summary>
-    Task SyncUserAsync(string identityUserId, bool isCandidate, bool isExpert, CancellationToken cancellationToken);
+    Task SyncUserAsync(string identityUserId, bool isCandidate, bool isExpert, bool isAdmin, CancellationToken cancellationToken);
 }
