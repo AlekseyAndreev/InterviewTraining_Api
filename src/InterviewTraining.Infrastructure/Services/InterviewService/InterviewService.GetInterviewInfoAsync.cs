@@ -1,5 +1,4 @@
-﻿using InterviewTraining.Application.Common;
-using InterviewTraining.Application.Exceptions;
+﻿using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.Helpers;
@@ -53,14 +52,20 @@ public partial class InterviewService
 
         var timeZoneCode = await _userTimeZoneService.GetTimeZoneCode(currentUser.TimeZoneId);
 
-        var status = CalculateStatus(interview, activeVersion);
+        var calculatedStatus = CalculateStatus(interview, activeVersion);
+        var currentStatus = activeVersion.State;
+
+        if (calculatedStatus != currentStatus)
+        {
+            _logger.LogError("Вычисленный статус {CalculatedStatus} и текущий статус {CurrentStatus} не совпадают", calculatedStatus, calculatedStatus);
+        }
 
         var response = new GetInterviewInfoResponse
         {
             Id = interview.Id,
-            Status = status,
-            StatusDescriptionRu = InterviewStatusDescription.GetStatusDescriptionRu(status),
-            StatusDescriptionEn = InterviewStatusDescription.GetStatusDescriptionEn(status),
+            Status = calculatedStatus.ToString(),
+            StatusDescriptionRu = InterviewStatusDescriptionHelper.GetStatusDescriptionRu(calculatedStatus),
+            StatusDescriptionEn = InterviewStatusDescriptionHelper.GetStatusDescriptionEn(calculatedStatus),
             StartDateTime = DateTimeHelper.ConvertUtcToUserTimeZone(activeVersion.StartUtc, timeZoneCode),
             EndDateTime = activeVersion.EndUtc.HasValue == true
                 ? DateTimeHelper.ConvertUtcToUserTimeZone(activeVersion.EndUtc.Value, timeZoneCode)

@@ -6,6 +6,7 @@ public class InterviewVersion : BaseEntity<Guid>
 {
     public Guid InterviewId { get; set; }
     public Interview Interview { get; set; }
+    public InterviewVersionState? State { get; set; }
     public CandidateInterviewData Candidate { get; set; }
     public ExpertInterviewData Expert { get; set; }
     public bool IsAdminApproved { get; set; }

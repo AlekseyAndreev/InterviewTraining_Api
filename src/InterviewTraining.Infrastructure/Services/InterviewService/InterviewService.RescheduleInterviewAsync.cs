@@ -32,6 +32,9 @@ public partial class InterviewService
         newVersion.Candidate.IsApproved = isCandidate;
         newVersion.Expert.IsRescheduled = isExpert;
         newVersion.Expert.IsApproved = isExpert;
+        newVersion.StartUtc = newStartUtc;
+        var state = CalculateStatus(interview, newVersion);
+        newVersion.State = state;
         await _unitOfWork.InterviewVersions.AddAsync(newVersion);
 
         interview.ActiveInterviewVersionId = newVersion.Id;

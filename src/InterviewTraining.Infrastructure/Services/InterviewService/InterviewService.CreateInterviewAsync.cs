@@ -118,6 +118,7 @@ public partial class InterviewService
             InterviewId = interviewId,
             StartUtc = startUtc,
             InterviewPrice = expertInterviewPrice,
+            State = InterviewVersionState.ConfirmedByCandidate,
             CurrencyId = expertCurrencyId,
             Candidate = new CandidateInterviewData
             {

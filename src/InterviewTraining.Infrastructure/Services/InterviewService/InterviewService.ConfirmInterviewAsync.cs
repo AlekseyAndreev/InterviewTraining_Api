@@ -40,6 +40,8 @@ public partial class InterviewService
         var newVersion = CopyFrom(interview.Id, activeVersion);
         newVersion.Candidate.IsApproved = isCandidate ? true : (activeVersion.Candidate?.IsApproved ?? false);
         newVersion.Expert.IsApproved = isExpert ? true : (activeVersion.Expert?.IsApproved ?? false);
+        var state = CalculateStatus(interview, newVersion);
+        newVersion.State = state;
 
         await _unitOfWork.InterviewVersions.AddAsync(newVersion);
 

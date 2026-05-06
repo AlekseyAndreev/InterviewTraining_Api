@@ -48,6 +48,12 @@ public class InterviewVersionConfiguration : IEntityTypeConfiguration<Domain.Int
             .IsRequired();
 
         builder
+            .Property(x => x.State)
+            .HasComment("Состояние версии")
+            .HasColumnName("state")
+            .IsRequired(false);
+
+        builder
             .Property(x => x.LanguageId)
             .HasComment("Идентификатор языка")
             .HasColumnName("language_id")

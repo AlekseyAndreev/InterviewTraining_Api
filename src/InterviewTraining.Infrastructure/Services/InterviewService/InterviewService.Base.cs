@@ -1,5 +1,4 @@
-﻿using InterviewTraining.Application.Common;
-using InterviewTraining.Application.Exceptions;
+﻿using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.Interfaces;
 using InterviewTraining.Application.SignalR;
 using InterviewTraining.Domain;
@@ -24,41 +23,41 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
     /// <summary>
     /// Вычисление статуса интервью на основе данных версии
     /// </summary>
-    private static string CalculateStatus(Interview interview, InterviewVersion version)
+    private static InterviewVersionState CalculateStatus(Interview interview, InterviewVersion version)
     {
         if (version == null)
         {
-            return InterviewStatus.Draft;
+            return InterviewVersionState.Draft;
         }
 
         if (version.Candidate?.IsDeleted == true && version.Expert?.IsDeleted == true)
         {
-            return InterviewStatus.DeletedByCandidateAndExpert;
+            return InterviewVersionState.DeletedByCandidateAndExpert;
         }
 
         if (version.Expert?.IsDeleted == true)
         {
-            return InterviewStatus.DeletedByExpert;
+            return InterviewVersionState.DeletedByExpert;
         }
 
         if (version.Candidate?.IsDeleted == true)
         {
-            return InterviewStatus.DeletedByCandidate;
+            return InterviewVersionState.DeletedByCandidate;
         }
 
         if (version.Candidate?.IsCancelled == true && version.Expert?.IsCancelled == true)
         {
-            return InterviewStatus.CancelledByCandidateAndExpert;
+            return InterviewVersionState.CancelledByCandidateAndExpert;
         }
 
         if (version.Expert?.IsCancelled == true)
         {
-            return InterviewStatus.CancelledByExpert;
+            return InterviewVersionState.CancelledByExpert;
         }
 
         if (version.Candidate?.IsCancelled == true)
         {
-            return InterviewStatus.CancelledByCandidate;
+            return InterviewVersionState.CancelledByCandidate;
         }
 
         var nowUtc = DateTime.UtcNow;
@@ -71,64 +70,64 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
 
         if (bothApproved && isEnd && isAdminApproved)
         {
-            return InterviewStatus.Completed;
+            return InterviewVersionState.Completed;
         }
 
         var isInProcess = (version.StartUtc <= nowUtc && !version.EndUtc.HasValue && version.StartUtc.AddHours(1) > nowUtc) || (version.StartUtc <= nowUtc && version.EndUtc.HasValue && version.EndUtc.Value > nowUtc);
 
         if (bothApproved && isInProcess && isAdminApproved)
         {
-            return InterviewStatus.InProgress;
+            return InterviewVersionState.InProgress;
         }
 
         var isStartDateExpired = version.StartUtc <= nowUtc;
 
         if (!candidateApproved && !expertApproved && isStartDateExpired)
         {
-            return InterviewStatus.TimeExpiredBothDidNotApprove;
+            return InterviewVersionState.TimeExpiredBothDidNotApprove;
         }
 
         if (candidateApproved && !expertApproved && isStartDateExpired)
         {
-            return InterviewStatus.TimeExpiredExpertDidNotApprove;
+            return InterviewVersionState.TimeExpiredExpertDidNotApprove;
         }
 
         if (!candidateApproved && expertApproved && isStartDateExpired)
         {
-            return InterviewStatus.TimeExpiredCandidateDidNotApprove;
+            return InterviewVersionState.TimeExpiredCandidateDidNotApprove;
         }
 
         if (bothApproved && !isAdminApproved && isStartDateExpired)
         {
-            return InterviewStatus.TimeExpiredBothApprovedAdminDidNotApprove;
+            return InterviewVersionState.TimeExpiredBothApprovedAdminDidNotApprove;
         }
 
         if (bothApproved && !isAdminApproved && !isStartDateExpired)
         {
-            return InterviewStatus.ConfirmedBothAdminNotApproved;
+            return InterviewVersionState.ConfirmedBothAdminNotApproved;
         }
 
         if (bothApproved && isAdminApproved && !isStartDateExpired)
         {
-            return InterviewStatus.ConfirmedBothAdminApprovedTimeDidNotStart;
+            return InterviewVersionState.ConfirmedBothAdminApprovedTimeDidNotStart;
         }
 
         if (candidateApproved && !isStartDateExpired)
         {
-            return InterviewStatus.ConfirmedByCandidate;
+            return InterviewVersionState.ConfirmedByCandidate;
         }
 
         if (expertApproved && !isStartDateExpired)
         {
-            return InterviewStatus.ConfirmedByExpert;
+            return InterviewVersionState.ConfirmedByExpert;
         }
 
         if (!candidateApproved && !expertApproved && !isStartDateExpired)
         {
-            return InterviewStatus.PendingConfirmation;
+            return InterviewVersionState.PendingConfirmation;
         }
 
-        return InterviewStatus.Unknown;
+        return InterviewVersionState.Unknown;
     }
 
     private async Task<(bool isCandidate, bool isExpert, Interview interview, InterviewVersion activeVersion, AdditionalUserInfo currentUser)> GetBaseToChangeInterviewAsync(string currentUserId, Guid interviewId, string actionName, CancellationToken cancellationToken)

@@ -1,5 +1,4 @@
-﻿using InterviewTraining.Application.Common;
-using InterviewTraining.Application.Exceptions;
+﻿using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
@@ -36,7 +35,14 @@ public partial class InterviewService
             var interviewDate = activeVersion != null
                 ? DateTimeHelper.ConvertUtcToUserTimeZone(activeVersion.StartUtc, timeZoneCode)
                 : DateTime.MinValue;
-            var status = CalculateStatus(interview, activeVersion);
+            var calculatedStatus = CalculateStatus(interview, activeVersion);
+            var currentStatus = activeVersion.State;
+
+            if (calculatedStatus != currentStatus)
+            {
+                _logger.LogError("Вычисленный статус {CalculatedStatus} и текущий статус {CurrentStatus} не совпадают", calculatedStatus, calculatedStatus);
+            }
+
             var dto = new InterviewDto
             {
                 Id = interview.Id,
@@ -44,9 +50,9 @@ public partial class InterviewService
                 ExpertName = interview.Expert?.FullName ?? "Не указан",
                 CandidateId = interview.Candidate?.IdentityUserId,
                 CandidateName = interview.Candidate?.FullName ?? "Не указан",
-                Status = status,
-                StatusDescriptionRu = InterviewStatusDescription.GetStatusDescriptionRu(status),
-                StatusDescriptionEn = InterviewStatusDescription.GetStatusDescriptionEn(status),
+                Status = calculatedStatus.ToString(),
+                StatusDescriptionRu = InterviewStatusDescriptionHelper.GetStatusDescriptionRu(calculatedStatus),
+                StatusDescriptionEn = InterviewStatusDescriptionHelper.GetStatusDescriptionEn(calculatedStatus),
                 ScheduledAt = interviewDate,
             };
             

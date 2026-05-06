@@ -30,6 +30,8 @@ public partial class InterviewService
         newVersion.Candidate.CancelReason = isCandidate ? request.CancelReason : activeVersion.Candidate?.CancelReason;
         newVersion.Expert.IsCancelled = isExpert ? true : (activeVersion.Expert?.IsCancelled ?? false);
         newVersion.Expert.CancelReason = isExpert ? request.CancelReason : activeVersion.Expert?.CancelReason;
+        var state = CalculateStatus(interview, newVersion);
+        newVersion.State = state;
 
         await _unitOfWork.InterviewVersions.AddAsync(newVersion);
 
