@@ -1,4 +1,5 @@
 ﻿using InterviewTraining.Application.Exceptions;
+using InterviewTraining.Application.SignalR;
 using InterviewTraining.Application.UserChatMessage.V10.EditUserChatMessage;
 using Microsoft.Extensions.Logging;
 using System;
@@ -19,10 +20,10 @@ public partial class UserChatMessageService
         EditUserChatMessageRequest request,
         CancellationToken cancellationToken = default)
     {
-        var user = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.IdentityUserId, cancellationToken);
+        var user = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(request.CurrentIdentityUserId, cancellationToken);
         if (user == null)
         {
-            _logger.LogWarning("User not found: {UserId}", request.IdentityUserId);
+            _logger.LogWarning("User not found: {UserId}", request.CurrentIdentityUserId);
             throw new BusinessLogicException("User not found");
         }
 
@@ -52,6 +53,16 @@ public partial class UserChatMessageService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Message {MessageId} edited by user {UserId}", request.MessageId, user.Id);
+
+        await _userWithAdminChatNotificationProvider.NotifyChatMessageUpdatedAsync(new UserWithAdminChatMessageNotificationDto
+        {
+            Id = message.Id,
+            Text = message.MessageText,
+            CreatedUtc = message.CreatedUtc,
+            IsEdited = message.IsEdited,
+            ModifiedUtc = message.ModifiedUtc,
+            UserId = user.IdentityUserId
+        });
 
         return new EditUserChatMessageResponse
         {

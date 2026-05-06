@@ -27,16 +27,4 @@ public partial class UserChatMessageService(IUnitOfWork _unitOfWork, IUserWithAd
         IsRead = message.IsRead,
         Created = DateTimeHelper.ConvertUtcToUserTimeZone(message.CreatedUtc, userTimeZoneCode),
     };
-
-    private async Task NotifyUserWithAdminChatChanged(UserChatMessage userChatMessage, string userId, CancellationToken cancellationToken)
-    {
-        await _userWithAdminChatNotificationProvider.NotifyChatMessageUpdatedAsync(new UserWithAdminChatMessageNotificationDto
-        {
-            Id = userChatMessage.Id,
-            CreatedUtc = userChatMessage.CreatedUtc,
-            ModifiedUtc = userChatMessage.ModifiedUtc,
-            IsEdited = userChatMessage.IsEdited,
-            Text = userChatMessage.MessageText,
-        });
-    }
 }

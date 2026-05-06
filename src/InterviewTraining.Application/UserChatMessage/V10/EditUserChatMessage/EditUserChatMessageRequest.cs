@@ -16,7 +16,7 @@ public class EditUserChatMessageRequest : IMediatorRequest<EditUserChatMessageRe
     ///<summary>
     /// Identity user id of sender
     ///</summary>
-    public string IdentityUserId { get; set; }
+    public string CurrentIdentityUserId { get; set; }
 
     ///<summary>
     /// New message text

@@ -58,7 +58,7 @@ public class UserChatMessagesController : BaseController<UserChatMessagesControl
         CancellationToken cancellationToken)
     {
         request.MessageId = messageId;
-        request.IdentityUserId = CurrentUserId;
+        request.CurrentIdentityUserId = CurrentUserId;
         return await _mediator.SendAsync(request, cancellationToken);
     }
 

@@ -1,4 +1,5 @@
 ﻿using InterviewTraining.Application.Exceptions;
+using InterviewTraining.Application.SignalR;
 using InterviewTraining.Application.UserChatMessage.V10.SendUserChatMessage;
 using InterviewTraining.Domain;
 using Microsoft.Extensions.Logging;
@@ -66,6 +67,16 @@ public partial class UserChatMessageService
 
         _logger.LogInformation("Message {MessageId} sent from {SenderId} to {ReceiverId}",
             message.Id, sender.Id, receiver.Id);
+
+        await _userWithAdminChatNotificationProvider.NotifyChatMessageCreatedAsync(new UserWithAdminChatMessageNotificationDto
+        {
+            Id = message.Id,
+            CreatedUtc = message.CreatedUtc,
+            ModifiedUtc = message.ModifiedUtc,
+            IsEdited = message.IsEdited,
+            Text = message.MessageText,
+            UserId = sender.IdentityUserId
+        });
 
         return new SendUserChatMessageResponse
         {
