@@ -32,4 +32,9 @@ public interface IUserChatMessageRepository : IRepository<UserChatMessage, Guid>
     /// Soft delete message
     ///</summary>
     Task<bool> SoftDeleteAsync(Guid messageId, Guid userId, CancellationToken cancellationToken = default);
+
+    ///<summary>
+    /// Get unread messages count from admins for each user
+    ///</summary>
+    Task<Dictionary<Guid, int>> GetUnreadMessagesCountFromAdminsAsync(IEnumerable<Guid> userIds, CancellationToken cancellationToken = default);
 }

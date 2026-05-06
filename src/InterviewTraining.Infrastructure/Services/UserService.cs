@@ -146,6 +146,16 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
             .OrderBy(u => u.FullName)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
+            .ToList();
+
+        // Get user IDs for unread messages count
+        var userIds = pagedUsers.Select(u => u.Id).ToList();
+
+        // Get unread messages count from admins for each user
+        var unreadMessagesCounts = await unitOfWork.UserChatMessages
+            .GetUnreadMessagesCountFromAdminsAsync(userIds, cancellationToken);
+
+        var userDtos = pagedUsers
             .Select(u => new UserDto
             {
                 Id = u.Id,
@@ -154,12 +164,13 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
                 IsExpert = u.IsExpert,
                 IsCandidate = u.IsCandidate,
                 IsDeleted = u.IsDeleted,
+                UnreadMessagesByAdmin = unreadMessagesCounts.TryGetValue(u.Id, out var count) ? count : 0
             })
             .ToList();
 
         return new GetAllUsersForAdminResponse
         {
-            Data = pagedUsers,
+            Data = userDtos,
             TotalRecords = totalCount,
             PageNumber = request.PageNumber,
             PageSize = request.PageSize

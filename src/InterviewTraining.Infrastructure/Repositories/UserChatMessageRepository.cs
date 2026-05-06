@@ -82,4 +82,28 @@ public class UserChatMessageRepository : Repository<UserChatMessage, Guid>, IUse
         message.ModifiedUtc = DateTime.UtcNow;
         return true;
     }
+
+    ///<summary>
+    /// Get unread messages count from admins for each user
+    ///</summary>
+    public async Task<Dictionary<Guid, int>> GetUnreadMessagesCountFromAdminsAsync(
+        IEnumerable<Guid> userIds,
+        CancellationToken cancellationToken = default)
+    {
+        var userIdList = userIds.ToList();
+
+        var unreadCounts = await DbSet
+            .Include(x => x.ReceiverUser)
+            .Where(x =>
+                !x.IsDeleted &&
+                !x.IsRead &&
+                userIdList.Contains(x.ReceiverUserId) &&
+                x.ReceiverUser != null &&
+                x.ReceiverUser.IsAdmin)
+            .GroupBy(x => x.ReceiverUserId)
+            .Select(g => new { UserId = g.Key, Count = g.Count() })
+            .ToListAsync(cancellationToken);
+
+        return unreadCounts.ToDictionary(x => x.UserId, x => x.Count);
+    }
 }
