@@ -55,7 +55,6 @@ public ErrorHandlingMiddleware(RequestDelegate next) => _next = next;
         context.Response.ContentType = "application/json";
         context.Response.Headers.TryAdd("Access-Control-Allow-Origin", "*");
 
-        // Контролируемые ошибки
         if (exception is EntityNotFoundException entityNotFoundException)
         {
             var errorId = Guid.NewGuid();

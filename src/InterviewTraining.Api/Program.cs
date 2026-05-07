@@ -57,6 +57,8 @@ try
     }
 
     await InterviewContextSeeding.SeedAllAsync(app.Services);
+    
+    app.UseMiddleware<ErrorHandlingMiddleware>();
 
     var uiUrls = app.Configuration.GetSection("UiUrls").Get<string[]>() ?? Array.Empty<string>();
     app.UseCors(builder => builder
@@ -69,9 +71,7 @@ try
     {
         app.UseDeveloperExceptionPage();
     }
-
-    app.UseMiddleware<ErrorHandlingMiddleware>();
-
+    
     app.UseAuthentication();
 
     app.UseHttpsRedirection();
