@@ -62,6 +62,7 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
         userInfo.FullName = request.FullName;
         userInfo.ShortDescription = request.ShortDescription;
         userInfo.Description = request.Description;
+        userInfo.IsExpertAvailableInSearch = false;
 
         if (request.InterviewPrice.HasValue && request.IsExpert)
         {
