@@ -75,7 +75,6 @@ public class AdditionalUserInfoRepository : Repository<AdditionalUserInfo, Guid>
     public override async Task<IEnumerable<AdditionalUserInfo>> GetAllAsync()
     {
         return await DbSet
-            .Where(u => !u.IsDeleted)
             .ToListAsync();
     }
 }
