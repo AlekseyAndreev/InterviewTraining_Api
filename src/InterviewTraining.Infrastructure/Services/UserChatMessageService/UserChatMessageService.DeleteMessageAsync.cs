@@ -61,7 +61,6 @@ public partial class UserChatMessageService
             UserId = user.IsAdmin ? message.ReceiverUser.IdentityUserId : message.SenderUser.IdentityUserId
         });
 
-
         return new DeleteUserChatMessageResponse
         {
             Success = true,
