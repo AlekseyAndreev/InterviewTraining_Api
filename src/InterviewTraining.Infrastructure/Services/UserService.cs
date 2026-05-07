@@ -28,6 +28,7 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
         return new GetUserInfoResponse
         {
             Description = userInfo.Description,
+            IsExpertAvailableInSearch = userInfo.IsExpertAvailableInSearch,
             FullName = userInfo.FullName,
             ShortDescription = userInfo.ShortDescription,
             Photo = userInfo.PhotoLocal,

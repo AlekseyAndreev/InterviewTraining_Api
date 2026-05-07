@@ -8,6 +8,7 @@ public class GetUserInfoResponse
     public byte[] Photo { get; set; }
     public string FullName { get; set; }
     public string ShortDescription { get; set; }
+    public bool IsExpertAvailableInSearch { get; set; }
     public string Description { get; set; }
     public decimal? InterviewPrice { get; set; }
     public Guid? CurrencyId { get; set; }
