@@ -97,10 +97,9 @@ public class UserChatMessageRepository : Repository<UserChatMessage, Guid>, IUse
             .Where(x =>
                 !x.IsDeleted &&
                 !x.IsRead &&
-                userIdList.Contains(x.ReceiverUserId) &&
                 x.ReceiverUser != null &&
                 x.ReceiverUser.IsAdmin)
-            .GroupBy(x => x.ReceiverUserId)
+            .GroupBy(x => x.SenderUserId)
             .Select(g => new { UserId = g.Key, Count = g.Count() })
             .ToListAsync(cancellationToken);
 
