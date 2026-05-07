@@ -3,6 +3,7 @@ using InterviewTraining.Application.SignalR;
 using InterviewTraining.Application.UserChatMessage.V10.EditUserChatMessage;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -62,7 +63,7 @@ public partial class UserChatMessageService
             CreatedUtc = message.CreatedUtc,
             IsEdited = message.IsEdited,
             ModifiedUtc = message.ModifiedUtc,
-            UserId = user.IdentityUserId
+            UserId = user.IsAdmin ? message.ReceiverUser.IdentityUserId : message.SenderUser.IdentityUserId
         });
 
         return new EditUserChatMessageResponse

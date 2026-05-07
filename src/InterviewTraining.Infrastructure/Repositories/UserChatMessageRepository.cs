@@ -71,7 +71,7 @@ public class UserChatMessageRepository : Repository<UserChatMessage, Guid>, IUse
     public async Task<bool> SoftDeleteAsync(Guid messageId, Guid userId, CancellationToken cancellationToken = default)
     {
         var message = await DbSet
-            .FirstOrDefaultAsync(x => x.Id == messageId && x.SenderUserId == userId && !x.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == messageId && (x.SenderUserId == userId || x.SenderUser.IsAdmin) && !x.IsDeleted, cancellationToken);
 
         if (message == null)
         {

@@ -16,4 +16,9 @@ public interface IUserWithAdminChatNotificationProvider
     /// Отправить уведомление об обновлении сообщения в чате
     /// </summary>
     Task NotifyChatMessageUpdatedAsync(UserWithAdminChatMessageNotificationDto message);
+
+    ///<summary>
+    /// Отправить уведомление о удалении сообщения в чате
+    /// </summary>
+    Task NotifyChatMessageDeletedAsync(UserWithAdminChatMessageNotificationDto message);
 }

@@ -40,4 +40,9 @@ public class UserWithAdminChatHub : Hub
     /// Имя метода для уведомления об обновлении сообщения
     /// </summary>
     public const string MessageUpdatedMethod = "UserWithAdminChatMessageUpdated";
+
+    /// <summary>
+    /// Имя метода для уведомления о удалении сообщения
+    /// </summary>
+    public const string MessageDeletedMethod = "UserWithAdminChatMessageDeleted";
 }

@@ -61,4 +61,24 @@ public class UserWithAdminChatNotificationProvider : IUserWithAdminChatNotificat
             _logger.LogError(ex, "Ошибка при отправке уведомления об обновлении сообщения {MessageId}", message.Id);
         }
     }
+
+    /// <summary>
+    /// Отправить уведомление об обновлении сообщения в чате
+    /// </summary>
+    public async Task NotifyChatMessageDeletedAsync(UserWithAdminChatMessageNotificationDto message)
+    {
+        try
+        {
+            var groupName = UserWithAdminChatHub.GetGroupName(message.UserId);
+            await _hubContext.Clients.Group(groupName)
+                .SendAsync(UserWithAdminChatHub.MessageDeletedMethod, message);
+
+            _logger.LogDebug("Отправлено уведомление о удалении сообщения {MessageId} в чате пользователя {UserId} и админа",
+                message.Id, message.UserId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка при отправке уведомления о удалении сообщения {MessageId}", message.Id);
+        }
+    }
 }
