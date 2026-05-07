@@ -34,7 +34,7 @@ public partial class UserChatMessageService
             throw new EntityNotFoundException("UserChatMessage");
         }
 
-        if (message.SenderUserId != user.Id)
+        if (message.SenderUserId != user.Id && message.SenderUser?.IsAdmin != true && !user.IsAdmin)
         {
             _logger.LogWarning("User {UserId} is not authorized to edit message {MessageId}", user.Id, request.MessageId);
             throw new BusinessLogicException("You can only edit your own messages");
@@ -49,6 +49,7 @@ public partial class UserChatMessageService
         message.MessageText = request.MessageText;
         message.IsEdited = true;
         message.ModifiedUtc = DateTime.UtcNow;
+        message.IsRead = false;
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

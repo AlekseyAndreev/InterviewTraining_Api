@@ -13,6 +13,11 @@ public class UserChatMessageDto
     public Guid Id { get; set; }
 
     ///<summary>
+    /// Is sender admin
+    ///</summary>
+    public bool IsSenderAdmin { get; set; }
+
+    ///<summary>
     /// Sender user id
     ///</summary>
     public string SenderUserId { get; set; }

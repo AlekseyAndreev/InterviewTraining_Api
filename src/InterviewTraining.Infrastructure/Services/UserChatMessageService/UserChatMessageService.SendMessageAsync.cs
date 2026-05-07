@@ -75,7 +75,7 @@ public partial class UserChatMessageService
             ModifiedUtc = message.ModifiedUtc,
             IsEdited = message.IsEdited,
             Text = message.MessageText,
-            UserId = sender.IdentityUserId
+            UserId = request.IsAdmin ? receiver.IdentityUserId : sender.IdentityUserId
         });
 
         return new SendUserChatMessageResponse

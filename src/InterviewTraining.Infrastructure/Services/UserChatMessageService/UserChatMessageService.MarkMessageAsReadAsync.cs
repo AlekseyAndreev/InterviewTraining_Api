@@ -33,7 +33,7 @@ public partial class UserChatMessageService
             throw new EntityNotFoundException("UserChatMessage");
         }
 
-        if (message.ReceiverUserId != user.Id)
+        if (message.ReceiverUserId != user.Id && (message.ReceiverUser?.IsAdmin != true) && !user.IsAdmin)
         {
             _logger.LogWarning("User {UserId} is not authorized to mark as read message {MessageId}", user.Id, request.MessageId);
             throw new BusinessLogicException("You can not mark as read");

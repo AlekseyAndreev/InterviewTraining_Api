@@ -5,8 +5,6 @@ using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.Helpers;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.Services;
 
@@ -18,6 +16,7 @@ public partial class UserChatMessageService(IUnitOfWork _unitOfWork, IUserWithAd
     private static UserChatMessageDto MapToDto(UserChatMessage message, string userTimeZoneCode) => new()
     {
         Id = message.Id,
+        IsSenderAdmin = message.SenderUser?.IsAdmin == true,
         SenderUserId = message.SenderUser?.IdentityUserId,
         SenderFullName = message.SenderUser?.FullName,
         ReceiverUserId = message.ReceiverUser?.IdentityUserId,
