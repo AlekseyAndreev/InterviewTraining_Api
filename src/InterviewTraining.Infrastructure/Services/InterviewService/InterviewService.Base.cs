@@ -130,7 +130,23 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
         return InterviewVersionState.Unknown;
     }
 
-    private async Task<(bool isCandidate, bool isExpert, Interview interview, InterviewVersion activeVersion, AdditionalUserInfo currentUser)> GetBaseToChangeInterviewAsync(string currentUserId, Guid interviewId, string actionName, CancellationToken cancellationToken)
+    /// <summary>
+    /// Вычисление статуса интервью на основе данных версии
+    /// </summary>
+    private InterviewVersionState CalculateStatusWithCheck(Interview interview, InterviewVersion version)
+    {
+        var calculatedStatus = CalculateStatus(interview, version);
+        var currentStatus = version.State;
+
+        if (calculatedStatus != currentStatus)
+        {
+            _logger.LogError("Вычисленный статус {CalculatedStatus} и текущий статус {CurrentStatus} не совпадают", calculatedStatus, calculatedStatus);
+        }
+
+        return calculatedStatus;
+    }
+
+    private async Task<(bool isCandidate, bool isExpert, bool isAdminCurrentUser, Interview interview, InterviewVersion activeVersion, AdditionalUserInfo currentUser)> GetBaseToChangeInterviewAsync(string currentUserId, Guid interviewId, string actionName, bool isAdmin, CancellationToken cancellationToken)
     {
         var currentUser = await _unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(currentUserId, cancellationToken);
         if (currentUser == null)
@@ -149,7 +165,9 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
         var isCandidate = interview.CandidateId == currentUser.Id;
         var isExpert = interview.ExpertId == currentUser.Id;
 
-        if (!isCandidate && !isExpert)
+        var isAdminCurrentUser = isAdmin && currentUser.IsAdmin;
+
+        if (!isCandidate && !isExpert && !isAdminCurrentUser)
         {
             _logger.LogWarning("Пользователь {UserId} не является участником интервью {InterviewId}",
                 currentUser.Id, interview.Id);
@@ -174,7 +192,7 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
             throw new BusinessLogicException($"Невозможно выполнить действие {actionName}, так как собеседование отменено");
         }
 
-        return (isCandidate, isExpert, interview, activeVersion, currentUser);
+        return (isCandidate, isExpert, isAdminCurrentUser, interview, activeVersion, currentUser);
     }
 
     private async Task NotifyInterviewChanged(Interview interview, InterviewVersion newVersion, string chatMessageText, CancellationToken cancellationToken)

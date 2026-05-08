@@ -17,7 +17,7 @@ public partial class InterviewService
     /// </summary>
     public async Task<CancelInterviewResponse> CancelInterviewAsync(CancelInterviewRequest request, CancellationToken cancellationToken)
     {
-        var (isCandidate, isExpert, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Отмена собеседования", cancellationToken);
+        var (isCandidate, isExpert, _, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Отмена собеседования", false, cancellationToken);
 
         var utcNow = DateTime.UtcNow;
         if (activeVersion.StartUtc < utcNow)
@@ -30,8 +30,7 @@ public partial class InterviewService
         newVersion.Candidate.CancelReason = isCandidate ? request.CancelReason : activeVersion.Candidate?.CancelReason;
         newVersion.Expert.IsCancelled = isExpert ? true : (activeVersion.Expert?.IsCancelled ?? false);
         newVersion.Expert.CancelReason = isExpert ? request.CancelReason : activeVersion.Expert?.CancelReason;
-        var state = CalculateStatus(interview, newVersion);
-        newVersion.State = state;
+        newVersion.State = CalculateStatus(interview, newVersion);
 
         await _unitOfWork.InterviewVersions.AddAsync(newVersion);
 

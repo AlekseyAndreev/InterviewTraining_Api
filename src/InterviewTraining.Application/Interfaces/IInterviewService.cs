@@ -1,4 +1,5 @@
 ﻿using InterviewTraining.Application.CancelInterview.V10;
+using InterviewTraining.Application.ChangeAdminData.V10;
 using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
@@ -41,6 +42,16 @@ public interface IInterviewService
     /// Если одна из сторон уже отменила собеседование, другая сторона не может его отменить.
     /// </remarks>
     Task<CancelInterviewResponse> CancelInterviewAsync(CancelInterviewRequest request, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Отменить собеседование
+    /// </summary>
+    /// <remarks>
+    /// Доступно кандидату или эксперту, участвующим в собеседовании.
+    /// При отмене создаётся новая версия интервью с признаком отмены.
+    /// Если одна из сторон уже отменила собеседование, другая сторона не может его отменить.
+    /// </remarks>
+    Task<ChangeAdminDataResponse> ChangeAdminDataAsync(ChangeAdminDataRequest request, CancellationToken cancellationToken);
 
     /// <summary>
     /// Подтвердить собеседование

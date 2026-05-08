@@ -17,4 +17,6 @@ public class ConfirmInterviewRequest : IMediatorRequest<ConfirmInterviewResponse
     /// Идентификатор собеседования
     /// </summary>
     public Guid InterviewId { get; set; }
+
+    public bool IsAdmin { get; set; }
 }

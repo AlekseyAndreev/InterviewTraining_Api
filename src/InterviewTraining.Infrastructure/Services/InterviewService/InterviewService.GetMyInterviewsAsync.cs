@@ -35,13 +35,7 @@ public partial class InterviewService
             var interviewDate = activeVersion != null
                 ? DateTimeHelper.ConvertUtcToUserTimeZone(activeVersion.StartUtc, timeZoneCode)
                 : DateTime.MinValue;
-            var calculatedStatus = CalculateStatus(interview, activeVersion);
-            var currentStatus = activeVersion.State;
-
-            if (calculatedStatus != currentStatus)
-            {
-                _logger.LogError("Вычисленный статус {CalculatedStatus} и текущий статус {CurrentStatus} не совпадают", calculatedStatus, calculatedStatus);
-            }
+            var calculatedStatus = CalculateStatusWithCheck(interview, activeVersion);
 
             var dto = new InterviewDto
             {

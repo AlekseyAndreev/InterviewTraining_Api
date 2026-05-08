@@ -1,13 +1,12 @@
-﻿using InterviewTraining.Application.CancelInterview.V10;
+﻿using InterviewTraining.Api.Constants;
+using InterviewTraining.Application.CancelInterview.V10;
+using InterviewTraining.Application.ChangeAdminData.V10;
 using InterviewTraining.Application.ConfirmInterview.V10;
-using InterviewTraining.Application.CreateInterviewChatMessage.V10;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
-using InterviewTraining.Application.GetInterviewChatMessages.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.RescheduleInterview.V10;
-using InterviewTraining.Application.UpdateInterviewChatMessage.V10;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -144,7 +143,8 @@ public class InterviewsController : BaseController<InterviewsController>
         var request = new ConfirmInterviewRequest
         {
             IdentityUserId = CurrentUserId,
-            InterviewId = id
+            InterviewId = id,
+            IsAdmin = IsAdmin,
         };
         return await _mediator.SendAsync(request, cancellationToken);
     }
@@ -169,6 +169,26 @@ public class InterviewsController : BaseController<InterviewsController>
     public async Task<RescheduleInterviewResponse> RescheduleInterview(Guid id, [FromBody] RescheduleInterviewRequest request, CancellationToken cancellationToken)
     {
         request.IdentityUserId = CurrentUserId;
+        request.InterviewId = id;
+        return await _mediator.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Изменить данные собеседования для админа
+    /// </summary>
+    /// <remarks>
+    /// Позволяет администратору изменить данные собеседования.
+    /// </remarks>
+    /// <param name="id">Идентификатор собеседования</param>
+    /// <param name="request">Данные для изменения</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Результат изменения собеседования</returns>
+    [HttpPut("{id:guid}/admin-data")]
+    [Authorize(Roles = AuhConstants.RoleAdmin)]
+    public async Task<ChangeAdminDataResponse> ChangeAdminData(Guid id, [FromBody] ChangeAdminDataRequest request, CancellationToken cancellationToken)
+    {
+        request.CurrentIdentityUserId = CurrentUserId;
+        request.IsAdmin = IsAdmin;
         request.InterviewId = id;
         return await _mediator.SendAsync(request, cancellationToken);
     }

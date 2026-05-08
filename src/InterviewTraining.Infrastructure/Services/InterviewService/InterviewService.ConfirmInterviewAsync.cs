@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.Exceptions;
-using InterviewTraining.Application.SignalR;
 using InterviewTraining.Domain;
 using Microsoft.Extensions.Logging;
 
@@ -14,21 +13,65 @@ namespace InterviewTraining.Infrastructure.Services;
 /// </summary>
 public partial class InterviewService
 {
+    private readonly InterviewVersionState[] CorrectStatusesToConfirmForExpert = [InterviewVersionState.PendingConfirmation, InterviewVersionState.ConfirmedByCandidate];
+    private readonly InterviewVersionState[] CorrectStatusesToConfirmForCandidate = [InterviewVersionState.PendingConfirmation, InterviewVersionState.ConfirmedByExpert];
+
     /// <summary>
     /// Подтвердить собеседование
     /// </summary>
     public async Task<ConfirmInterviewResponse> ConfirmInterviewAsync(ConfirmInterviewRequest request, CancellationToken cancellationToken)
     {
-        var (isCandidate, isExpert, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Подтверждение собеседования", cancellationToken);
+        var (isCandidate, isExpert, isAdminCurrentUser, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Подтверждение собеседования", request.IsAdmin, cancellationToken);
+        
+        var currentState = CalculateStatusWithCheck(interview, activeVersion);
 
-        if (isCandidate && activeVersion.Candidate?.IsApproved == true)
+        if (isCandidate)
         {
-            throw new BusinessLogicException("Вы уже подтвердили это собеседование");
+            if (!CorrectStatusesToConfirmForCandidate.Contains(currentState))
+            {
+                throw new BusinessLogicException($"Не возможно подтвердить статус собеседования кандидатом. Текущий статус собеседования {currentState}");
+            }
+
+            if (activeVersion.Candidate?.IsApproved == true)
+            {
+                throw new BusinessLogicException("Вы уже подтвердили это собеседование");
+            }
         }
 
-        if (isExpert && activeVersion.Expert?.IsApproved == true)
+        if (isExpert)
         {
-            throw new BusinessLogicException("Вы уже подтвердили это собеседование");
+            if (!CorrectStatusesToConfirmForExpert.Contains(currentState))
+            {
+                throw new BusinessLogicException($"Не возможно подтвердить статус собеседования экспертом. Текущий статус собеседования {currentState}");
+            }
+
+            if (activeVersion.Expert?.IsApproved == true)
+            {
+                throw new BusinessLogicException("Вы уже подтвердили это собеседование");
+            }
+        }
+
+        if (isAdminCurrentUser)
+        {
+            if (activeVersion.State != InterviewVersionState.ConfirmedBothAdminNotApproved)
+            {
+                throw new BusinessLogicException("Админ не может подтвердить собеседование. Текущий статус должен быть ConfirmedBothAdminNotApproved");
+            }
+
+            if (string.IsNullOrEmpty(activeVersion.LinkToVideoCall))
+            {
+                throw new BusinessLogicException("Админ не может подтвердить собеседование. Нет ссылки на созвон");
+            }
+
+            if (!activeVersion.Candidate.IsPaidByCandidate)
+            {
+                throw new BusinessLogicException("Админ не может подтвердить собеседование. Собеседование не оплачено кандидатом");
+            }
+
+            if (activeVersion.IsAdminApproved)
+            {
+                throw new BusinessLogicException("Админ уже подтвердили это собеседование");
+            }
         }
 
         var utcNow = DateTime.UtcNow;
@@ -40,8 +83,8 @@ public partial class InterviewService
         var newVersion = CopyFrom(interview.Id, activeVersion);
         newVersion.Candidate.IsApproved = isCandidate ? true : (activeVersion.Candidate?.IsApproved ?? false);
         newVersion.Expert.IsApproved = isExpert ? true : (activeVersion.Expert?.IsApproved ?? false);
-        var state = CalculateStatus(interview, newVersion);
-        newVersion.State = state;
+        newVersion.IsAdminApproved = isAdminCurrentUser ? true : activeVersion.IsAdminApproved;
+        newVersion.State = CalculateStatus(interview, newVersion);
 
         await _unitOfWork.InterviewVersions.AddAsync(newVersion);
 

@@ -18,7 +18,7 @@ public partial class InterviewService
     /// </summary>
     public async Task<RescheduleInterviewResponse> RescheduleInterviewAsync(RescheduleInterviewRequest request, CancellationToken cancellationToken)
     {
-        var (isCandidate, isExpert, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Перенос времени", cancellationToken);
+        var (isCandidate, isExpert, _, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Перенос времени", false, cancellationToken);
 
         var timeZoneCode = await _userTimeZoneService.GetTimeZoneCode(currentUser.TimeZoneId);
         var newStartUtc = DateTimeHelper.ConvertUserTimeToUtc(request.NewDate, request.NewTime, timeZoneCode);
@@ -33,8 +33,7 @@ public partial class InterviewService
         newVersion.Expert.IsRescheduled = isExpert;
         newVersion.Expert.IsApproved = isExpert;
         newVersion.StartUtc = newStartUtc;
-        var state = CalculateStatus(interview, newVersion);
-        newVersion.State = state;
+        newVersion.State = CalculateStatus(interview, newVersion);
         await _unitOfWork.InterviewVersions.AddAsync(newVersion);
 
         interview.ActiveInterviewVersionId = newVersion.Id;

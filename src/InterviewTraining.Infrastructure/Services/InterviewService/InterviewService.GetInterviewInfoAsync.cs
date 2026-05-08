@@ -52,13 +52,7 @@ public partial class InterviewService
 
         var timeZoneCode = await _userTimeZoneService.GetTimeZoneCode(currentUser.TimeZoneId);
 
-        var calculatedStatus = CalculateStatus(interview, activeVersion);
-        var currentStatus = activeVersion.State;
-
-        if (calculatedStatus != currentStatus)
-        {
-            _logger.LogError("Вычисленный статус {CalculatedStatus} и текущий статус {CurrentStatus} не совпадают", calculatedStatus, calculatedStatus);
-        }
+        var calculatedStatus = CalculateStatusWithCheck(interview, activeVersion);
 
         var response = new GetInterviewInfoResponse
         {
@@ -84,7 +78,9 @@ public partial class InterviewService
                 : null,
             ExpertApproval = activeVersion.Expert != null
                 ? MapApproval(activeVersion.Expert)
-                : null
+                : null,
+            IsPaidByCandidate = activeVersion.Candidate?.IsPaidByCandidate,
+            IsPaidToExpert = activeVersion.Expert?.IsPaidToExpert,
         };
 
         return response;

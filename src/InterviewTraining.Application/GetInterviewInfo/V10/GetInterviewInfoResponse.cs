@@ -87,4 +87,7 @@ public class GetInterviewInfoResponse
     /// Дата создания
     /// </summary>
     public DateTime CreatedUtc { get; set; }
+
+    public bool? IsPaidByCandidate { get; set; }
+    public bool? IsPaidToExpert { get; set; }
 }
