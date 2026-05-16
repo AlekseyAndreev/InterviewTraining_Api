@@ -1,11 +1,14 @@
 ﻿using InterviewTraining.Application;
+using InterviewTraining.Application.Interfaces;
 using InterviewTraining.Infrastructure;
 using InterviewTraining.Infrastructure.DatabaseContext;
 using InterviewTraining.Infrastructure.Helpers;
+using InterviewTraining.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 
@@ -71,6 +74,13 @@ public static class ServiceCollectionExtensions
         ConfigureContext(services, configuration);
 
         services.AddSignalR();
+
+        // Регистрация LlmService с HttpClient
+        services.AddHttpClient<ILlmService, LlmService>(client =>
+        {
+            client.BaseAddress = new Uri(configuration["Llm:Endpoint"] ?? "https://opencode.ai/zen/v1/");
+            client.Timeout = TimeSpan.FromMinutes(5);
+        });
 
         services.AddSwaggerGen();
     }

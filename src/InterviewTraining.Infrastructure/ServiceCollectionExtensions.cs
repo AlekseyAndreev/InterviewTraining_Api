@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICurrencyService, CurrencyService>();
         services.AddScoped<IUserNotificationService, UserNotificationService>();
         services.AddScoped<IUserChatMessageService, UserChatMessageService>();
+        services.AddScoped<ILlmService, LlmService>();
         services.AddInfrastructureProviders();
         return services;
     }
