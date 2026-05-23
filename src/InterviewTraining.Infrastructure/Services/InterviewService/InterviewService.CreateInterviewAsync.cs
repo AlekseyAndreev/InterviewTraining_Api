@@ -1,11 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using InterviewTraining.Application.CreateInterview.V10;
+﻿using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.Services;
 
@@ -82,6 +82,8 @@ public partial class InterviewService
         interview.ActiveInterviewVersionId = interviewVersion.Id;
         _unitOfWork.Interviews.Update(interview);
 
+        await _unitOfWork.UserNotifications.AddAsync(CreateNotification(interview, "Создано новое собеседование", interview.ExpertId), cancellationToken);
+
         await _unitOfWork.SaveChangesAsync();
 
         _logger.LogInformation("Создано собеседование {InterviewId} кандидатом {CandidateId} с экспертом {ExpertId}",
@@ -93,6 +95,23 @@ public partial class InterviewService
             Success = true
         };
     }
+
+    ///<summary>
+    /// Создать уведомления для кандидата и эксперта
+    ///</summary>
+    private static UserNotification CreateNotification(Interview interview, string message, Guid userId) =>
+        new()
+        {
+            Id = Guid.NewGuid(),
+            UserId = userId,
+            Text = message,
+            IsRead = false,
+            IsDeleted = false,
+            CreatedUtc = DateTime.UtcNow,
+            ModifiedUtc = null,
+            LinkType = UserNotificationLinkTypeConstants.LinkTypeInterview,
+            LinkId = interview.Id.ToString()
+        };
 
     private async Task<Guid?> GetLanguageIdAsync(Guid? interviewLanguageIdParam, CancellationToken cancellationToken)
     {

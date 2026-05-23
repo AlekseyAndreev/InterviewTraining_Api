@@ -118,5 +118,9 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
         });
 
         await interviewChatMessageProvider.CreateInterviewChatMessage(interview.Id, MessageSenderType.System, null, chatMessageText, cancellationToken);
+
+        await _unitOfWork.UserNotifications.AddAsync(CreateNotification(interview, chatMessageText, interview.ExpertId), cancellationToken);
+        await _unitOfWork.UserNotifications.AddAsync(CreateNotification(interview, chatMessageText, interview.CandidateId), cancellationToken);
+        await _unitOfWork.SaveChangesAsync();
     }
 }
