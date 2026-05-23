@@ -45,6 +45,8 @@ public class UserNotificationService(IUnitOfWork unitOfWork, IUserTimeZoneProvid
             IsRead = n.IsRead,
             Text = n.Text,
             Created = DateTimeHelper.ConvertUtcToUserTimeZone(n.CreatedUtc, timeZoneCode),
+            LinkType = n.LinkType,
+            LinkId = n.LinkId,
         }).ToArray();
     }
 

@@ -1,13 +1,10 @@
 ﻿using InterviewTraining.Api.Constants;
 using InterviewTraining.Application.CustomMediatorLogic;
-using InterviewTraining.Application.DeleteUserNotification.V10;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.GetAllUsersForAdmin.V10;
 using InterviewTraining.Application.GetUserInfo.V10;
-using InterviewTraining.Application.GetUserNotifications.V10;
 using InterviewTraining.Application.ManageAvailableTime.V10;
 using InterviewTraining.Application.UpdateUserInfo.V10;
-using InterviewTraining.Application.UpdateUserNotification.V10;
 using InterviewTraining.Application.UpdateUserTimeZone.V10;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -136,65 +133,6 @@ public class UsersController : BaseController<UsersController>
         CancellationToken cancellationToken)
     {
         request.IdentityUserId = CurrentUserId;
-        return await _mediator.SendAsync(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Получить уведомления текущего пользователя
-    /// </summary>
-    [HttpGet("me/notifications")]
-    [Authorize]
-    public async Task<GetUserNotificationsResponse> GetUserNotifications(CancellationToken cancellationToken)
-    {
-        var request = new GetUserNotificationsRequest();
-        request.IdenitityUserId = CurrentUserId;
-        return await _mediator.SendAsync(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Удалить уведомление
-    /// </summary>
-    [HttpDelete("me/notifications/{notificationId}")]
-    [Authorize]
-    public async Task<DeleteUserNotificationResponse> DeleteNotification(Guid notificationId, CancellationToken cancellationToken)
-    {
-        var request = new DeleteUserNotificationRequest
-        {
-            NotificationId = notificationId,
-            IdentityUserId = CurrentUserId,
-        };
-        return await _mediator.SendAsync(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Пометить уведомление как прочитанное
-    /// </summary>
-    [HttpPut("me/notifications/{notificationId}/read")]
-    [Authorize]
-    public async Task<UpdateUserNotificationResponse> MarkNotificationAsRead(Guid notificationId, CancellationToken cancellationToken)
-    {
-        var request = new UpdateUserNotificationRequest
-        {
-            NotificationId = notificationId,
-            IsRead = true,
-            IdentityUserId = CurrentUserId,
-        };
-        return await _mediator.SendAsync(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Пометить уведомление как непрочитанное
-    /// </summary>
-    [HttpPut("me/notifications/{notificationId}/unread")]
-    [Authorize]
-    public async Task<UpdateUserNotificationResponse> MarkNotificationAsUnread(Guid notificationId, CancellationToken cancellationToken)
-    {
-        var request = new UpdateUserNotificationRequest
-        {
-            NotificationId = notificationId,
-            IsRead = false,
-            IdentityUserId = CurrentUserId,
-        };
         return await _mediator.SendAsync(request, cancellationToken);
     }
 

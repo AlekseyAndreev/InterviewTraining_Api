@@ -8,4 +8,6 @@ public class UserNotificationDto
     public bool IsRead { get; set; }
     public string Text { get; set; }
     public DateTime Created { get; set; }
+    public string LinkType { get; set; }
+    public string LinkId { get; set; }
 }

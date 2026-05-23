@@ -61,6 +61,18 @@ public class UserNotificationConfiguration : IEntityTypeConfiguration<Domain.Use
             .IsRequired();
 
         builder
+            .Property(x => x.LinkType)
+            .HasComment("Вид ссылки")
+            .HasColumnName("link_type")
+            .IsRequired(false);
+
+        builder
+            .Property(x => x.LinkId)
+            .HasComment("Идентификатор для ссылки")
+            .HasColumnName("link_id")
+            .IsRequired(false);
+
+        builder
             .HasOne(x => x.User)
             .WithMany(x => x.Notifications)
             .HasForeignKey(x => x.UserId)

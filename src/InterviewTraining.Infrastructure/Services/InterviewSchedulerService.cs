@@ -160,6 +160,8 @@ public class InterviewSchedulerService : IInterviewSchedulerService
                 IsDeleted = false,
                 CreatedUtc = now,
                 ModifiedUtc = null,
+                LinkType = UserNotificationLinkTypeConstants.LinkTypeInterview,
+                LinkId = interview.Id.ToString()
             });
         }
 
@@ -174,6 +176,8 @@ public class InterviewSchedulerService : IInterviewSchedulerService
                 IsDeleted = false,
                 CreatedUtc = now,
                 ModifiedUtc = null,
+                LinkType = UserNotificationLinkTypeConstants.LinkTypeInterview,
+                LinkId = interview.Id.ToString()
             });
         }
 
