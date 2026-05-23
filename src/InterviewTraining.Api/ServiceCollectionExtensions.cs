@@ -1,5 +1,6 @@
 ﻿using InterviewTraining.Application;
 using InterviewTraining.Application.Interfaces;
+using InterviewTraining.Application.Options;
 using InterviewTraining.Infrastructure;
 using InterviewTraining.Infrastructure.DatabaseContext;
 using InterviewTraining.Infrastructure.Helpers;
@@ -14,17 +15,19 @@ using System.Threading.Tasks;
 
 namespace InterviewTraining.Api;
 
-/// <summary>
+///<summary>
 /// Startup
-/// </summary>
+///</summary>
 public static class ServiceCollectionExtensions
 {
-    /// <summary>
+    ///<summary>
     /// This method gets called by the runtime. Use this method to add services to the container.
-    /// </summary>
+    ///</summary>
     ///<param name="services"></param>
     public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddOptions();
+        services.Configure<UiSettings>(configuration.GetSection(UiSettings.SectionName));
         services.AddCors();
         services.AddHealthChecks();
 
@@ -85,9 +88,9 @@ public static class ServiceCollectionExtensions
         services.AddSwaggerGen();
     }
 
-    /// <summary>
+    ///<summary>
     /// ConfigureContext
-    /// </summary>
+    ///</summary>
     private static IServiceCollection ConfigureContext(IServiceCollection services,
         IConfiguration configuration)
     {

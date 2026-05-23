@@ -1,6 +1,7 @@
 ﻿using Elastic.Serilog.Sinks;
 using InterviewTraining.Api;
 using InterviewTraining.Api.Middlewares;
+using InterviewTraining.Application.Options;
 using InterviewTraining.Infrastructure.BackgroundServices;
 using InterviewTraining.Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Builder;
@@ -62,7 +63,7 @@ try
     await InterviewContextSeeding.SeedAllAsync(app.Services);
     app.UseMiddleware<ErrorHandlingMiddleware>();
 
-    var uiUrls = app.Configuration.GetSection("UiUrls").Get<string[]>() ?? Array.Empty<string>();
+    var uiUrls = app.Configuration.GetSection(UiSettings.SectionName).Get<string[]>() ?? Array.Empty<string>();
     app.UseCors(builder => builder
         .WithOrigins(uiUrls)
         .AllowAnyHeader()
