@@ -1,5 +1,6 @@
 ﻿using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.RescheduleInterview.V10;
+using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,12 +14,35 @@ namespace InterviewTraining.Infrastructure.Services;
 /// </summary>
 public partial class InterviewService
 {
+    private readonly InterviewVersionState[] CorrectStatusesToReschedule = [
+        InterviewVersionState.Draft,
+        InterviewVersionState.PendingConfirmation,
+        InterviewVersionState.ConfirmedByExpert,
+        InterviewVersionState.ConfirmedByCandidate,
+        InterviewVersionState.ConfirmedBothAdminApprovedTimeDidNotStart,
+        InterviewVersionState.ConfirmedBothAdminNotApproved,
+        InterviewVersionState.TimeExpiredBothApprovedAdminDidNotApprove,
+        InterviewVersionState.TimeExpiredCandidateDidNotApprove,
+        InterviewVersionState.TimeExpiredExpertDidNotApprove,
+        InterviewVersionState.TimeExpiredBothDidNotApprove,
+    ];
+
     /// <summary>
     /// Изменить время собеседования
     /// </summary>
     public async Task<RescheduleInterviewResponse> RescheduleInterviewAsync(RescheduleInterviewRequest request, CancellationToken cancellationToken)
     {
         var (isCandidate, isExpert, _, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Перенос времени", false, cancellationToken);
+
+        var currentState = CalculateStatusWithCheck(interview, activeVersion);
+
+        if (isCandidate || isExpert)
+        {
+            if (!CorrectStatusesToReschedule.Contains(currentState))
+            {
+                throw new BusinessLogicException($"Не возможно перенести время собеседования. Текущий статус собеседования {currentState}");
+            }
+        }
 
         var timeZoneCode = await _userTimeZoneService.GetTimeZoneCode(currentUser.TimeZoneId);
         var newStartUtc = DateTimeHelper.ConvertUserTimeToUtc(request.NewDate, request.NewTime, timeZoneCode);

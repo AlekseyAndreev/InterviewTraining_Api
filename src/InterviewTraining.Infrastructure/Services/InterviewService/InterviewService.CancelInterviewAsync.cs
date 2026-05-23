@@ -1,9 +1,10 @@
-﻿using System;
+﻿using InterviewTraining.Application.CancelInterview.V10;
+using InterviewTraining.Application.Exceptions;
+using InterviewTraining.Domain;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using InterviewTraining.Application.CancelInterview.V10;
-using InterviewTraining.Application.Exceptions;
-using Microsoft.Extensions.Logging;
 
 namespace InterviewTraining.Infrastructure.Services;
 
@@ -12,12 +13,49 @@ namespace InterviewTraining.Infrastructure.Services;
 /// </summary>
 public partial class InterviewService
 {
+    private readonly InterviewVersionState[] CorrectStatusesToCancel = [
+        InterviewVersionState.Draft,
+        InterviewVersionState.PendingConfirmation,
+        InterviewVersionState.ConfirmedByExpert,
+        InterviewVersionState.ConfirmedByCandidate,
+        InterviewVersionState.ConfirmedBothAdminApprovedTimeDidNotStart,
+        InterviewVersionState.ConfirmedBothAdminNotApproved,
+    ];
+
     /// <summary>
     /// Отменить собеседование
     /// </summary>
     public async Task<CancelInterviewResponse> CancelInterviewAsync(CancelInterviewRequest request, CancellationToken cancellationToken)
     {
         var (isCandidate, isExpert, _, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Отмена собеседования", false, cancellationToken);
+
+        var currentState = CalculateStatusWithCheck(interview, activeVersion);
+
+        if (isCandidate)
+        {
+            if (!CorrectStatusesToCancel.Contains(currentState))
+            {
+                throw new BusinessLogicException($"Не возможно отменить собеседования кандидатом. Текущий статус собеседования {currentState}");
+            }
+
+            if (activeVersion.Candidate?.IsCancelled == true)
+            {
+                throw new BusinessLogicException("Вы уже отменили это собеседование");
+            }
+        }
+
+        if (isExpert)
+        {
+            if (!CorrectStatusesToCancel.Contains(currentState))
+            {
+                throw new BusinessLogicException($"Не возможно отменить собеседования экспертом. Текущий статус собеседования {currentState}");
+            }
+
+            if (activeVersion.Expert?.IsCancelled == true)
+            {
+                throw new BusinessLogicException("Вы уже отменили это собеседование");
+            }
+        }
 
         var utcNow = DateTime.UtcNow;
         if (activeVersion.StartUtc < utcNow)
