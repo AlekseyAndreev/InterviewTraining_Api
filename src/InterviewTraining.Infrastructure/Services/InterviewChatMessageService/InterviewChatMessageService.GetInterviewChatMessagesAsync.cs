@@ -26,7 +26,7 @@ public partial class InterviewChatMessageService
            throw new BusinessLogicException("Не найдена информация по пользователю");
        }
 
-       var interview = await _unitOfWork.Interviews.GetByIdAsync(request.InterviewId);
+       var interview = await _unitOfWork.Interviews.GetByIdAsync(request.InterviewId, cancellationToken);
        if (interview == null)
        {
            _logger.LogWarning("Интервью с идентификатором {InterviewId} не найдено", request.InterviewId);
@@ -45,7 +45,7 @@ public partial class InterviewChatMessageService
        }
 
        var userTimeZone = currentUser.TimeZoneId.HasValue
-           ? await _unitOfWork.TimeZones.GetByIdAsync(currentUser.TimeZoneId.Value)
+           ? await _unitOfWork.TimeZones.GetByIdAsync(currentUser.TimeZoneId.Value, cancellationToken)
            : null;
        var timeZoneCode = userTimeZone?.Code;
 

@@ -81,16 +81,16 @@ public class SkillRepository : Repository<Skill, Guid>, ISkillRepository
             .ToListAsync(cancellationToken);
     }
 
-    public override async Task<Skill> GetByIdAsync(Guid id)
+    public override async Task<Skill> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await DbSet
-            .FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted);
+            .FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted, cancellationToken);
     }
 
-    public override async Task<IEnumerable<Skill>> GetAllAsync()
+    public override async Task<IEnumerable<Skill>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await DbSet
             .Where(s => !s.IsDeleted)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

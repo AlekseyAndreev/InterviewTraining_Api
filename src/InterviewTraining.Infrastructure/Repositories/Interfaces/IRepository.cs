@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.Repositories.Interfaces;
@@ -15,32 +16,32 @@ public interface IRepository<T, TKey> where T : class
     /// <summary>
     /// Получить сущность по идентификатору
     /// </summary>
-    Task<T> GetByIdAsync(TKey id);
+    Task<T> GetByIdAsync(TKey id, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получить все сущности
     /// </summary>
-    Task<IEnumerable<T>> GetAllAsync();
+    Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// Найти сущности по условию
     /// </summary>
-    Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+    Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
 
     /// <summary>
     /// Найти первую сущность по условию
     /// </summary>
-    Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+    Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
 
     /// <summary>
     /// Добавить сущность
     /// </summary>
-    Task<T> AddAsync(T entity);
+    Task<T> AddAsync(T entity, CancellationToken cancellationToken);
 
     /// <summary>
     /// Добавить несколько сущностей
     /// </summary>
-    Task AddRangeAsync(IEnumerable<T> entities);
+    Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken);
 
     /// <summary>
     /// Обновить сущность
@@ -60,7 +61,7 @@ public interface IRepository<T, TKey> where T : class
     /// <summary>
     /// Проверить существование сущности по условию
     /// </summary>
-    Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
+    Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
 
     /// <summary>
     /// Получить количество сущностей

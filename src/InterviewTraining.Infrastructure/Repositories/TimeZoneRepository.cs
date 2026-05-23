@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.Repositories;
@@ -28,7 +29,7 @@ public class TimeZoneRepository : Repository<Domain.TimeZone, Guid>, ITimeZoneRe
     }
 
     /// <inheritdoc />
-    public new async Task<List<Domain.TimeZone>> GetAllAsync()
+    public new async Task<List<Domain.TimeZone>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await Context.TimeZones
             .Where(t => !t.IsDeleted)

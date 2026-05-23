@@ -22,7 +22,7 @@ public class CurrencyService(IUnitOfWork unitOfWork, IMemoryCache memoryCache) :
             return cachedCurrencies;
         }
 
-        var currencies = await unitOfWork.Currencies.GetAllAsync();
+        var currencies = await unitOfWork.Currencies.GetAllAsync(cancellationToken);
         var response = currencies.Select(x => x.ToCurrencyResponse()).ToArray();
 
         memoryCache.Set(CacheKey, response, new MemoryCacheEntryOptions

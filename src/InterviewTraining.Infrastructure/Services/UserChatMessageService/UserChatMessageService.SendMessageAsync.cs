@@ -62,7 +62,7 @@ public partial class UserChatMessageService
             CreatedUtc = DateTime.UtcNow
         };
 
-        await _unitOfWork.UserChatMessages.AddAsync(message);
+        await _unitOfWork.UserChatMessages.AddAsync(message, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         _logger.LogInformation("Message {MessageId} sent from {SenderId} to {ReceiverId}",

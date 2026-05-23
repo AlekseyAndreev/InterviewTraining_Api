@@ -1,6 +1,7 @@
 ﻿using Elastic.Serilog.Sinks;
 using InterviewTraining.Api;
 using InterviewTraining.Api.Middlewares;
+using InterviewTraining.Infrastructure.BackgroundServices;
 using InterviewTraining.Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,8 @@ try
     builder.Host.UseSerilog();
 
     builder.Services.ConfigureServices(builder.Configuration);
+    // Регистрация BackgroundService для шедулера
+    builder.Services.AddHostedService<InterviewSchedulerBackgroundService>();
 
     var app = builder.Build();
 
@@ -57,7 +60,6 @@ try
     }
 
     await InterviewContextSeeding.SeedAllAsync(app.Services);
-    
     app.UseMiddleware<ErrorHandlingMiddleware>();
 
     var uiUrls = app.Configuration.GetSection("UiUrls").Get<string[]>() ?? Array.Empty<string>();
@@ -71,7 +73,6 @@ try
     {
         app.UseDeveloperExceptionPage();
     }
-    
     app.UseAuthentication();
 
     app.UseHttpsRedirection();

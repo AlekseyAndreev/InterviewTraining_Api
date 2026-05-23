@@ -24,7 +24,7 @@ public partial class InterviewChatMessageService
             throw new BusinessLogicException("Не найдена информация по пользователю");
         }
 
-        var interview = await _unitOfWork.Interviews.GetByIdAsync(request.InterviewId);
+        var interview = await _unitOfWork.Interviews.GetByIdAsync(request.InterviewId, cancellationToken);
         if (interview == null)
         {
             _logger.LogWarning("Интервью с идентификатором {InterviewId} не найдено", request.InterviewId);

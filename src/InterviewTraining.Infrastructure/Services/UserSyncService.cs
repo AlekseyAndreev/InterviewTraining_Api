@@ -46,7 +46,7 @@ public class UserSyncService(IUnitOfWork _unitOfWork, ILogger<UserSyncService> _
                 TimeZoneId = InterviewContextSeeding.MoscowGuid
             };
 
-            await _unitOfWork.AdditionalUserInfos.AddAsync(newUser);
+            await _unitOfWork.AdditionalUserInfos.AddAsync(newUser, cancellationToken);
             
             _logger.LogInformation("Создан новый пользователь {UserId}", identityUserId);
         }

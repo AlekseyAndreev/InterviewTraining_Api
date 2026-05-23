@@ -12,7 +12,7 @@ public class InterviewLanguageService(IUnitOfWork unitOfWork) : IInterviewLangua
 {
     public async Task<InterviewLanguageResponse[]> GetAllAsync(CancellationToken cancellationToken)
     {
-        var all = await unitOfWork.InterviewLanguages.GetAllAsync();
+        var all = await unitOfWork.InterviewLanguages.GetAllAsync(cancellationToken);
         return all.Select(x => x.ToInterviewLanguageResponse()).ToArray();
     }
 }

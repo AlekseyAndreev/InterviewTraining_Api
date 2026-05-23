@@ -1,6 +1,7 @@
 ﻿using InterviewTraining.Application.CancelInterview.V10;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Domain;
+using InterviewTraining.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -27,7 +28,7 @@ public partial class InterviewService
     /// </summary>
     public async Task<CancelInterviewResponse> CancelInterviewAsync(CancelInterviewRequest request, CancellationToken cancellationToken)
     {
-        var (isCandidate, isExpert, _, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Отмена собеседования", false, cancellationToken);
+        var (isCandidate, isExpert, isAdminCurrentUser, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.IdentityUserId, request.InterviewId, "Отмена собеседования", false, cancellationToken);
 
         var currentState = CalculateStatusWithCheck(interview, activeVersion);
 
@@ -63,14 +64,15 @@ public partial class InterviewService
             throw new BusinessLogicException("Время собеседования уже вышло. Вы уже не можете отменить собеседование");
         }
 
-        var newVersion = CopyFrom(interview.Id, activeVersion);
+        var newVersion = InterviewHelper.CopyFrom(interview.Id, activeVersion);
         newVersion.Candidate.IsCancelled = isCandidate ? true : (activeVersion.Candidate?.IsCancelled ?? false);
         newVersion.Candidate.CancelReason = isCandidate ? request.CancelReason : activeVersion.Candidate?.CancelReason;
         newVersion.Expert.IsCancelled = isExpert ? true : (activeVersion.Expert?.IsCancelled ?? false);
         newVersion.Expert.CancelReason = isExpert ? request.CancelReason : activeVersion.Expert?.CancelReason;
-        newVersion.State = CalculateStatus(interview, newVersion);
+        newVersion.State = InterviewHelper.CalculateStatus(interview, newVersion);
+        newVersion.ChangedBy = GetChangedBy(isCandidate, isExpert, false);
 
-        await _unitOfWork.InterviewVersions.AddAsync(newVersion);
+        await _unitOfWork.InterviewVersions.AddAsync(newVersion, cancellationToken);
 
         interview.ActiveInterviewVersionId = newVersion.Id;
         _unitOfWork.Interviews.Update(interview);
@@ -91,4 +93,4 @@ public partial class InterviewService
             Success = true,
         };
     }
- }
+}

@@ -2,6 +2,7 @@
 using InterviewTraining.Application.Interfaces;
 using InterviewTraining.Application.SignalR;
 using InterviewTraining.Domain;
+using InterviewTraining.Infrastructure.Helpers;
 using InterviewTraining.Infrastructure.Providers;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -20,114 +21,24 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
         IInterviewNotificationProvider _notificationProvider,
         IUserTimeZoneProvider _userTimeZoneService) : IInterviewService
 {
-    /// <summary>
-    /// Вычисление статуса интервью на основе данных версии
-    /// </summary>
-    private static InterviewVersionState CalculateStatus(Interview interview, InterviewVersion version)
+    private static InterviewVersionChangedBy GetChangedBy(bool isCandidate, bool isExpert, bool isAdmin)
     {
-        if (version == null)
+        if (isCandidate)
         {
-            return InterviewVersionState.Draft;
+            return InterviewVersionChangedBy.Candidate;
         }
 
-        if (version.Candidate?.IsDeleted == true && version.Expert?.IsDeleted == true)
+        if (isExpert)
         {
-            return InterviewVersionState.DeletedByCandidateAndExpert;
+            return InterviewVersionChangedBy.Expert;
         }
 
-        if (version.Expert?.IsDeleted == true)
+        if (isAdmin)
         {
-            return InterviewVersionState.DeletedByExpert;
+            return InterviewVersionChangedBy.Expert;
         }
 
-        if (version.Candidate?.IsDeleted == true)
-        {
-            return InterviewVersionState.DeletedByCandidate;
-        }
-
-        if (version.Candidate?.IsCancelled == true && version.Expert?.IsCancelled == true)
-        {
-            return InterviewVersionState.CancelledByCandidateAndExpert;
-        }
-
-        if (version.Expert?.IsCancelled == true)
-        {
-            return InterviewVersionState.CancelledByExpert;
-        }
-
-        if (version.Candidate?.IsCancelled == true)
-        {
-            return InterviewVersionState.CancelledByCandidate;
-        }
-
-        var nowUtc = DateTime.UtcNow;
-        var candidateApproved = version.Candidate?.IsApproved ?? false;
-        var expertApproved = version.Expert?.IsApproved ?? false;
-        var bothApproved = candidateApproved && expertApproved;
-        var isAdminApproved = version.IsAdminApproved;
-
-        var isEnd = (version.EndUtc.HasValue && version.EndUtc.Value < nowUtc) || (!version.EndUtc.HasValue && version.StartUtc.AddHours(1) < nowUtc);
-
-        if (bothApproved && isEnd && isAdminApproved)
-        {
-            return InterviewVersionState.Completed;
-        }
-
-        var isInProcess = (version.StartUtc <= nowUtc && !version.EndUtc.HasValue && version.StartUtc.AddHours(1) > nowUtc) || (version.StartUtc <= nowUtc && version.EndUtc.HasValue && version.EndUtc.Value > nowUtc);
-
-        if (bothApproved && isInProcess && isAdminApproved)
-        {
-            return InterviewVersionState.InProgress;
-        }
-
-        var isStartDateExpired = version.StartUtc <= nowUtc;
-
-        if (!candidateApproved && !expertApproved && isStartDateExpired)
-        {
-            return InterviewVersionState.TimeExpiredBothDidNotApprove;
-        }
-
-        if (candidateApproved && !expertApproved && isStartDateExpired)
-        {
-            return InterviewVersionState.TimeExpiredExpertDidNotApprove;
-        }
-
-        if (!candidateApproved && expertApproved && isStartDateExpired)
-        {
-            return InterviewVersionState.TimeExpiredCandidateDidNotApprove;
-        }
-
-        if (bothApproved && !isAdminApproved && isStartDateExpired)
-        {
-            return InterviewVersionState.TimeExpiredBothApprovedAdminDidNotApprove;
-        }
-
-        if (bothApproved && !isAdminApproved && !isStartDateExpired)
-        {
-            return InterviewVersionState.ConfirmedBothAdminNotApproved;
-        }
-
-        if (bothApproved && isAdminApproved && !isStartDateExpired)
-        {
-            return InterviewVersionState.ConfirmedBothAdminApprovedTimeDidNotStart;
-        }
-
-        if (candidateApproved && !isStartDateExpired)
-        {
-            return InterviewVersionState.ConfirmedByCandidate;
-        }
-
-        if (expertApproved && !isStartDateExpired)
-        {
-            return InterviewVersionState.ConfirmedByExpert;
-        }
-
-        if (!candidateApproved && !expertApproved && !isStartDateExpired)
-        {
-            return InterviewVersionState.PendingConfirmation;
-        }
-
-        return InterviewVersionState.Unknown;
+        return InterviewVersionChangedBy.Unknown;
     }
 
     /// <summary>
@@ -135,7 +46,7 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
     /// </summary>
     private InterviewVersionState CalculateStatusWithCheck(Interview interview, InterviewVersion version)
     {
-        var calculatedStatus = CalculateStatus(interview, version);
+        var calculatedStatus = InterviewHelper.CalculateStatus(interview, version);
         var currentStatus = version.State;
 
         if (calculatedStatus != currentStatus)
@@ -208,37 +119,4 @@ public partial class InterviewService(IUnitOfWork _unitOfWork,
 
         await interviewChatMessageProvider.CreateInterviewChatMessage(interview.Id, MessageSenderType.System, null, chatMessageText, cancellationToken);
     }
-
-    private static InterviewVersion CopyFrom(Guid interviewId, InterviewVersion activeVersion) =>
-        new()
-        {
-            Id = Guid.NewGuid(),
-            InterviewId = interviewId,
-            StartUtc = activeVersion.StartUtc,
-            EndUtc = activeVersion.EndUtc,
-            LinkToVideoCall = activeVersion.LinkToVideoCall,
-            LanguageId = activeVersion.LanguageId,
-            CreatedUtc = DateTime.UtcNow,
-            IsAdminApproved = activeVersion.IsAdminApproved,
-            CurrencyId = activeVersion.CurrencyId,
-            InterviewPrice = activeVersion.InterviewPrice,
-            Candidate = new CandidateInterviewData
-            {
-                IsApproved = activeVersion.Candidate?.IsApproved ?? false,
-                IsPaidByCandidate = activeVersion.Candidate?.IsPaidByCandidate ?? false,
-                IsCancelled = activeVersion.Candidate?.IsCancelled ?? false,
-                CancelReason = activeVersion.Candidate?.CancelReason,
-                IsDeleted = activeVersion.Candidate?.IsDeleted ?? false,
-                IsRescheduled = activeVersion.Candidate?.IsRescheduled ?? false,
-            },
-            Expert = new ExpertInterviewData
-            {
-                IsApproved = activeVersion.Expert?.IsApproved ?? false,
-                IsPaidToExpert = activeVersion.Expert?.IsPaidToExpert ?? false,
-                IsCancelled = activeVersion.Expert?.IsCancelled ?? false,
-                CancelReason = activeVersion.Expert?.CancelReason,
-                IsDeleted = activeVersion.Expert?.IsDeleted ?? false,
-                IsRescheduled = activeVersion.Expert?.IsRescheduled ?? false,
-            }
-        };
 }

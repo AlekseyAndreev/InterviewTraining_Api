@@ -45,7 +45,7 @@ public class UserSkillService : IUserSkillService
         foreach (var skillId in skillIdsList)
         {
             // Проверяем существование навыка
-            var skill = await _unitOfWork.Skills.GetByIdAsync(skillId);
+            var skill = await _unitOfWork.Skills.GetByIdAsync(skillId, cancellationToken);
             if (skill == null)
             {
                 _logger.LogWarning("Навык с ID {SkillId} не найден", skillId);
@@ -68,7 +68,7 @@ public class UserSkillService : IUserSkillService
                 CreatedUtc = DateTime.UtcNow
             };
 
-            await _unitOfWork.UserSkills.AddAsync(userSkill);
+            await _unitOfWork.UserSkills.AddAsync(userSkill, cancellationToken);
             addedCount++;
         }
 

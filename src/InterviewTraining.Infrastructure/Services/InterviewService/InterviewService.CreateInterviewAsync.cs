@@ -52,7 +52,7 @@ public partial class InterviewService
             throw new BusinessLogicException("Эксперт и кандидат один и тот же пользователь");
         }
 
-        var interviewLanguageId = await GetLanguageId(request.InterviewLanguageId);
+        var interviewLanguageId = await GetLanguageIdAsync(request.InterviewLanguageId, cancellationToken);
 
         var startUtc = DateTimeHelper.ConvertUserTimeToUtc(request.Date, request.Time, candidate.TimeZone?.Code);
 
@@ -70,14 +70,14 @@ public partial class InterviewService
             CreatedUtc = DateTime.UtcNow
         };
 
-        await _unitOfWork.Interviews.AddAsync(interview);
+        await _unitOfWork.Interviews.AddAsync(interview, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var interviewVersion = CreateNewEmptyVersion(interview.Id, startUtc, expert.InterviewPrice, expert.CurrencyId, interviewLanguageId);
-
+        interviewVersion.ChangedBy = InterviewVersionChangedBy.Candidate;
         await interviewChatMessageProvider.CreateInterviewChatMessage(interview.Id, MessageSenderType.Candidate, candidate.Id, request.Notes, cancellationToken);
 
-        await _unitOfWork.InterviewVersions.AddAsync(interviewVersion);
+        await _unitOfWork.InterviewVersions.AddAsync(interviewVersion, cancellationToken);
 
         interview.ActiveInterviewVersionId = interviewVersion.Id;
         _unitOfWork.Interviews.Update(interview);
@@ -94,14 +94,14 @@ public partial class InterviewService
         };
     }
 
-    private async Task<Guid?> GetLanguageId(Guid? interviewLanguageIdParam)
+    private async Task<Guid?> GetLanguageIdAsync(Guid? interviewLanguageIdParam, CancellationToken cancellationToken)
     {
         if (!interviewLanguageIdParam.HasValue)
         {
             return null;
         }
 
-        var existsLang = await _unitOfWork.InterviewLanguages.AnyAsync(x => x.Id == interviewLanguageIdParam.Value && !x.IsDeleted);
+        var existsLang = await _unitOfWork.InterviewLanguages.AnyAsync(x => x.Id == interviewLanguageIdParam.Value && !x.IsDeleted, cancellationToken);
         if (!existsLang)
         {
             throw new BusinessLogicException("Язык собеседования не найден в БД");

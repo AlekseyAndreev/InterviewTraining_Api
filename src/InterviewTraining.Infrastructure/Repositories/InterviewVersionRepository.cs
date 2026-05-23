@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.DatabaseContext;
@@ -9,9 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InterviewTraining.Infrastructure.Repositories;
 
-/// <summary>
+///<summary>
 /// Репозиторий для работы с версиями интервью
-/// </summary>
+///</summary>
 public class InterviewVersionRepository : Repository<InterviewVersion, Guid>, IInterviewVersionRepository
 {
     public InterviewVersionRepository(InterviewContext context) : base(context)
@@ -26,13 +27,13 @@ public class InterviewVersionRepository : Repository<InterviewVersion, Guid>, II
             .ToListAsync();
     }
 
-    public override async Task<InterviewVersion> GetByIdAsync(Guid id)
+    public override async Task<InterviewVersion> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await DbSet.FirstOrDefaultAsync(v => v.Id == id);
+        return await DbSet.FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
     }
 
-    public override async Task<IEnumerable<InterviewVersion>> GetAllAsync()
+    public override async Task<IEnumerable<InterviewVersion>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await DbSet.ToListAsync();
+        return await DbSet.ToListAsync(cancellationToken);
     }
 }

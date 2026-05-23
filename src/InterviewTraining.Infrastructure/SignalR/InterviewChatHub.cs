@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.SignalR;
 
-/// <summary>
+///<summary>
 /// SignalR хаб для уведомлений о сообщениях чата
-/// </summary>
+///</summary>
 [Authorize]
 public class InterviewChatHub : Hub
 {
@@ -16,29 +16,29 @@ public class InterviewChatHub : Hub
         return $"interview_{interviewId}_chat";
     }
 
-    /// <summary>
+    ///<summary>
     /// Присоединиться к группе чата интервью
-    /// </summary>
+    ///</summary>
     public async Task JoinInterviewChat(Guid interviewId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, GetGroupName(interviewId));
     }
 
-    /// <summary>
+    ///<summary>
     /// Покинуть группу чата интервью
-    /// </summary>
+    ///</summary>
     public async Task LeaveInterviewChat(Guid interviewId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, GetGroupName(interviewId));
     }
 
-    /// <summary>
+    ///<summary>
     /// Имя метода для уведомления о новом сообщении
-    /// </summary>
+    ///</summary>
     public const string MessageCreatedMethod = "ChatMessageCreated";
 
-    /// <summary>
+    ///<summary>
     /// Имя метода для уведомления об обновлении сообщения
-    /// </summary>
+    ///</summary>
     public const string MessageUpdatedMethod = "ChatMessageUpdated";
 }

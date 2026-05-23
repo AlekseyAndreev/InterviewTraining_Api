@@ -1,11 +1,12 @@
 ﻿using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.DatabaseContext;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace InterviewTraining.Infrastructure.Repositories;
 
@@ -18,10 +19,10 @@ public class InterviewLanguageRepository : Repository<InterviewLanguage, Guid>, 
     {
     }
 
-    public override async Task<IEnumerable<InterviewLanguage>> GetAllAsync()
+    public override async Task<IEnumerable<InterviewLanguage>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await DbSet
             .Where(u => !u.IsDeleted)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

@@ -1,4 +1,4 @@
-using InterviewTraining.Domain;
+﻿using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.DatabaseContext;
 using InterviewTraining.Infrastructure.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -30,5 +30,10 @@ public class UserNotificationRepository : Repository<UserNotification, Guid>, IU
             .Include(x => x.User)
             .Where(x => x.Id == id && !x.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task AddRangeAsync(IEnumerable<UserNotification> notifications, CancellationToken cancellationToken)
+    {
+        await DbSet.AddRangeAsync(notifications, cancellationToken);
     }
 }

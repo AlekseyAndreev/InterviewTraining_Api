@@ -12,7 +12,7 @@ public interface IInterviewNotificationProvider
     /// </summary>
     Task NotifyChatMessageCreatedAsync(InterviewChatMessageNotificationDto message);
 
-    ///<summary>
+    /// <summary>
     /// Отправить уведомление об обновлении сообщения в чате
     /// </summary>
     Task NotifyChatMessageUpdatedAsync(InterviewChatMessageNotificationDto message);

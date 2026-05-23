@@ -23,7 +23,7 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
             throw new BusinessLogicException("Не найдена информация по пользователю");
         }
 
-        var timeZones = await unitOfWork.TimeZones.GetAllAsync();
+        var timeZones = await unitOfWork.TimeZones.GetAllAsync(cancellationToken);
 
         return new GetUserInfoResponse
         {
@@ -73,7 +73,7 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
                 throw new BusinessLogicException("При указании суммы должна быть выбрана валюта");
             }
 
-            var currency = await unitOfWork.Currencies.GetByIdAsync(request.CurrencyId.Value);
+            var currency = await unitOfWork.Currencies.GetByIdAsync(request.CurrencyId.Value, cancellationToken);
             if (currency == null)
             {
                 logger.LogWarning("Валюта {CurrencyId} не найдена", request.CurrencyId);
@@ -107,7 +107,7 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
 
         if (request.TimeZoneId.HasValue)
         {
-            var timeZone = await unitOfWork.TimeZones.GetByIdAsync(request.TimeZoneId.Value);
+            var timeZone = await unitOfWork.TimeZones.GetByIdAsync(request.TimeZoneId.Value, cancellationToken);
             if (timeZone == null || timeZone.IsDeleted)
             {
                 throw new BusinessLogicException("Указанная временная зона не найдена");
@@ -132,9 +132,9 @@ public class UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger) : 
     ///</summary>
     public async Task<GetAllUsersForAdminResponse> GetAllUsersForAdminAsync(
         GetAllUsersForAdminRequest request,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
-        var allUsers = await unitOfWork.AdditionalUserInfos.GetAllAsync();
+        var allUsers = await unitOfWork.AdditionalUserInfos.GetAllAsync(cancellationToken);
 
         // Apply search filter if provided
         var filteredUsers = string.IsNullOrWhiteSpace(request.SearchFilter)

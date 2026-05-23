@@ -46,7 +46,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             }
         }
 
-        var timeZoneInfo = await GetUserTimeZoneAsync(user.TimeZoneId);
+        var timeZoneInfo = await GetUserTimeZoneAsync(user.TimeZoneId, cancellationToken);
 
         TimeOnly? startTimeUtc = null;
         TimeOnly? endTimeUtc = null;
@@ -82,7 +82,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             IsDeleted = false
         };
 
-        await _unitOfWork.UserAvailableTimes.AddAsync(availableTime);
+        await _unitOfWork.UserAvailableTimes.AddAsync(availableTime, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new CreateAvailableTimeResponse
@@ -120,7 +120,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             timeZoneId = currentUser.TimeZoneId;
         }
 
-        var timeZoneInfo = await GetUserTimeZoneAsync(timeZoneId);
+        var timeZoneInfo = await GetUserTimeZoneAsync(timeZoneId, cancellationToken);
 
         var result = new GetAvailableTimeResponse
         {
@@ -144,7 +144,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             throw new EntityNotFoundException("User");
         }
 
-        var availableTime = await _unitOfWork.UserAvailableTimes.GetByIdAsync(id);
+        var availableTime = await _unitOfWork.UserAvailableTimes.GetByIdAsync(id, cancellationToken);
         if (availableTime == null || availableTime.UserId != user.Id)
         {
             throw new EntityNotFoundException("UserAvailableTime");
@@ -175,7 +175,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             throw new EntityNotFoundException("User");
         }
 
-        var availableTime = await _unitOfWork.UserAvailableTimes.GetByIdAsync(request.AvailableTimeId);
+        var availableTime = await _unitOfWork.UserAvailableTimes.GetByIdAsync(request.AvailableTimeId, cancellationToken);
         if (availableTime == null || availableTime.UserId != user.Id)
         {
             throw new EntityNotFoundException("UserAvailableTime");
@@ -192,7 +192,7 @@ public class UserAvailableTimeService : IUserAvailableTimeService
             }
         }
 
-        var timeZoneInfo = await GetUserTimeZoneAsync(user.TimeZoneId);
+        var timeZoneInfo = await GetUserTimeZoneAsync(user.TimeZoneId, cancellationToken);
 
         TimeOnly? startTimeUtc = null;
         TimeOnly? endTimeUtc = null;
@@ -244,14 +244,14 @@ public class UserAvailableTimeService : IUserAvailableTimeService
     }
 
     // TODO: объеденить с получением временной зоны и кода в интервью
-    private async Task<TimeZoneInfo> GetUserTimeZoneAsync(Guid? timeZoneId)
+    private async Task<TimeZoneInfo> GetUserTimeZoneAsync(Guid? timeZoneId, CancellationToken cancellationToken)
     {
         if (!timeZoneId.HasValue)
         {
             return null;
         }
 
-        var timeZone = await _unitOfWork.TimeZones.GetByIdAsync(timeZoneId.Value);
+        var timeZone = await _unitOfWork.TimeZones.GetByIdAsync(timeZoneId.Value, cancellationToken);
         if (timeZone == null)
         {
             return null;

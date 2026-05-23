@@ -66,15 +66,15 @@ public class AdditionalUserInfoRepository : Repository<AdditionalUserInfo, Guid>
             .ToListAsync();
     }
 
-    public override async Task<AdditionalUserInfo> GetByIdAsync(Guid id)
+    public override async Task<AdditionalUserInfo> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await DbSet
-            .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
+            .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted, cancellationToken);
     }
 
-    public override async Task<IEnumerable<AdditionalUserInfo>> GetAllAsync()
+    public override async Task<IEnumerable<AdditionalUserInfo>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await DbSet
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

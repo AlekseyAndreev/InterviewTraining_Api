@@ -15,6 +15,16 @@ namespace InterviewTraining.Infrastructure.Repositories;
 /// </summary>
 public class InterviewRepository : Repository<Interview, Guid>, IInterviewRepository
 {
+    private static readonly List<InterviewVersionState> StatusesForScheduler = [
+        InterviewVersionState.Unknown,
+        InterviewVersionState.PendingConfirmation,
+        InterviewVersionState.ConfirmedByExpert,
+        InterviewVersionState.ConfirmedByCandidate,
+        InterviewVersionState.ConfirmedBothAdminApprovedTimeDidNotStart,
+        InterviewVersionState.ConfirmedBothAdminNotApproved,
+        InterviewVersionState.InProgress,
+    ];
+    
     public InterviewRepository(InterviewContext context) : base(context)
     {
     }
@@ -44,15 +54,30 @@ public class InterviewRepository : Repository<Interview, Guid>, IInterviewReposi
             .FirstOrDefaultAsync(i => i.Id == id && !i.Candidate.IsDeleted && !i.Expert.IsDeleted, cancellationToken);
     }
 
-    public override async Task<Interview> GetByIdAsync(Guid id)
+    public override async Task<Interview> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await DbSet
-            .FirstOrDefaultAsync(i => i.Id == id);
+            .FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
     }
 
-    public override async Task<IEnumerable<Interview>> GetAllAsync()
+    public override async Task<IEnumerable<Interview>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await DbSet
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyCollection<Interview>> GetExpiredVersionsForSchedulerAsync(CancellationToken cancellationToken)
+    {
+        var utcNow = DateTime.UtcNow;
+        return await DbSet
+            .Include(v => v.Candidate)
+            .Include(v => v.Expert)
+            .Include(v => v.ActiveInterviewVersion)
+            .Include(v => v.ActiveInterviewVersion)
+                .ThenInclude(i => i.Candidate)
+            .Include(v => v.ActiveInterviewVersion)
+                .ThenInclude(i => i.Expert)
+            .Where(v => v.ActiveInterviewVersion != null && StatusesForScheduler.Contains(v.ActiveInterviewVersion.State))
+            .ToListAsync(cancellationToken);
     }
 }

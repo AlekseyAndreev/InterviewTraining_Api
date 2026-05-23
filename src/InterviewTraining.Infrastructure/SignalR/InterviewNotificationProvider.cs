@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace InterviewTraining.Infrastructure.SignalR;
 
-/// <summary>
+///<summary>
 /// Реализация сервиса уведомлений через SignalR
-/// </summary>
+///</summary>
 public class InterviewNotificationProvider : IInterviewNotificationProvider
 {
     private readonly IHubContext<InterviewChatHub> _chatHubContext;
@@ -25,9 +25,9 @@ public class InterviewNotificationProvider : IInterviewNotificationProvider
         _logger = logger;
     }
 
-    /// <summary>
+    ///<summary>
     /// Отправить уведомление о новом сообщении в чате собеседования
-    /// </summary>
+    ///</summary>
     public async Task NotifyChatMessageCreatedAsync(InterviewChatMessageNotificationDto message)
     {
         try
@@ -45,9 +45,9 @@ public class InterviewNotificationProvider : IInterviewNotificationProvider
         }
     }
 
-    /// <summary>
+    ///<summary>
     /// Отправить уведомление об обновлении сообщения в чате
-    /// </summary>
+    ///</summary>
     public async Task NotifyChatMessageUpdatedAsync(InterviewChatMessageNotificationDto message)
     {
         try
@@ -65,9 +65,9 @@ public class InterviewNotificationProvider : IInterviewNotificationProvider
         }
     }
 
-    /// <summary>
+    ///<summary>
     /// Отправить уведомление об изменении версии интервью
-    /// </summary>
+    ///</summary>
     public async Task NotifyInterviewVersionChangedAsync(InterviewVersionChangedNotificationDto notification)
     {
         try

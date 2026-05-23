@@ -3,6 +3,7 @@ using InterviewTraining.Application.ChangeAdminData.V10;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Application.SignalR;
 using InterviewTraining.Domain;
+using InterviewTraining.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -21,10 +22,15 @@ public partial class InterviewService
     public async Task<ChangeAdminDataResponse> ChangeAdminDataAsync(ChangeAdminDataRequest request, CancellationToken cancellationToken)
     {
         var (isCandidate, isExpert, isAdminCurrentUser, interview, activeVersion, currentUser) = await GetBaseToChangeInterviewAsync(request.CurrentIdentityUserId, request.InterviewId, "Изменение данных собеседования админом", request.IsAdmin, cancellationToken);
-        
-        var currentState = CalculateStatus(interview, activeVersion);
 
-        var newVersion = CopyFrom(interview.Id, activeVersion);
+        if (!isAdminCurrentUser)
+        {
+            throw new BusinessLogicException("Только админ может это делать");
+        }
+
+        var currentState = InterviewHelper.CalculateStatus(interview, activeVersion);
+
+        var newVersion = InterviewHelper.CopyFrom(interview.Id, activeVersion);
         if (currentState == InterviewVersionState.ConfirmedBothAdminNotApproved)
         {
             var utcNow = DateTime.UtcNow;
@@ -39,9 +45,10 @@ public partial class InterviewService
         {
             newVersion.Expert.IsPaidToExpert = request.IsPaidToExpert == true;
         }
-        newVersion.State = CalculateStatus(interview, newVersion);
+        newVersion.State = InterviewHelper.CalculateStatus(interview, newVersion);
+        newVersion.ChangedBy = InterviewVersionChangedBy.Admin;
 
-        await _unitOfWork.InterviewVersions.AddAsync(newVersion);
+        await _unitOfWork.InterviewVersions.AddAsync(newVersion, cancellationToken);
 
         interview.ActiveInterviewVersionId = newVersion.Id;
         _unitOfWork.Interviews.Update(interview);

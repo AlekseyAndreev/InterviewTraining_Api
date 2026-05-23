@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.DatabaseContext;
@@ -56,16 +57,16 @@ public class SkillTagRepository : Repository<SkillTag, Guid>, ISkillTagRepositor
         DbSet.RemoveRange(tags);
     }
 
-    public override async Task<SkillTag> GetByIdAsync(Guid id)
+    public override async Task<SkillTag> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await DbSet
-            .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
+            .FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted, cancellationToken);
     }
 
-    public override async Task<IEnumerable<SkillTag>> GetAllAsync()
+    public override async Task<IEnumerable<SkillTag>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await DbSet
             .Where(t => !t.IsDeleted)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

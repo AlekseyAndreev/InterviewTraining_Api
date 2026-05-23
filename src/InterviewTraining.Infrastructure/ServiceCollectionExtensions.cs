@@ -31,6 +31,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserNotificationService, UserNotificationService>();
         services.AddScoped<IUserChatMessageService, UserChatMessageService>();
         services.AddScoped<ILlmService, LlmService>();
+        services.AddScoped<IInterviewSchedulerService, InterviewSchedulerService>();
         services.AddInfrastructureProviders();
         return services;
     }

@@ -50,7 +50,7 @@ public partial class InterviewService
             throw new BusinessLogicException("Не задана активная версия для интервью");
         }
 
-        var timeZoneCode = await _userTimeZoneService.GetTimeZoneCode(currentUser.TimeZoneId);
+        var timeZoneCode = await _userTimeZoneService.GetTimeZoneCodeAsync(currentUser.TimeZoneId, cancellationToken);
 
         var calculatedStatus = CalculateStatusWithCheck(interview, activeVersion);
 

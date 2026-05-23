@@ -32,7 +32,7 @@ public class InterviewChatMessageProvider(IUnitOfWork _unitOfWork,
             ModifiedUtc = null,
         };
 
-        await _unitOfWork.InterviewChatMessages.AddAsync(interviewChatMessage);
+        await _unitOfWork.InterviewChatMessages.AddAsync(interviewChatMessage, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await _notificationProvider.NotifyChatMessageCreatedAsync(new InterviewChatMessageNotificationDto

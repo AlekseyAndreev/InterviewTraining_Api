@@ -20,4 +20,9 @@ public interface IInterviewRepository : IRepository<Interview, Guid>
     /// Получить интервью с включением связанных данных
     /// </summary>
     Task<Interview> GetWithDetailsAsync(Guid id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получить просроченные версии интервью для обработки шедулером
+    /// </summary>
+    Task<IReadOnlyCollection<Interview>> GetExpiredVersionsForSchedulerAsync(CancellationToken cancellationToken);
 }

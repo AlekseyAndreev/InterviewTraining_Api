@@ -24,4 +24,9 @@ public enum InterviewChangeType
     /// Перенос времени
     /// </summary>
     Rescheduled = 3,
+
+    /// <summary>
+    /// Время истекло
+    /// </summary>
+    TimeExpired = 4,
 }

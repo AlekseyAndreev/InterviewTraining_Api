@@ -37,7 +37,7 @@ public class UserNotificationService(IUnitOfWork unitOfWork, IUserTimeZoneProvid
         var currentUser = await unitOfWork.AdditionalUserInfos.GetByIdentityUserIdAsync(userId, cancellationToken);
         var notifications = await unitOfWork.UserNotifications.GetAllNotDeletedWithRelatedAsync(userId, cancellationToken);
 
-        var timeZoneCode = await userTimeZoneService.GetTimeZoneCode(currentUser?.TimeZoneId);
+        var timeZoneCode = await userTimeZoneService.GetTimeZoneCodeAsync(currentUser?.TimeZoneId, cancellationToken);
 
         return notifications.Select(n => new AppUserNotificationDto
         {

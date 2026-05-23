@@ -44,21 +44,22 @@ public partial class InterviewService
             }
         }
 
-        var timeZoneCode = await _userTimeZoneService.GetTimeZoneCode(currentUser.TimeZoneId);
+        var timeZoneCode = await _userTimeZoneService.GetTimeZoneCodeAsync(currentUser.TimeZoneId, cancellationToken);
         var newStartUtc = DateTimeHelper.ConvertUserTimeToUtc(request.NewDate, request.NewTime, timeZoneCode);
         if (newStartUtc < DateTime.UtcNow)
         {
             throw new BusinessLogicException("Нельзя переносить собеседование в прошлое");
         }
 
-        var newVersion = CopyFrom(interview.Id, activeVersion);
+        var newVersion = InterviewHelper.CopyFrom(interview.Id, activeVersion);
         newVersion.Candidate.IsRescheduled = isCandidate;
         newVersion.Candidate.IsApproved = isCandidate;
         newVersion.Expert.IsRescheduled = isExpert;
         newVersion.Expert.IsApproved = isExpert;
         newVersion.StartUtc = newStartUtc;
-        newVersion.State = CalculateStatus(interview, newVersion);
-        await _unitOfWork.InterviewVersions.AddAsync(newVersion);
+        newVersion.State = InterviewHelper.CalculateStatus(interview, newVersion);
+        newVersion.ChangedBy = GetChangedBy(isCandidate, isExpert, false);
+        await _unitOfWork.InterviewVersions.AddAsync(newVersion, cancellationToken);
 
         interview.ActiveInterviewVersionId = newVersion.Id;
         _unitOfWork.Interviews.Update(interview);

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.Exceptions;
 using InterviewTraining.Domain;
+using InterviewTraining.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
 
 namespace InterviewTraining.Infrastructure.Services;
@@ -80,13 +81,14 @@ public partial class InterviewService
             throw new BusinessLogicException("Время собеседования уже вышло. Вы уже не можете подтвердить своё участие");
         }
 
-        var newVersion = CopyFrom(interview.Id, activeVersion);
+        var newVersion = InterviewHelper.CopyFrom(interview.Id, activeVersion);
         newVersion.Candidate.IsApproved = isCandidate ? true : (activeVersion.Candidate?.IsApproved ?? false);
         newVersion.Expert.IsApproved = isExpert ? true : (activeVersion.Expert?.IsApproved ?? false);
         newVersion.IsAdminApproved = isAdminCurrentUser ? true : activeVersion.IsAdminApproved;
-        newVersion.State = CalculateStatus(interview, newVersion);
+        newVersion.State = InterviewHelper.CalculateStatus(interview, newVersion);
+        newVersion.ChangedBy = GetChangedBy(isCandidate, isExpert, isAdminCurrentUser);
 
-        await _unitOfWork.InterviewVersions.AddAsync(newVersion);
+        await _unitOfWork.InterviewVersions.AddAsync(newVersion, cancellationToken);
 
         interview.ActiveInterviewVersionId = newVersion.Id;
         _unitOfWork.Interviews.Update(interview);

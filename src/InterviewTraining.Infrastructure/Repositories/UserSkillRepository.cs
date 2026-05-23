@@ -59,15 +59,15 @@ public class UserSkillRepository : Repository<UserSkill, Guid>, IUserSkillReposi
             .ToListAsync(cancellationToken);
     }
 
-    public override async Task<UserSkill> GetByIdAsync(Guid id)
+    public override async Task<UserSkill> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await DbSet
-            .FirstOrDefaultAsync(us => us.Id == id);
+            .FirstOrDefaultAsync(us => us.Id == id, cancellationToken);
     }
 
-    public override async Task<IEnumerable<UserSkill>> GetAllAsync()
+    public override async Task<IEnumerable<UserSkill>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await DbSet
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

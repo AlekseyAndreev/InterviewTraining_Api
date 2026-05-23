@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using InterviewTraining.Domain;
 using InterviewTraining.Infrastructure.DatabaseContext;
@@ -67,16 +68,16 @@ public class UserRatingRepository : Repository<UserRating, Guid>, IUserRatingRep
             .CountAsync(r => r.UserToId == userToId && !r.IsDeleted);
     }
 
-    public override async Task<UserRating> GetByIdAsync(Guid id)
+    public override async Task<UserRating> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await DbSet
-            .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
+            .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted, cancellationToken);
     }
 
-    public override async Task<IEnumerable<UserRating>> GetAllAsync()
+    public override async Task<IEnumerable<UserRating>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await DbSet
             .Where(r => !r.IsDeleted)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

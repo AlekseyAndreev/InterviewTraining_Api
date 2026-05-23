@@ -77,16 +77,16 @@ public class SkillGroupRepository : Repository<SkillGroup, Guid>, ISkillGroupRep
             .ToListAsync(cancellationToken);
     }
 
-    public override async Task<SkillGroup> GetByIdAsync(Guid id)
+    public override async Task<SkillGroup> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await DbSet
-            .FirstOrDefaultAsync(g => g.Id == id && !g.IsDeleted);
+            .FirstOrDefaultAsync(g => g.Id == id && !g.IsDeleted, cancellationToken);
     }
 
-    public override async Task<IEnumerable<SkillGroup>> GetAllAsync()
+    public override async Task<IEnumerable<SkillGroup>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await DbSet
             .Where(g => !g.IsDeleted)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }
