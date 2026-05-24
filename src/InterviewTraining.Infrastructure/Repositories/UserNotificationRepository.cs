@@ -31,9 +31,4 @@ public class UserNotificationRepository : Repository<UserNotification, Guid>, IU
             .Where(x => x.Id == id && !x.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
     }
-
-    public async Task AddRangeAsync(IEnumerable<UserNotification> notifications, CancellationToken cancellationToken)
-    {
-        await DbSet.AddRangeAsync(notifications, cancellationToken);
-    }
 }
