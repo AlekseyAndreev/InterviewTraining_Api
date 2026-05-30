@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InterviewTraining.Infrastructure.Repositories;
 
-///<summary>
+/// <summary>
 /// Репозиторий для работы с интервью
 /// </summary>
 public class InterviewRepository : Repository<Interview, Guid>, IInterviewRepository
@@ -24,7 +24,7 @@ public class InterviewRepository : Repository<Interview, Guid>, IInterviewReposi
         InterviewVersionState.ConfirmedBothAdminNotApproved,
         InterviewVersionState.InProgress,
     ];
-    
+
     public InterviewRepository(InterviewContext context) : base(context)
     {
     }
@@ -78,6 +78,16 @@ public class InterviewRepository : Repository<Interview, Guid>, IInterviewReposi
             .Include(v => v.ActiveInterviewVersion)
                 .ThenInclude(i => i.Expert)
             .Where(v => v.ActiveInterviewVersion != null && StatusesForScheduler.Contains(v.ActiveInterviewVersion.State))
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<Interview>> GetAllForAdminAsync(CancellationToken cancellationToken)
+    {
+        return await DbSet
+            .Include(i => i.Candidate)
+            .Include(i => i.Expert)
+            .Include(i => i.ActiveInterviewVersion)
+            .OrderByDescending(i => i.CreatedUtc)
             .ToListAsync(cancellationToken);
     }
 }

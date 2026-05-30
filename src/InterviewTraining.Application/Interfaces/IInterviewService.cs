@@ -2,6 +2,7 @@
 using InterviewTraining.Application.ChangeAdminData.V10;
 using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.CreateInterview.V10;
+using InterviewTraining.Application.GetAllInterviewsForAdmin.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.RescheduleInterview.V10;
@@ -19,6 +20,15 @@ public interface IInterviewService
     /// Получить список интервью текущего пользователя
     /// </summary>
     Task<GetMyInterviewsResponse> GetMyInterviewsAsync(string identityUserId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получить все интервью для администратора (включая удалённые)
+    /// </summary>
+    /// <remarks>
+    /// Доступно только пользователям с ролью администратор.
+    /// Возвращает все интервью, включая те, где кандидат или эксперт были удалены.
+    /// </remarks>
+    Task<GetAllInterviewsForAdminResponse> GetAllInterviewsForAdminAsync(string identityUserId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Создать новое собеседование

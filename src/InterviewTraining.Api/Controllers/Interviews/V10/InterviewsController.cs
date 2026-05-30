@@ -4,6 +4,7 @@ using InterviewTraining.Application.ChangeAdminData.V10;
 using InterviewTraining.Application.ConfirmInterview.V10;
 using InterviewTraining.Application.CreateInterview.V10;
 using InterviewTraining.Application.CustomMediatorLogic;
+using InterviewTraining.Application.GetAllInterviewsForAdmin.V10;
 using InterviewTraining.Application.GetInterviewInfo.V10;
 using InterviewTraining.Application.GetMyInterviews.V10;
 using InterviewTraining.Application.RescheduleInterview.V10;
@@ -28,12 +29,32 @@ public class InterviewsController : BaseController<InterviewsController>
     /// <summary>
     /// Constructor
     /// </summary>
-    ///<param name="mediator"></param>
+    /// <param name="mediator"></param>
     /// <param name="logger"></param>
     public InterviewsController(ICustomMediator mediator, ILogger<InterviewsController> logger)
         : base(logger)
     {
         _mediator = mediator;
+    }
+
+    /// <summary>
+    /// Получить список всех интервью для администратора
+    /// </summary>
+    /// <remarks>
+    /// Возвращает список всех интервью, включая удалённые.
+    /// Доступно только для пользователей с ролью администратор.
+    /// </remarks>
+    /// <param name="cancellationToken">Токен отмены</param>
+    /// <returns>Список всех интервью</returns>
+    [HttpGet("all")]
+    [Authorize(Roles = AuhConstants.RoleAdmin)]
+    public async Task<GetAllInterviewsForAdminResponse> GetAllInterviewsForAdmin(CancellationToken cancellationToken)
+    {
+        var request = new GetAllInterviewsForAdminRequest
+        {
+            IdentityUserId = CurrentUserId
+        };
+        return await _mediator.SendAsync(request, cancellationToken);
     }
 
     /// <summary>
@@ -43,7 +64,7 @@ public class InterviewsController : BaseController<InterviewsController>
     /// Возвращает список всех интервью, где текущий пользователь является кандидатом или экспертом.
     /// Дата интервью возвращается в часовом поясе пользователя (из профиля) или UTC, если часовой пояс не задан.
     /// </remarks>
-    ///<param name="cancellationToken">Токен отмены</param>
+    /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Список интервью</returns>
     [HttpPost("my")]
     [Authorize]

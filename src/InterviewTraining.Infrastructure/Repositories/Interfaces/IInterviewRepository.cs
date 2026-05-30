@@ -25,4 +25,9 @@ public interface IInterviewRepository : IRepository<Interview, Guid>
     /// Получить просроченные версии интервью для обработки шедулером
     /// </summary>
     Task<IReadOnlyCollection<Interview>> GetExpiredVersionsForSchedulerAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Получить все интервью для администратора (включая удалённые)
+    /// </summary>
+    Task<IEnumerable<Interview>> GetAllForAdminAsync(CancellationToken cancellationToken);
 }
